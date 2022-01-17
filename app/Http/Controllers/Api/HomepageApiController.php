@@ -16,7 +16,22 @@ class HomepageApiController extends Controller
     public function index()
     {
          $homepage=Homepage::all();
-        return response()->json(['status' => true, 'message' => "Home Page", 'home' => $homepage], 200);
+
+         if(!empty($homepage)){
+
+            foreach($homepage as $key => $val){
+
+                $homepage[$key]['content'] = json_decode($val->content);
+             }
+            return response()->json(['status' => true, 'message' => "Home Page", 'home' => $homepage], 200);
+
+         }
+         else{
+            return response()->json(['status' => false, 'message' => "Home Page", 'home' => []], 200);
+    
+         }
+
+         
     }
 
     /**

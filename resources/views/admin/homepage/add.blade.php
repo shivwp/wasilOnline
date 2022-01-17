@@ -41,7 +41,6 @@
 
 
 @section('content')
-
 <!-- ROW-1 OPEN-->
 
 <div class="card">
@@ -71,7 +70,7 @@ $content = json_decode($homepage_content->content);
 					 <label class="form-label">Content</label> 
 
 					 <?php //echo $content->content;?>
-					 <div id="summernote"><?php echo $content->content ?></div>
+					 <div id="summernote">{{isset($content) ? $content->content : '' }}</div>
 				</div>
 				<div class="col-12">
 					<div class="row">
@@ -113,33 +112,39 @@ $content = json_decode($homepage_content->content);
 						<div class="col-md-6">
 						<label class="form-label">Sale image 1</label> 
 							<input type ="file" class="form-control" name="sale_image[1][image]" value="" placeholder="banner image">
+							@if(!empty($content->sale))
 							<img src="{{url('img/slider/'.$content->sale[0]->image)}}"  height="100px">
+							@endif
 						</div>
 						<div class="col-md-6">
 						<label class="form-label">url</label> 
-						<input type ="text" class="form-control" name="sale_image[1][url]" value="{{$content->sale[0]->url}}" placeholder="banner url">
+						<input type ="text" class="form-control" name="sale_image[1][url]" value="{{isset($content->sale[0]) ? $content->sale[0]->url : ''}}" placeholder="banner url">
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-6">
 						<label class="form-label">Sale image 2</label> 
 							<input type ="file" class="form-control" name="sale_image[2][image]" value="" placeholder="banner image">
+						@if(!empty($content->sale[1]))
 						<img src="{{url('img/slider/'.$content->sale[1]->image)}}"  height="100px">
+						@endif
 						</div>
 						<div class="col-md-6">
 						<label class="form-label">url</label> 
-						<input type ="text" class="form-control" name="sale_image[2][url]" value="{{$content->sale[1]->url}}" placeholder="banner url">
+						<input type ="text" class="form-control" name="sale_image[2][url]" value="{{isset($content->sale[1]) ? $content->sale[1]->url : ''}}" placeholder="banner url">
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-6">
 						<label class="form-label">Sale image 3</label> 
 							<input type ="file" class="form-control" name="sale_image[3][image]" value="" placeholder="banner image">
+						@if(!empty($content->sale[2]))
 						<img src="{{url('img/slider/'.$content->sale[2]->image)}}"  height="100px">
+						@endif
 						</div>
 						<div class="col-md-6">
 						<label class="form-label">url</label> 
-						<input type ="text" class="form-control" name="sale_image[3][url]" value="{{$content->sale[2]->url}}" placeholder="banner url">
+						<input type ="text" class="form-control" name="sale_image[3][url]" value="{{isset($content->sale[2]) ? $content->sale[2]->url : ''}}" placeholder="banner url">
 						</div>
 					</div>
 
@@ -147,12 +152,16 @@ $content = json_decode($homepage_content->content);
 				<div class="col-12">
 					<label class="form-label">Advertisement Images</label> 
 					<input type ="file" class="form-control" name="adv_img" value="" placeholder="banner image">
+					@if(!empty($content->adv_img))
 					<img src="{{url('img/slider/'.$content->adv_img)}}"  height="100px">
+					@endif
 				</div>
 				<div class="col-12">
 					<label class="form-label">Banner Image</label> 
 					<input type ="file" class="form-control" name="banner_img" value="" placeholder="banner image">
+					@if(!empty($content->banner_img))
 					<img src="{{url('img/slider/'.$content->banner_img)}}"  height="100px">
+					@endif
 				
 				</div>
 				<div class="col-12">
@@ -199,13 +208,13 @@ $content = json_decode($homepage_content->content);
 
  $('document').ready(function() {
 
-    // $('.note-codable').attr('name', 'content');
+    $('.note-codable').attr('name', 'content');
 
-    // var pre_editor_val = $('input[name="content"]').val();
+    var pre_editor_val = $('input[name="content"]').val();
 
-    // $('textarea[name="content"]').val(pre_editor_val);
+    $('textarea[name="content"]').val(pre_editor_val);
 
-    // $('.note-editable.card-block').html(pre_editor_val);
+    $('.note-editable.card-block').html(pre_editor_val);
 
     $('button[type="submit"]').click(function(editor_val){
 

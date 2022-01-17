@@ -23,21 +23,18 @@ class ProductApiController extends Controller
 
         if(count($product) > 0){
 
-            // foreach($product as $key => $val){
-            //     if($val->parent_id != 0){
-                   
-            //     $varants = DB::table('products_variants')->select()->where('product_id','=',$val->id)->first();
+            foreach($product as $key => $val){
+                $data = [];
+                $gallery = json_decode($val->gallary_image);
+                if(!empty($gallery)){
+                    foreach ($gallery as $key1 => $value) {
+                        $value1 = url('products/gallery/' . $value);
+                        $data[] = $value1;
+                    }
+                }
 
-            //     }
-            //     if($val->parent_id == 0){
-
-            //         $attr = DB::table('product_attributes')->where('product_id','=',$val->id)->first();
-                    
-            //     }
-
-
-            // }
-
+            }
+           
 
             return response()->json(['status' => true, 'message' => "All product list", 'user' => $product], 200);
 
