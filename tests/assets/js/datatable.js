@@ -1,0 +1,1 @@
+$((function(e){"use strict";$("#datatable1").DataTable({responsive:!0,language:{searchPlaceholder:"Search...",sSearch:"",lengthMenu:"_MENU_ items/page"}}),$("#datatable2").DataTable({bLengthChange:!1,searching:!1,responsive:!0}),$(".dataTables_length select").select2({minimumResultsForSearch:1/0})}));
