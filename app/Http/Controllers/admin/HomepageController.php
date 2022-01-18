@@ -78,69 +78,84 @@ class HomepageController extends Controller
     public function store(Request $request)
 
     {
-    // dd($request->sale_image);
+        //dd(gettype($request->sale_image[1]['image']));
         $d['title'] = "Homepage";
         $content = [];
 
         $thumb=[];
        
-        if($request->has('silder_image')) {
-          $files=$request->silder_image;
+        if($request->has('slider_image')) {
+          $files=$request->slider_image;
             if($files) {
                 $i=0;
               foreach($files as $file){
-                $name=uniqid().$file['image']->getClientOriginalName();
-                $file['image']->move('img/slider', $name);
-                $thumb[$i]['image']=$name;
-                $thumb[$i]['url']=$file['url'];
+                if(!empty($file['image'])){
+                    $name=uniqid().$file['image']->getClientOriginalName();
+                    $file['image']->move('img/slider', $name);
+                    $thumb[$i]['image']=$name;
+                    $thumb[$i]['url']=$file['url'];
+                   // $i++;
+                }
+                else{
+                    $thumb[$i]['image']=$file['image_prev'];
+                    $thumb[$i]['url']=$file['url'];
+                  
 
+                }
                 $i++;
               }
             }
         }
-
-        
         $thumb_sale=[];
-       
+      
         if($request->has('sale_image')) {
           $files=$request->sale_image;
             if($files) {
                 $i=0;
               foreach($files as $file){
-                $name=uniqid().$file['image']->getClientOriginalName();
-                $file['image']->move('img/slider', $name);
-                $thumb_sale[$i]['image']=$name;
-                $thumb_sale[$i]['url']=$file['url'];
-
+                if(!empty($file['image'])){
+                    $name=uniqid().$file['image']->getClientOriginalName();
+                    $file['image']->move('img/slider', $name);
+                    $thumb_sale[$i]['image']=$name;
+                    $thumb_sale[$i]['url']=$file['url'];
+                }
+                else{
+                    $thumb_sale[$i]['image']=$file['sale_prev'];
+                    $thumb_sale[$i]['url']=$file['url'];
+                }
                 $i++;
               }
             }
         }
 
-
         $thumb_adv='';
        
         if($request->has('adv_img')) {
           $file=$request->adv_img;
-            if($file) {
+            if($request->has('adv_img')) {
                 $name=uniqid().$file->getClientOriginalName();
                 $file->move('img/slider', $name);
                 $thumb_adv = $name;
             }
         }
+        else{
+               $thumb_adv = $request->adv_img_prev;  
+            }
 
 
         $thumb_banner='';
        
         if($request->has('banner_img')) {
-          $file=$request->banner_img;
-            if($file) {
-                $i=0;
-                $name=uniqid().$file->getClientOriginalName();
-                $file->move('img/slider', $name);
-                $thumb_banner = $name;
+          $file_banner=$request->banner_img;
+            if($request->has('banner_img')) {
+                $name1=uniqid().$file_banner->getClientOriginalName();
+                $file_banner->move('img/slider', $name1);
+                $thumb_banner = $name1;
             }
         }
+         else{
+               $thumb_banner = $request->banner_img_prev;  
+            }
        $content['content'] = $request->input('content');
        $content['slider'] = $thumb;
        $content['sale'] = $thumb_sale;
@@ -157,6 +172,7 @@ class HomepageController extends Controller
         $metaarray=[
             'Pagemeta_title'=>$request->input('page_title'),
             'Pagemeta_details'=>$request->input('page_details'),
+
         ];
         foreach($metaarray as $key=> $vl){
             if(!empty($vl)){
@@ -170,12 +186,9 @@ class HomepageController extends Controller
             }
         }
         
-
     return redirect('dashboard/homepage/1/edit');
 
     }
-
-
 
     /**
 
@@ -196,8 +209,6 @@ class HomepageController extends Controller
         //
 
     }
-
-
 
     /**
 

@@ -367,6 +367,7 @@ class ProductController extends Controller
        // Save Varients
     public function saveVarient($request, $pid)
     { 
+      
       $pid = $pid;
       $products = Product::where('parent_id', '=', $pid)->get();
       foreach ($products as $pk => $pv) {
@@ -430,6 +431,7 @@ class ProductController extends Controller
           //   ]);
 
           // }
+         
 
            $thumb=[];
           $i=0;
