@@ -16,14 +16,15 @@
 @endsection
 @section('content')
 
+
 						<!-- ROW-1 OPEN -->
 						<div class="row row-cards">
-							<div class="col-sm-12 col-md-6 col-lg-6 col-xl-3">
+								<div class="col-sm-12 col-md-6 col-lg-6 col-xl-3">
 								<div class="card">
 									<div class="card-body text-center">
-										<i class="fa fa-globe text-primary fa-3x text-primary-shadow"></i>
-										<h6 class="mt-4 mb-2">Total Visit</h6>
-										<h2 class="mb-2 number-font">834</h2>
+										<i class="icon-bag text-info fa-3x text-info-shadow"></i>
+										<h4 class="mt-4 mb-2 number-font">Total Orders </h4>
+										<h2 class="mb-2  ">70</h2>
 										<p class="text-muted">Sed ut perspiciatis unde omnis accusantium doloremque</p>
 									</div>
 								</div>
@@ -31,9 +32,9 @@
 							<div class="col-sm-12 col-md-6 col-lg-6 col-xl-3">
 								<div class="card">
 									<div class="card-body text-center">
-										<i class="fa fa-dollar text-secondary fa-3x text-secondary-shadow"></i>
-										<h6 class="mt-4 mb-2">Cost per Click</h6>
-										<h2 class="mb-2  number-font">$34,516</h2>
+										<i class="icon-graph text-primary fa-3x text-primary-shadow"></i>
+										<h4 class="mt-4 mb-2 number-font">Fullfilled</h4>
+										<h2 class="mb-2 ">40</h2>
 										<p class="text-muted">Sed ut perspiciatis unde omnis accusantium doloremque</p>
 									</div>
 								</div>
@@ -41,9 +42,9 @@
 							<div class="col-sm-12 col-md-6 col-lg-6 col-xl-3">
 								<div class="card">
 									<div class="card-body text-center">
-										<i class="fa fa-comment-o text-success fa-3x text-success-shadow"></i>
-										<h6 class="mt-4 mb-2">Investment</h6>
-										<h2 class="mb-2 number-font">80%</h2>
+										<i class="icon icon-basket-loaded text-secondary fa-3x text-secondary-shadow"></i>
+										<h4 class="mt-4 mb-2 number-font">Shipped</h4>
+										<h2 class="mb-2  ">20</h2>
 										<p class="text-muted">Sed ut perspiciatis unde omnis accusantium doloremque</p>
 									</div>
 								</div>
@@ -51,13 +52,14 @@
 							<div class="col-sm-12 col-md-6 col-lg-6 col-xl-3">
 								<div class="card">
 									<div class="card-body text-center">
-										<i class="fa fa-pie-chart text-info fa-3x text-info-shadow"></i>
-										<h6 class="mt-4 mb-2">Revenue</h6>
-										<h2 class="mb-2  number-font">70k</h2>
+										<i class="icon-basket text-success fa-3x text-success-shadow"></i>
+										<h4 class="mt-4 mb-2 number-font">Delivered </h4>
+										<h2 class="mb-2 ">10</h2>
 										<p class="text-muted">Sed ut perspiciatis unde omnis accusantium doloremque</p>
 									</div>
 								</div>
 							</div><!-- COL END -->
+						
 						</div>
 						<!-- ROW-1 CLOSED -->
 
@@ -65,15 +67,10 @@
 						<div class="row">
 							<div class="col-sm-12 col-md-12 col-lg-12 col-xl-4">
 								<div class="card overflow-hidden bg-white work-progress">
-									<div class="card-header">
-										<h3 class="card-title">Current Deals</h3>
-										<div class="card-options">
-											<h4 class="mb-0 text-dark font-weight-normal">39.05%</h4>
-										</div>
-									</div>
+									
 									<div class="card-body">
-										<h3 class="number-font mb-2">$ 50,150.00</h3>
-										<span>Used balance Current Deals</span>
+										<h3 class="number-font mb-2">70</h3>
+										<span>Total Orders</span>
 										<div class="chart-wrapper">
 											<canvas id="deals" class="chart-dropshadow-success"></canvas>
 										</div>
@@ -89,23 +86,7 @@
 										<div class="chart-wrapper">
 											<canvas id="total-coversations" class="h-160 chart-dropshadow-info"></canvas>
 										</div>
-										<div class="row mt-6">
-											<div class="col text-center">
-												<h5 class="font-weight-normal mt-2">Twitter</h5>
-												<h3 class="text-xxl mb-1 social-content  number-font">21,754</h3>
-												<p class="mb-0 text-muted"><span class="text-lg font-weight-700"><i class="fa fa-caret-up text-success ml-1"></i> +2.56%</span> vs last month (79.56%)</p>
-											</div>
-											<div class="col text-center">
-												<h5 class="font-weight-normal mt-2">Google</h5>
-												<h3 class="text-xxl mb-1 social-content  number-font">3,256</h3>
-												<p class="mb-0 text-muted"><span class="text-lg font-weight-700"><i class="fa fa-caret-up text-success ml-1"></i> +2.56%</span> vs last month (79.56%)</p>
-											</div>
-											<div class="col text-center">
-												<h5 class="font-weight-normal mt-2">Facebook</h5>
-												<h3 class="text-xxl mb-1 social-content  number-font">86,258</h3>
-												<p class="mb-0 text-muted"><span class="text-lg font-weight-700"><i class="fa fa-caret-up text-success ml-1"></i> +2.56%</span> vs last month (79.56%)</p>
-											</div>
-										</div>
+									
 									</div>
 								</div>
 							</div><!-- COL END -->
@@ -119,8 +100,8 @@
 									<div class="card-body">
 										<div class="row">
 											<div class="col">
-												<h6 class="">Today's revenue</h6>
-												<h3 class="mb-2 number-font">$ 22,300</h3>
+												<h6 class="">Today's Order</h6>
+												<h3 class="mb-2 number-font">30</h3>
 												<p class="text-muted">
 													<span class="text-success"><i class="fa fa-chevron-circle-up text-success ml-1"></i> 3%</span>
 													last month
@@ -143,7 +124,7 @@
 										<div class="row">
 											<div class="col">
 												<h6 class="">Total Clients</h6>
-												<h3 class="mb-2 number-font">1,12,900</h3>
+												<h3 class="mb-2 number-font">900</h3>
 												<p class="text-muted">
 													<span class="text-danger"><i class="fa fa-chevron-circle-down text-danger ml-1"></i> 0.15%</span>
 													last month
@@ -166,7 +147,7 @@
 							<div class="col-lg-6 col-md-12 col-sm-12 col-xl-4">
 								<div class="card overflow-hidden">
 									<div class="card-header">
-										<h3 class="card-title">Customer Satisfaction</h3>
+										<h3 class="card-title">Department Performance And Work Ability</h3>
 									</div>
 									<div class="card-body">
 										<div id="morrisBar8" class="h-270 donutShadow"></div>
@@ -176,29 +157,26 @@
 							<div class="col-lg-12 col-md-12 col-sm-12 col-xl-4">
 								<div class="card">
 									<div class="card-header">
-										<h3 class="card-title">Users</h3>
+										<h3 class="card-title">Orders</h3>
 									</div>
 									<div class="">
 										<div class="list-group-item d-flex  align-items-center border-top-0 border-left-0 border-right-0">
-											<div class="mr-2">
-												<span class="avatar avatar-md brround cover-image" data-image-src="{{URL::asset('assets/images/users/1.jpg')}}"></span>
-											</div>
+										
 											<div class="">
-												<div class="font-weight-semibold">Mozelle Belt</div>
-												<small class="text-muted">Web Designer
+												<div class="font-weight-semibold">Total Orders</div>
+												<small class="text-muted">70
 												</small>
+												
 											</div>
 											<div class="ml-auto">
-												<a href="#" class="btn btn-sm btn-primary">View</a>
+												<a href="#" class="btn btn-sm btn-info">View</a>
 											</div>
 										</div>
 										<div class="list-group-item d-flex  align-items-center border-left-0 border-right-0">
-											<div class="mr-2">
-												<span class="avatar avatar-md brround cover-image" data-image-src="{{URL::asset('assets/images/users/13.jpg')}}"></span>
-											</div>
+										
 											<div class="">
-												<div class="font-weight-semibold">Thomos</div>
-												<small class="text-muted">Web Designer
+												<div class="font-weight-semibold">Fullfilled</div>
+												<small class="text-muted">40
 												</small>
 											</div>
 											<div class="ml-auto">
@@ -206,12 +184,10 @@
 											</div>
 										</div>
 										<div class="list-group-item d-flex  align-items-center border-left-0 border-right-0">
-											<div class="mr-2">
-												<span class="avatar avatar-md brround cover-image" data-image-src="{{URL::asset('assets/images/users/14.jpg')}}"></span>
-											</div>
+											
 											<div class="">
-												<div class="font-weight-semibold">Marry</div>
-												<small class="text-muted">Web Designer
+												<div class="font-weight-semibold">Shipped</div>
+												<small class="text-muted">20
 												</small>
 											</div>
 											<div class="ml-auto">
@@ -219,21 +195,17 @@
 											</div>
 										</div>
 										<div class="list-group-item d-flex  align-items-center border-left-0 border-right-0">
-											<div class="mr-2">
-												<span class="avatar avatar-md brround cover-image" data-image-src="{{URL::asset('assets/images/users/6.jpg')}}"></span>
-											</div>
+											
 											<div class="">
-												<div class="font-weight-semibold">John</div>
-												<small class="text-muted">Web Designer
+												<div class="font-weight-semibold">Delivered</div>
+												<small class="text-muted">10
 												</small>
 											</div>
 											<div class="ml-auto">
 												<a href="#" class="btn btn-sm btn-danger">View</a>
 											</div>
 										</div>
-										<div class="p-3 px-5">
-											<a href="#" class="btn btn-primary"><i class="fe fe-plus mr-1"></i>Add New User</a>
-										</div>
+									
 									</div>
 								</div>
 							</div><!-- COL END -->
@@ -260,8 +232,8 @@
 										<div class="card overflow-hidden">
 											<div class="card-body pb-0">
 												<div class="float-left">
-													<h6 class="mb-1">Graph Profit Margin</h6>
-													<h2 class="number-font mb-0">78%</h2>
+													<h6 class="mb-1">Graph Fullfillment</h6>
+													<h2 class="number-font mb-0">40</h2>
 												</div>
 												<div class="float-right">
 													<span class="mini-stat-icon bg-info"><i class="si si-eye "></i></span>
@@ -276,8 +248,8 @@
 										<div class="card">
 											<div class="card-body pb-0">
 												<div class="float-left">
-													<p class="mb-1">Total revenue</p>
-													<h2 class="number-font mb-0">$7865</h2>
+													<p class="mb-1">Delivered Orders</p>
+													<h2 class="number-font mb-0">10</h2>
 												</div>
 												<div class="float-right">
 													<span class="mini-stat-icon bg-danger"><i class="si si-volume-2"></i></span>
