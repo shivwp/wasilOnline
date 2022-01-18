@@ -24,14 +24,14 @@
                                 
                                     <div class="card-body">
                                         <div class="table-responsive">
-                                             <div class="paging-section">
-                                            <form method="get"  >
+                                            <div class="paging-section">
+                                            <form method="get">
                                                     <h6>show</h6>
                                                     <select id="pagination" name="paginate">
                                                         <option value="10" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 10) ? 'selected':''}}>10</option>
                                                         <option value="20" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 20) ? 'selected':''}}>20</option>
                                                         <option value="30" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 30) ? 'selected':''}}>30</option>
-                                                        <option value="50" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 40) ? 'selected':''}}>30</option>
+                                                        <option value="40" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 40) ? 'selected':''}}>40</option>
                                                    @if(isset($_GET['page']))<input type="hidden" name="page" value="{{$_GET['page']}}">@endif
                                                    <input type="submit" name="" style="display:none;">
                                                </form>
