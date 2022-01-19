@@ -51,6 +51,8 @@ use App\Http\Controllers\admin\GeneralSettingController;
 
 use App\Http\Controllers\admin\WithdrowController;
 
+use App\Http\Controllers\admin\DashboardController;
+
 
 
 
@@ -127,6 +129,10 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
     //Mail
 
     Route::resource('mail', MailController::class);
+
+    //Dashboard
+
+    Route::resource('dashboard', DashboardController::class);
 
     //Category
 

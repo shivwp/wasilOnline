@@ -4,10 +4,10 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Review;
-use Auth;
+use App\Models\Order;
+use Carbon\Carbon;
 
-class ReviewController extends Controller
+class DashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,14 +16,39 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        $d['title'] = "Reviews";
-        $d['review']=Review::all();
-        $pagination=10;
-        if(isset($_GET['paginate'])){
-            $pagination=$_GET['paginate'];
+     
+        $d['order']=Order::all()->groupBy(function($date) {
+            return Carbon::parse($date->created_at)->format('m'); 
+        });
+        $d['readyforship']=Order::where('status','=','ready to ship')->get();
+        $d['shipped']=Order::where('status','=','shipped')->get();;
+        $d['delivered']=Order::where('status','=','delivered')->get();;
+
+        $ordermcount = [];
+        $orderArr = [];
+      
+        
+        $d['month'] =["Jan", "Feb", "Mar", "Apr", "May", "Jun","jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        $d['string'] = '"Jan", "Feb", "Mar", "Apr", "May", "Jun","jul", "Aug", "Sep", "Oct", "Nov", "Dec"';//implode(",",$d['month']);
+     
+        foreach ( $d['order'] as $key => $value) {
+            $ordermcount[(int)$key] = count($value);
         }
-        $d['review'] =Review::paginate($pagination)->withQueryString();
-        return view('admin.reviews.index',$d);
+   
+         for ($i = 1; $i <= 12; $i++) {
+                if (!empty($ordermcount[$i])) {
+                    $orderArr[] = $ordermcount[$i];
+                    //$ordermonth=$orderArr[]
+                } else {
+                    $orderArr[]= 0;
+                }
+                
+            }
+        $d['orderArr'] = implode(",",$orderArr);
+       // dd( $orderArr);
+
+
+        return view('index2',$d);
     }
 
     /**
@@ -89,12 +114,6 @@ class ReviewController extends Controller
      */
     public function destroy($id)
     {
-        $review = Review::findOrFail($id);
-        $review->delete();
-        if(Auth::user()->roles->first()->title == 'Vendor'){
-        $type='Review';
-       \Helper::addToLog('Review Deleted', $type);
-       }
-        return back();
+        //
     }
 }
