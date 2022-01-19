@@ -208,95 +208,10 @@ class ProductController extends Controller
           $this->saveVarient($request, $product->id);
         
         }
-          
-          // $childProducts = Product::where('parent_id', '=', $product->id)->get();
-          // if(count($childProducts) > 0) {
-          //   foreach ($childProducts as $cp_k => $cp_v) {
-          //     # code...
-          //     $childProduct = Product::find($cp_v->id);
-          //     $childProduct->vendor_id = Auth::user()->id;
-          //     $childProduct->pname = $request->input('productname');
-          //     $childProduct->product_type = $request->input('pro_type');
-          //     $childProduct->cat_id = $request->input('catid');
-          //     $childProduct->cat_id_2  = $request->input('catid_2');
-          //     $childProduct->cat_id_3     = $request->input('catid_3');
-          //     // $childProduct->sku_id=$request->input('sku');
-          //     $childProduct->p_price=$request->input("purchase");
-          //     $childProduct->commission=$request->input("commission");
-          //     $childProduct->tax_apply= $request->input('tax_apply');
-          //     $childProduct->tax_type= $request->input('tax');
-          //     $childProduct->short_description=$request->input('example-textarea-input');
-          //     // $childProduct->discount_type=$request->input("discount_type");
-          //     // $childProduct->discount=$request->input('discount');
-          //     $childProduct->in_stock=$request->input('stock');
-          //     $childProduct->shipping_type= $request->input("shipping_type");
-          //     $childProduct->shipping_charge=$request->input("shipping_price");
-          //     $childProduct->meta_title= $request->input('meta_title');
-          //     $childProduct->meta_keyword=$request->input('meta_keyword');
-          //     $childProduct->meta_description=$request->input('meta_description');
-          //     $childProduct->save();
-          //   }
-            // $meta_data = [
-            //   'meta_title'         => $request->input('meta_title'),
-            //   'meta_keyword'          => $request->input('meta_keyword'),
-            //   'meta_description'      => $request->input('meta_description'),
-            // ];
-  
-            // foreach($meta_data as $metakey => $meatval){
-            //     DB::table('product_meta')->insert([
-            //       'product_id' => $product->id,
-            //       'key' => $metakey,
-            //       'value' => $meatval,
-            //     ]);
-  
-            // }
-            
-            // if($request->hasfile('featured_image'))
-            // {
-            //     $img = $request->file('featured_image');
-                
-            //     $extention = $img->getClientOriginalExtension();
-            //     $filename = time().'.'.$extention;
-            //     try {
-            //       $img->move('/products/feature', $filename);
-            //     } catch(Exception $e) {
-            //       echo 'Message: ' .$e->getMessage();
-            //       exit;
-            //     }
-               
-            //     // 
-            //     $childProduct->featured_image = $filename;
-            //     // Product::where('id',$childProduct->id)->update([
-            //     //     'featured_image' => $filename
-            //     // ]);
-            // }
-
-            
-
-          // $temp=[];
-          // if($request->hasfile('gallery_image'))
-          //   {
-          //       $files = $request->file('gallery_image');
-          //       foreach($files as $img){
-          //         $extentions = $img->getClientOriginalExtension();
-          //         $filenames = time().'.'.$extentions;
-          //         $img->move('products/gallery', $filenames);
-          //         $temp[]=$filenames;
-
-          //       }
-               
-          //       // Product::where('id',$childProduct->id)->update([
-          //       //     'gallery_image' => json_encode($temp)
-          //       // ]);
-          //       $childProduct->gallery_image = json_encode($temp);
-          //   }
-            // die('success');
-            
-
-
-  
-          // }
-        
+        if(Auth::user()->roles->first()->title == 'Vendor'){
+        $type='Product';
+       \Helper::addToLog('Product Created or Updated', $type);
+       }      
       return redirect('/dashboard/product')->with('status', 'your data is updated');
     }
 
@@ -646,10 +561,13 @@ class ProductController extends Controller
         $product =Product::where('id',$id)->first();
         if ($product != null) {
             $product->delete();
-            return redirect('dashboard/product')->with('success', 'Student deleted successfully');
+            return redirect('dashboard/product');
         }
     
-      
+       if(Auth::user()->roles->first()->title == 'Vendor'){
+        $type='Product';
+       \Helper::addToLog('Product Deleted', $type);
+       }  
    
     }
 }

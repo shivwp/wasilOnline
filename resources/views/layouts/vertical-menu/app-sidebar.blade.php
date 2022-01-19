@@ -122,7 +122,7 @@
 
                                     <ul class="sub-slide-menu">
 
-                                        <li><a class="sub-slide-item" href="{{ url('/' . $page='index2') }}">Rewards</a></li>
+                                        <li><a class="sub-slide-item" href="{{ route('dashboard.dashboard.index') }}">Rewards</a></li>
 
                                     </ul>
 

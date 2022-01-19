@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Menu;
+use Auth;
 
 class MenuController extends Controller
 {
@@ -45,7 +46,7 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
+        
          $menu = Menu::updateOrCreate(
             [
                 'id' => $request->id
@@ -58,9 +59,11 @@ class MenuController extends Controller
         ]);
        
    $menu->update();
-   $type='menu';
+   if(Auth::user()->roles->first()->title == 'Vendor'){
+    $type='menu';
    \Helper::addToLog('MENU create or update', $type);
-    return redirect('/dashboard/menus')->with('status', 'your data is updated');
+   }
+   return redirect('/dashboard/menus')->with('status', 'your data is updated');
     }
 
     /**
@@ -109,7 +112,8 @@ class MenuController extends Controller
     {
         $pg=Menu::findOrFail($id);
          $pg->delete();
-        \Helper::addToLog('MENU delete');
+         $type='menu';
+        \Helper::addToLog('MENU Delete', $type);
          return redirect('dashboard/menus');
     }
 }

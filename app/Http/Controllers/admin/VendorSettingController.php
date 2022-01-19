@@ -83,40 +83,70 @@ class VendorSettingController extends Controller
      //dd($request->vendor_id); 
 
         if(Auth::user()->roles->first()->title == 'Admin'){
-        // isset($request->vender_id)
-        $password = Hash::make($request->password);
-        $user = User::updateOrCreate(['id'=>$request->vendor_id],[
-                                        'first_name'    => $request->first_name,
-                                        'last_name'     => $request->last_name,
-                                        'email'         => $request->email,
-                                        'password'      => $password,
-                                    ]);
-        
-        $user->roles()->sync(3);
-        $vendor_id=$user->id;
-        $data = $request->except('_token');
-         
-        foreach ($data as $key => $value) {
-       
-        $this->savevalue($vendor_id,$key,$value);
-
-        }
+            // isset($request->vender_id)
+            $password = Hash::make($request->password);
+            $user = User::updateOrCreate([
+                'id'=>$request->vendor_id],[
+                'first_name'    => $request->first_name,
+                'last_name'     => $request->last_name,
+                'email'         => $request->email,
+                'password'      => $password,
+            ]);
+            
+            $user->roles()->sync(3);
+            $vendor_id=$user->id;
+            $role = 'Admin';
         }
         elseif(Auth::user()->roles->first()->title == 'Vendor'){
-        $vendor_id= Auth::user()->id;
+            // 
+            $vendor_id= Auth::user()->id;
+            $role = 'Vendor';
+        }
 
         $data = $request->except('_token');
-         
-        foreach ($data as $key => $value) {
-       
-        $this->savevalue($vendor_id,$key,$value);
 
+        if(isset($data['selling']))
+            $data['selling'] = 1;
+        else
+            $data['selling'] = 0;
+        
+        if(isset($data['product_publish']))
+            $data['product_publish'] = 1;
+        else
+            $data['product_publish'] = 0;
+
+        if(isset($data['feature_vendor']))
+            $data['feature_vendor'] = 1;
+        else
+            $data['feature_vendor'] = 0;
+
+        if(isset($data['notify']))
+            $data['notify'] = 1;
+        else
+            $data['notify'] = 0;
+
+        // dd($data);
+
+        foreach ($data as $key => $value) {
+            // 
+            
+            $this->savevalue($vendor_id,$key,$value);
         }
-        return back();
+
+        $type='Vendor ';
+        
+        \Helper::addToLog('Vendor Settings Changes', $type);
+
+        if($role == "Admin") {
+            return redirect('/dashboard/vendorsettings');
         }
-        \Helper::addToLog('Vendor settings change');
-        return redirect('/dashboard/vendorsettings');
+        else {
+            return back();
+        }
+
     }
+
+
     //  public function storedata(Request $request)
     // {
     //     //dd($request);
@@ -156,27 +186,27 @@ class VendorSettingController extends Controller
     public function savevalue($vendor_id,$key,$value="") {
 
         $name=$key;
-        $value=$value;
-        if($value != "") {
+        // $value=$value;
+        // if($value != "") {
             $setting= VendorSetting::updateOrCreate([
                 'vendor_id'=> $vendor_id,
-                'name'=>$name,
-
+                'name'=>$key,
             ], [
                 'value'=>$value
             ]);
-             $lastid =$setting->id;
-             if($key == 'profile_img' ){ 
+
+            $lastid =$setting->id;
+            if($key == 'profile_img' ){ 
+                // 
                 $file=$value;
                 $extention = $value->getClientOriginalExtension();
                 $filename = time().'.'.$extention;
                 $file->move('images/vendor/settings', $filename);
                 VendorSetting::where('id',$lastid)->where('name','=','profile_img')->update([
                     'value' => $filename
-
                 ]);
-                
             }
+
             if( $key=='banner_img'){ 
                 $file=$value;
                 $extention = $value->getClientOriginalExtension();
@@ -184,11 +214,9 @@ class VendorSettingController extends Controller
                 $file->move('images/vendor/settings', $filename);
                 VendorSetting::where('id',$lastid)->where('name','=','banner_img')->update([
                     'value' => $filename
-
                 ]);
-               
             }
-        }
+        // }
     
 
     }
