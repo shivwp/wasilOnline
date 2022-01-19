@@ -19,7 +19,11 @@
         
         <div class="col-md-4">
           <div class="form-group">
-            <img class="vendor_image" src="{{url('')}}/user/settings/{{($data['profile_img'])??''}}" style="height:100%;width:100%;" alt="logo">
+             @if(isset($vendor->id))
+            <img class="vendor_image" src="{{url('')}}/images/vendor/settings/{{($data['profile_img'])??''}}" style="height:100px;width:100px;" alt="logo" >
+             @else
+      
+        @endif
           </div>
         </div>
          <div class="col-md-2">
@@ -30,7 +34,11 @@
         </div>
         <div class="col-md-4">
           <div class="form-group">
-            <img class="banner_img" src="{{url('')}}/user/settings/{{($data['banner_img'])??''}}" style="height:100%;width:100%;" alt="logo">
+             @if(isset($vendor->id))
+            <img class="banner_img" src="{{url('')}}/images/vendor/settings/{{($data['banner_img'])??''}}" style="height:100px;width:100px;" alt="logo">
+             @else
+      
+        @endif
           </div>
         </div>
         <div class="col-md-6">
@@ -76,7 +84,7 @@
         <div class="col-md-6">
           <div class="form-group">
             <label class="control-label ">Username</label>
-            <input type="text" class="form-control" name="user_name " value="{{($data['user_name'])??''}}">
+            <input type="text" class="form-control" name="user_name " value="{{($data['first_name'])??''}}">
           </div>
         </div>
         <div class="col-md-6">
@@ -218,19 +226,43 @@
           </div>
         </div>
           <div class="col-md-12">
-        <input type="checkbox" id="selling" name="selling">
+            <label class="switch">
+              @if(isset($data['selling']))
+              <input type="checkbox" id="selling" name="selling" {{($data['selling'] == 1)?'checked':''}}>
+              @endif
+              <span class="slider round"></span>
+            </label>
+        
         <label for="scales">Enable Selling</label>
       </div>
         <div class="col-md-12">
-        <input type="checkbox" id="product_publish" name="product_publish">
+            <label class="switch">
+               @if(isset($data['product_publish']))
+              <input type="checkbox" id="product_publish" name="product_publish" {{($data['product_publish'] == 1)?'checked':''}}>
+               @endif
+              <span class="slider round"></span>
+            </label>
+        
         <label for="scales">Publish Product direct</label>
       </div>
         <div class="col-md-12">
-        <input type="checkbox" id="feature_vendor" name="feature_vendor">
+           <label class="switch">
+            @if(isset($data['feature_vendor']))
+              <input type="checkbox" id="feature_vendor" name="feature_vendor" {{($data['feature_vendor'] == 1)?'checked':''}}>
+               @endif
+              <span class="slider round"></span>
+            </label>
+       
         <label for="scales">Make feature vendor</label>
       </div>
        <div class="col-md-12">
-        <input type="checkbox" id="notify" name="notify">
+        <label class="switch">
+          @if(isset($data['notify']))
+             <input type="checkbox" id="notify" name="notify" {{($data['notify'] == 1)?'checked':''}}>
+              @endif
+              <span class="slider round"></span>
+            </label>
+        
         <label for="scales">Send the vendor an email About their account</label>
       </div>
       </div>

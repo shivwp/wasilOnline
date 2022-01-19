@@ -27,7 +27,7 @@ class OrderController extends Controller
         }
         elseif(Auth::user()->roles->first()->title == 'Vendor'){
          
-            $d['order']=Order::join('ordered_products', 'ordered_products.order_id', '=', 'orders.id' )->join('products','products.id','=','ordered_products.product_id')->where('products.vendor_id','=','Auth::user()->id')->where('order.status', '<>' , 'delivered');
+            $d['order']=Order::join('ordered_products', 'ordered_products.order_id', '=', 'orders.id' )->join('products','products.id','=','ordered_products.product_id')->where('products.vendor_id','=','Auth::user()->id')->where('orders.status', '<>' , 'delivered');
         }
         else{
           $d['order'] = [];
@@ -108,6 +108,7 @@ class OrderController extends Controller
                            ->where('orders.id',$id)->first();
         $d['allorder'] = Order::join('ordered_products','ordered_products.order_id','=','orders.id')
                          ->where('orders.id',$id)->get();
+        
        
         return view('admin/order/add',$d);
     }
@@ -142,6 +143,10 @@ class OrderController extends Controller
         $addressdata = Address::where('order_id',$order_id)->first();
         $addressdata->address = $request->address;
         $addressdata->save();
+        if(Auth::user()->roles->first()->title == 'Vendor'){
+        $type='Order';
+       \Helper::addToLog('Order create or update', $type);
+       }
 
         return redirect('/dashboard/order');
     }
@@ -156,6 +161,10 @@ class OrderController extends Controller
     {
         $order = Order::findOrFail($id);
         $order->delete();
+         if(Auth::user()->roles->first()->title == 'Vendor'){
+        $type='Order';
+       \Helper::addToLog('Order Deleted', $type);
+       }
         return back();
     }
 }

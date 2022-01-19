@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Coupon;
 
+use Auth;
+
 
 
 class CouponController extends Controller
@@ -42,6 +44,7 @@ class CouponController extends Controller
             $pagination=$_GET['paginate'];
         }
         $d['coupon'] =Coupon::paginate($pagination)->withQueryString();
+        
 
         return view('admin/coupon/index',$d);
 
@@ -134,7 +137,10 @@ class CouponController extends Controller
         ]);
 
         $coupon->update();
-
+        if(Auth::user()->roles->first()->title == 'Vendor'){
+        $type='Coupon';
+       \Helper::addToLog('Coupon create or update', $type);
+       }
     return redirect('/dashboard/coupon')->with('status', 'your data is updated');
 
     }
@@ -232,6 +238,10 @@ class CouponController extends Controller
          $coupon = Coupon::findOrFail($id);
 
         $coupon->delete();
+        if(Auth::user()->roles->first()->title == 'Vendor'){
+        $type='Coupon';
+       \Helper::addToLog('Coupon Deleted', $type);
+       }
 
         return back();
 

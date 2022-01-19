@@ -41,6 +41,7 @@
                                                         <th class="wd-15p">Email</th>
                                                         <th class="wd-15p">Comment</th>
                                                         <th class="wd-15p">Ratings</th>
+                                                        <th class="wd-15p">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -60,6 +61,18 @@
                                                             @endif
                                                             @endfor
                                                         </td>
+                                                        <td>
+                                                            <form action="{{ route('dashboard.review.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">
+
+                                                                        <input type="hidden" name="_method" value="DELETE">
+
+                                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
+                                                                        <button type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}"><i class="fa fa-trash"></i></button>
+
+                                                            </form>
+                                                        </td>
+                                                         
                                                     </tr>
                                                     @endforeach
                                                 @endif
