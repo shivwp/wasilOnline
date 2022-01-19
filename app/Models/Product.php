@@ -36,7 +36,9 @@ class Product extends Model
         'shipping_charge',
         'meta_title',
         'meta_keyword',
-        'parent_id'
+        'parent_id',
+        'commission',
+        'meta_description'
     ];
 
   public function category()

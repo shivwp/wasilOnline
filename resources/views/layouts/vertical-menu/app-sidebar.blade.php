@@ -321,15 +321,15 @@
                                 <li><a href="{{ route('dashboard.vendorsettings.index') }}" class="slide-item">Vendor List</a></li>
                             @endcan
 
-                              {{-- <li><a href="#" class="slide-item">Vendor Category</a></li>--}} 
+                              {{-- <li><a href="#" class="slide-item">Vendor Category</a></li>--}}
+                              @can('general_setting')
                                 <li class="sub-slide">
                                     <a class="sub-side-menu__item" data-toggle="sub-slide" href="#"><span class="sub-side-menu__label">Setting</span><i class="sub-angle fa fa-angle-right"></i></a>
                                     <ul class="sub-slide-menu">
                                         <li><a class="sub-slide-item" href="{{ route('dashboard.general-setting.index') }}">General setting</a></li>
-                                        
-                                         
                                     </ul>
                                 </li>
+                                @endcan
                                     <li><a href="{{ route('dashboard.withdrow.index') }}" class="slide-item">Withdrawal Request</a></li>
                                 @if(Auth::user()->roles->first()->title == "Vendor")
                                     <li><a href="{{ route('dashboard.withdrow.create') }}" class="slide-item">Withdraw</a></li>

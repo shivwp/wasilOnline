@@ -393,13 +393,14 @@ class ProductController extends Controller
        
        
           $product = Product::create([
-            'vendor_id'         => Auth::user()->id,
+            'vendor_id'         => $parent_product->vendor_id,
             'product_type'    => $parent_product->product_type,
             'pname'             => $parent_product->pname,
             'cat_id'             => $parent_product->cat_id,
             'cat_id_2'             => $parent_product->cat_id_2,
             'cat_id_3'             => $parent_product->cat_id_3,
             'sku_id'            =>  $variant_sku[$k][0],
+            'commission'        => $parent_product->commission,
             'p_price'           => $parent_product->p_price,
             's_price'           => $variant_price[$k][0],
             'tax_apply'       => $parent_product->tax_apply,
@@ -433,7 +434,7 @@ class ProductController extends Controller
           // }
          
 
-           $thumb=[];
+          $thumb=[];
           $i=0;
           if($request->has('variant_images')) {
             //
@@ -451,7 +452,7 @@ class ProductController extends Controller
 
           $variant_values = json_decode($variant[$k][0]);
           $variant_value = [];
-
+          
           $products_variants_id = DB::table('products_variants')->insertGetId([
             'parent_id' => $pid,
             'p_id' => $product->id,

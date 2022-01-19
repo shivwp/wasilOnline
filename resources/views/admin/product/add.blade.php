@@ -74,11 +74,11 @@
 				<div class="col-md-12">
 					<div class="form-group">
 						<label class="form-label">Select Vendor</label>
-						<select name="vendorid" class="form-control select2"  >
+						<select name="vendorid" class="form-control select2" required >
 							<option value="">Select</option>
 							@if(count($all_vendors) > 0)
 								@foreach($all_vendors as $val)
-									<option value="{{$val->id}}" {{isset($product) && ($product->cat_id == $val->id) ? 'selected' : ''}}>{{$val->first_name}}</option>
+									<option value="{{$val->id}}" {{isset($product) && ($product->vendor_id == $val->id) ? 'selected' : ''}}>{{$val->first_name}}</option>
 								@endforeach
 							@endif
 						</select>
@@ -92,7 +92,7 @@
 
 						<label class="form-label">Procuct Name</label>
 
-						<input type="hidden" name="pid" value="{{ isset($product->id)?$product->id:'' }}" class="pid" >
+						<input type="hidden" name="pid" value="{{ isset($product->id)?$product->id:'' }}" class="pid" required>
 
 						<input type="text" class="form-control" name="productname" placeholder="Name"  value="{{isset($product) ? $product->pname : '' }}">
 
@@ -106,7 +106,7 @@
 
 						<label class="form-label">Short Discription</label>
 
-						<textarea class="form-control" name="example-textarea-input" rows="6" placeholder="text here.." >{{isset($product) ? $product->short_description : '' }}</textarea>
+						<textarea class="form-control" name="example-textarea-input" rows="6" placeholder="text here.." required>{{isset($product) ? $product->short_description : '' }}</textarea>
 
 					</div>
 
@@ -118,7 +118,7 @@
 
 						<label class="form-label">Detailed Discription</label>
 
-                                                        <div id="summernote"></div>
+                                                        <div id="summernote">{{isset($product) ? $product->content : '' }}</div>
 
 					</div>
 
@@ -130,7 +130,7 @@
 
 						<label class="form-label">Select Category</label>
 
-						<select name="catid" class="form-control select2" id="pc" >
+						<select name="catid" class="form-control select2" id="pc" required>
   						
 							<option value="">Select</option>
 
@@ -201,15 +201,24 @@
 					</div>
 
 				</div>
+				@if(Auth::user()->roles->first()->title == "Admin" && !empty($product))
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="form-label">Product Commission</label>
+						<input type="text" class="form-control" name="commission" value ="{{isset($product) ? $product->commission : '' }}" >
+					</div>
+				</div>
+				@endif
 				<div class="col-md-6">
 					<div class="form-group">
 						<label class="form-label">Product Type</label>
-						<select name="pro_type" class="form-control select2 pro_type" id="product_type" >
+						<select name="pro_type" class="form-control select2 pro_type" id="product_type" required>
 								<option value="single" {{isset($product) && ($product->product_type == "single") ? 'selected' : ''}}>Single</option>
 								<option value="variants" {{isset($product) && ($product->product_type == "variants") ? 'selected' : ''}}>Variants</option>
 						</select>
 					</div>
 				</div>
+
 
 				<div class="col-md-6 pro-single">
 					<div class="form-group">
@@ -348,9 +357,10 @@
 	</td>
 	<td>
 		<img src="{{url('products/gallery')}}/{{json_decode($pval->variant_images)[0]}}" style="height:50px">
+		<input type="hidden" name="prv_img[{{$key}}][]" value="{{($pval->variant_images)}}">
 		<input type="file" class="form-control"  value="" name="variant_images[{{$key}}][]">
 	{{-- <input type="hidden" name="variant_id[{{$key}}][]" value="{{$key}}"> --}}
-	<input type="hidden" name="variant_value[{{$key}}][]" value="{{$key}}">
+	<input type="hidden" name="variant_value[{{$key}}][]" value="{{json_decode(json_encode($pval->variant_value))}}">
 	</td>
 	<td>
 		<button class="delete_variant fa fa-trash btn btn-danger btn-sm" data-row="1">
@@ -416,7 +426,7 @@
 
 						<label class="form-label">Purchase Price</label>
 
-						<input type="number" class="form-control" name="purchase" placeholder="Purchase Price" value="{{isset($product) ? $product->p_price : '' }}" >
+						<input type="number" class="form-control" name="purchase" placeholder="Purchase Price" value="{{isset($product) ? $product->p_price : '' }}" required>
 
 					</div>
 
@@ -428,7 +438,7 @@
 
 						<label class="form-label">Selling Price</label>
 
-						<input type="number" class="form-control" name="selling" placeholder="Selling Price" value="{{isset($product) ? $product->s_price : '' }}" >
+						<input type="number" class="form-control" name="selling" placeholder="Selling Price" value="{{isset($product) ? $product->s_price : '' }}" required>
 
 					</div>
 
@@ -484,7 +494,7 @@
 
 						<label class="form-label">Number of products</label>
 
-						<input type="number" class="form-control" name="stock" placeholder="Stock" value="{{isset($product) ? $product->in_stock : '' }}">
+						<input type="number" class="form-control" name="stock" placeholder="Stock" value="{{isset($product) ? $product->in_stock : '' }}" required>
 
 					</div>
 
@@ -496,7 +506,7 @@
 
 						<label class="form-label">Return Policy</label>
 
-						<select class="form-control select2" >
+						<select class="form-control select2" required>
 
 						<option value="none">None</option>
 
@@ -574,7 +584,7 @@
 
 						<label class="form-label">Meta Title</label>
 
-						<input type="text" class="form-control" name="meta_title" placeholder="Meta Title" value="{{isset($product) ? $product->meta_title : '' }}">
+						<input type="text" class="form-control" name="meta_title" placeholder="Meta Title" value="{{isset($product) ? $product->meta_title : '' }}" required>
 
 					</div>
 
@@ -586,7 +596,7 @@
 
 						<label class="form-label">Meta Keyword</label>
 
-						<textarea name="meta_keyword" class="form-control" placeholder="Meta Keyword" value="" rows="6">{{isset($product) ? $product->meta_keyword : '' }}</textarea>
+						<textarea name="meta_keyword" class="form-control" placeholder="Meta Keyword" value="" rows="6" required>{{isset($product) ? $product->meta_keyword : '' }}</textarea>
 
 					</div>
 
@@ -598,7 +608,7 @@
 
 						<label class="form-label">Meta Discription</label>
 
-						<textarea name="meta_description" class="form-control" placeholder="Meta Description" value="{{isset($product) ? $product->meta_description : '' }}" rows="6">{{isset($product) ? $product->meta_description : '' }}</textarea>
+						<textarea name="meta_description" class="form-control" placeholder="Meta Description" value="{{isset($product) ? $product->meta_description : '' }}" rows="6" required>{{isset($product) ? $product->meta_description : '' }}</textarea>
 
 					</div>
 
