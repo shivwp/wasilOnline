@@ -26,7 +26,7 @@
              <div class="col-md-4">
           <div class="form-group">
             <img src="{{ isset($setting[11]->value)?url($setting[11]->value):'https://image.shutterstock.com/image-vector/shield-letter-s-logosafesecureprotection-logomodern-260nw-633031571.jpg'}}" style="height:100px;width:200px;" alt="logo">
-          </div>
+            </div>
         </div>
        
         <div class="col-md-6">

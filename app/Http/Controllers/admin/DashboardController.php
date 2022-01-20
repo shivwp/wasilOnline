@@ -5,7 +5,10 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\User;
 use Carbon\Carbon;
+use DB;
+
 
 class DashboardController extends Controller
 {
@@ -16,20 +19,67 @@ class DashboardController extends Controller
      */
     public function index()
     {
-     
-        $d['order']=Order::all()->groupBy(function($date) {
+
+
+
+   $d['currdata'] = Order::select('*')
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->count();
+            
+   
+   //dd($d['currdata']);
+
+    $d['prevdata'] = Order::select('*')
+            ->whereMonth('created_at', Carbon::now()->subMonth()->month)
+            ->count();
+   
+    $role = 'user';
+    $d['curruser'] = User::with('roles')->whereHas("roles", function($q) use($role){ $q->where('title', '=', $role);})
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->count();
+   
+        //dd($d['curruser']);
+    $role = 'user';
+    $d['prevuser'] = User::with('roles')->whereHas("roles", function($q) use($role){ $q->where('title', '=', $role);})
+            ->whereMonth('created_at', Carbon::now()->subMonth()->month)
+            ->count();
+            //dd($d['prevuser']);
+   
+        $d['orders']=Order::count();
+        $d['readyforships']=Order::where('status','=','ready to ship')->get();
+        $d['delivereds']=Order::where('status','=','delivered')->get(); 
+        $d['shippeds']=Order::where('status','=','shipped')->get(); 
+        $role = 'user';
+        $d['users']= User::with('roles')->whereHas("roles", function($q) use($role){ $q->where('title', '=', $role);})->count();
+         
+//dd($d['orders']);
+
+                
+        $d['order']=Order::select(DB::raw('YEAR(created_at) year, MONTH(created_at) month'))->get()->groupBy(function($date) {
             return Carbon::parse($date->created_at)->format('m'); 
         });
-        $d['readyforship']=Order::where('status','=','ready to ship')->get();
-        $d['shipped']=Order::where('status','=','shipped')->get();;
-        $d['delivered']=Order::where('status','=','delivered')->get();;
+        // $post= Mjblog::select(DB::raw('YEAR(created_at) year, MONTH(created_at) month'));
+        // $posts_by_y_m = $post->where('created_at',$post)->get();
+
+
+        $d['readyforship']=Order::select(DB::raw('YEAR(created_at) year, MONTH(created_at) month'))->where('status','=','ready to ship')->get()->groupBy(function($date) {
+            return Carbon::parse($date->created_at)->format('m'); 
+        });
+        $d['shipped']=Order::select(DB::raw('YEAR(created_at) year, MONTH(created_at) month'))->where('status','=','shipped')->get()->groupBy(function($date) {
+            return Carbon::parse($date->created_at)->format('m'); 
+        });
+        $d['delivered']=Order::select(DB::raw('YEAR(created_at) year, MONTH(created_at) month'))->where('status','=','delivered')->get()->groupBy(function($date) {
+            return Carbon::parse($date->created_at)->format('m'); 
+        });
 
         $ordermcount = [];
         $orderArr = [];
+
       
         
-        $d['month'] =["Jan", "Feb", "Mar", "Apr", "May", "Jun","jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        $d['string'] = '"Jan", "Feb", "Mar", "Apr", "May", "Jun","jul", "Aug", "Sep", "Oct", "Nov", "Dec"';//implode(",",$d['month']);
+        
+        $d['string'] = '"Jan", "Feb", "Mar", "Apr", "May", "Jun","jul", "Aug", "Sep", "Oct", "Nov", "Dec"';
+        $d['string1'] = ' "Mon", "Tue", "Wed", "Thu", "Fri", "Sat","Sun"';
      
         foreach ( $d['order'] as $key => $value) {
             $ordermcount[(int)$key] = count($value);
@@ -45,8 +95,75 @@ class DashboardController extends Controller
                 
             }
         $d['orderArr'] = implode(",",$orderArr);
-       // dd( $orderArr);
 
+        $shipmcount = [];
+        $shipArr = [];
+        foreach ( $d['readyforship'] as $key => $value) {
+            $shipmcount[(int)$key] = count($value);
+        }
+   
+         for ($i = 1; $i <= 12; $i++) {
+                if (!empty($shipmcount[$i])) {
+                    $shipArr[] = $shipmcount[$i];
+                    //$shipmcount=$shipArr[]
+                } else {
+                    $shipArr[]= 0;
+                }
+                
+            }
+        $d['shipArr'] = implode(",",$shipArr);
+
+        $deliveredmcount = [];
+        $deliveredArr = [];
+        foreach ( $d['delivered'] as $key => $value) {
+            $deliveredmcount[(int)$key] = count($value);
+        }
+
+   
+         for ($i = 1; $i <= 12; $i++) {
+                if (!empty($deliveredmcount[$i])) {
+                    $deliveredArr[] = $deliveredmcount[$i];
+                    //$deliveredmcount=$deliveredArr[]
+                } else {
+                    $deliveredArr[]= 0;
+                }
+                
+            }
+            $d['deliveredArr'] = implode(",",$deliveredArr);
+ 
+
+           
+
+      
+        $date = Carbon::now()->startOfWeek();
+        $daydata=[];
+
+        for ($i = 0; $i < 7; $i++) {
+         $day = Carbon::now()->startOfWeek()->addDay($i);
+        
+               $daydata[$day->format('D')] = Order::select(DB::raw("(COUNT(*)) as count"))->where('status','=','ready to ship')->whereDate('created_at',$day)->count(); 
+            }
+        $d['weekdata'] = implode(",",$daydata);
+        
+   
+
+
+    $date = Carbon::now()->startOfWeek();
+        $daydata=[];
+
+        for ($i = 0; $i < 7; $i++) {
+         $day = Carbon::now()->startOfWeek()->addDay($i);
+        
+               $daydata[$day->format('D')] = Order::select(DB::raw("(COUNT(*)) as count"))->where('status','=','delivered')->whereDate('created_at',$day)->count(); 
+            }
+        $d['weekdatad'] = implode(",",$daydata);
+
+
+
+        
+        $d['orderd']=Order::whereDate('created_at', Carbon::today())->count();
+        //dd( $d['orderd']);
+        
 
         return view('index2',$d);
     }

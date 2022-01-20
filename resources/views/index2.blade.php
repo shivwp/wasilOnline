@@ -24,7 +24,7 @@
 									<div class="card-body text-center">
 										<i class="icon-bag text-info fa-3x text-info-shadow"></i>
 										<h4 class="mt-4 mb-2 number-font">Total Orders </h4>
-										<h2 class="mb-2  ">{{count($order)}}</h2>
+										<h2 class="mb-2  ">{{($orders)}}</h2>
 										<p class="text-muted"></p>
 									</div>
 								</div>
@@ -34,7 +34,7 @@
 									<div class="card-body text-center">
 										<i class="icon-graph text-primary fa-3x text-primary-shadow"></i>
 										<h4 class="mt-4 mb-2 number-font">Fullfilled</h4>
-										<h2 class="mb-2 ">{{count($readyforship)}}</h2>
+										<h2 class="mb-2 ">{{count($readyforships)}}</h2>
 										<p class="text-muted"></p>
 									</div>
 								</div>
@@ -44,7 +44,7 @@
 									<div class="card-body text-center">
 										<i class="icon icon-basket-loaded text-secondary fa-3x text-secondary-shadow"></i>
 										<h4 class="mt-4 mb-2 number-font">Shipped</h4>
-										<h2 class="mb-2  ">{{count($shipped)}}</h2>
+										<h2 class="mb-2  ">{{count($shippeds)}}</h2>
 										<p class="text-muted"></p>
 									</div>
 								</div>
@@ -54,7 +54,7 @@
 									<div class="card-body text-center">
 										<i class="icon-basket text-success fa-3x text-success-shadow"></i>
 										<h4 class="mt-4 mb-2 number-font">Delivered </h4>
-										<h2 class="mb-2 ">{{count($delivered)}}</h2>
+										<h2 class="mb-2 ">{{count($delivereds)}}</h2>
 										<p class="text-muted"></p>
 									</div>
 								</div>
@@ -69,7 +69,7 @@
 								<div class="card overflow-hidden bg-white work-progress">
 									
 									<div class="card-body">
-										<h3 class="number-font mb-2">{{count($order)}}</h3>
+										<h3 class="number-font mb-2">{{($orders)}}</h3>
 										<span>Total Orders</span>
 										<div class="chart-wrapper">
 											<canvas id="deals" class="chart-dropshadow-success"></canvas>
@@ -101,15 +101,32 @@
 										<div class="row">
 											<div class="col">
 												<h6 class="">Today's Order</h6>
-												<h3 class="mb-2 number-font">30</h3>
-												<p class="text-muted">
-													<span class="text-success"><i class="fa fa-chevron-circle-up text-success ml-1"></i> 3%</span>
+												<h3 class="mb-2 number-font">{!!$orderd!!}</h3>
+												@if($currdata > $prevdata)
+													<p class="text-muted">
+													<span class="text-success"><i class="fa fa-chevron-circle-up text-success ml-1"></i> {{$percentChange = (($currdata - $prevdata) / $currdata) * 100;}}%</span>
 													last month
 												</p>
+													@else
+													<p class="text-muted">
+													<span class="text-danger"><i class="fa fa-chevron-circle-down text-danger ml-1"></i>{{$percentChange = (($prevdata - $currdata) / $prevdata) * 100;}}%</span>
+													last month
+												</p>
+													@endif
+												
 												<div class="progress h-2">
 													<div class="progress-bar bg-secondary w-50" role="progressbar"></div>
 												</div>
-												<span class="d-inline-block mt-2 text-muted">12% increase</span>
+												<!-- @if($currdata >  $orders)
+													<span class="d-inline-block mt-2 text-muted">{{$percentChange = ($currdata - $orders)  * 100;}}% increase</span>
+													
+												
+													@else
+													<span class="d-inline-block mt-2 text-muted">{{$percentChange = ($currdata - $orders)  * 100;}}% decrease</span> 
+												
+													@endif
+												 -->
+												 	<span class="d-inline-block mt-2 text-muted">4% decrease</span> 
 											</div>
 											<div class="col col-auto">
 												<div class="counter-icon bg-secondary text-secondary box-secondary-shadow ml-auto">
@@ -124,15 +141,27 @@
 										<div class="row">
 											<div class="col">
 												<h6 class="">Total Clients</h6>
-												<h3 class="mb-2 number-font">900</h3>
-												<p class="text-muted">
-													<span class="text-danger"><i class="fa fa-chevron-circle-down text-danger ml-1"></i> 0.15%</span>
+												<h3 class="mb-2 number-font">{{($users)}}</h3>
+												
+													@if($curruser > $prevuser)
+													<p class="text-muted">
+													<span class="text-success"><i class="fa fa-chevron-circle-up text-success ml-1"></i> {{$percentChange = (($curruser - $prevuser) / $curruser) * 100;}}%</span>
 													last month
-												</p>
+													</p>
+													@else
+													<p class="text-muted">
+													<span class="text-danger"><i class="fa fa-chevron-circle-down text-danger ml-1"></i> {{$percentChange = (($prevuser - $curruser) / $prevuser) * 100;}}%</span>
+													last month
+													</p>
+													@endif
 												<div class="progress h-2">
 													<div class="progress-bar bg-primary w-50" role="progressbar"></div>
 												</div>
-												<span class="d-inline-block mt-2 text-muted">New Clients (12% increase)</span>
+												@if($curruser > $users)
+												<span class="d-inline-block mt-2 text-muted">New Clients ({{$percentChange = ($curruser /$users  )  * 100;}}%)</span>
+												@else
+												<span class="d-inline-block mt-2 text-muted">New Clients ({{$percentChange = ($curruser /$users  )  * 100;}}%)</span>
+												@endif
 											</div>
 											<div class="col col-auto">
 												<div class="counter-icon bg-primary text-primary box-primary-shadow ml-auto">
@@ -164,30 +193,30 @@
 										
 											<div class="">
 												<div class="font-weight-semibold">Total Orders</div>
-												<small class="text-muted">{{count($order)}}
+												<small class="text-muted">{{($orders)}}
 												</small>
 												
 											</div>
 											<div class="ml-auto">
-												<a href="#" class="btn btn-danger btn-sm">View</a>
+												<a href="#" class="btn btn-info btn-sm">View</a>
 											</div>
 										</div>
 										<div class="list-group-item d-flex  align-items-center border-left-0 border-right-0">
 										
 											<div class="">
 												<div class="font-weight-semibold">Fullfilled</div>
-												<small class="text-muted">{{count($readyforship)}}
+												<small class="text-muted">{{count($readyforships)}}
 												</small>
 											</div>
 											<div class="ml-auto">
-												<a href="#" class="btn btn-sm btn-secondary">View</a>
+												<a href="#" class="btn btn-sm btn-danger">View</a>
 											</div>
 										</div>
 										<div class="list-group-item d-flex  align-items-center border-left-0 border-right-0">
 											
 											<div class="">
 												<div class="font-weight-semibold">Shipped</div>
-												<small class="text-muted">{{count($shipped)}}
+												<small class="text-muted">{{count($shippeds)}}
 												</small>
 											</div>
 											<div class="ml-auto">
@@ -198,11 +227,11 @@
 											
 											<div class="">
 												<div class="font-weight-semibold">Delivered</div>
-												<small class="text-muted">{{count($delivered)}}
+												<small class="text-muted">{{count($delivereds)}}
 												</small>
 											</div>
 											<div class="ml-auto">
-												<a href="#" class="btn btn-sm  btn-info">View</a>
+												<a href="#" class="btn btn-sm  btn-secondary">View</a>
 											</div>
 										</div>
 									
@@ -233,7 +262,7 @@
 											<div class="card-body pb-0">
 												<div class="float-left">
 													<h6 class="mb-1">Graph Fullfillment</h6>
-													<h2 class="number-font mb-0">{{count($readyforship)}}</h2>
+													<h2 class="number-font mb-0">{{count($readyforships)}}</h2>
 												</div>
 												<div class="float-right">
 													<span class="mini-stat-icon bg-info"><i class="si si-eye "></i></span>
@@ -249,7 +278,7 @@
 											<div class="card-body pb-0">
 												<div class="float-left">
 													<p class="mb-1">Delivered Orders</p>
-													<h2 class="number-font mb-0">{{count($delivered)}}</h2>
+													<h2 class="number-font mb-0">{{count($delivereds)}}</h2>
 												</div>
 												<div class="float-right">
 													<span class="mini-stat-icon bg-danger"><i class="si si-volume-2"></i></span>
@@ -498,37 +527,41 @@
 	}), new Morris.Donut({
 		element: "morrisBar8",
 		data: [{
-			value: 23,
+			value: {{($orders)}},
+			label: "Total Order"
+		},
+		{
+			value: {{count($delivereds)}},
 			label: "Delivered"
-		}, {
-			value: 20,
-			label: "Fullfield"
-		}, {
-			value: 15,
+		},
+		{
+			value: {{count($shippeds)}},
 			label: "Shipped"
+		},
+		 {
+			value:{{count($readyforships)}},
+			label: "Fullfield"
 		}],
 		backgroundColor: "rgba(119, 119, 142, 0.2)",
 		labelColor: "#77778e",
-		colors: ["#0774f8", "#d43f8d", "#09ad95"],
-		formatter: function(o) {
-			return o + "%"
-		}
+		colors: ["#0774f8", "#d43f8d", "#09ad95", "#f5334f"],
+		
 	}).on("click", (function(o, e) {
 		console.log(o, e)
 	})), (t = document.getElementById("revenue")).height = "300", t.getContext("2d"), new Chart(t, {
 		type: "bar",
 		data: {
-			labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+			labels: [{!!$string!!}],
 			datasets: [{
-				label: "total profit",
-				data: [15, 18, 12, 14, 10, 15, 7, 14],
+				label: "Total Fullfillment",
+				data: [{!!$shipArr!!}],
 				backgroundColor: "#d43f8d",
 				hoverBackgroundColor: "#d43f8d",
 				hoverBorderWidth: 2,
 				hoverBorderColor: "#d43f8d"
 			}, {
-				label: "Total sales",
-				data: [10, 14, 10, 15, 9, 14, 15, 20],
+				label: "Total Delivered",
+				data: [{!!$deliveredArr!!}],
 				backgroundColor: "#0774f8",
 				hoverBackgroundColor: "#0774f8",
 				hoverBorderWidth: 2,
@@ -597,11 +630,12 @@
 	}), r = document.getElementById("areaChart1").getContext("2d"), new Chart(r, {
 		type: "line",
 		data: {
-			labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+			labels: [{!!$string1!!}],
+
 			type: "line",
 			datasets: [{
-				label: "Market value",
-				data: [30, 70, 30, 100, 50, 130, 100, 140],
+				label: "Total Fullfillment",
+				data: [{!!$weekdata!!}],
 				backgroundColor: "transparent",
 				borderColor: "#d43f8d",
 				pointBackgroundColor: "#fff",
@@ -666,11 +700,11 @@
 	}), r = document.getElementById("areaChart2").getContext("2d"), new Chart(r, {
 		type: "line",
 		data: {
-			labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+			labels: [{!!$string1!!}],
 			type: "line",
 			datasets: [{
-				label: "Total Revenue",
-				data: [24, 18, 28, 21, 32, 28, 30],
+				label: "Total Delivered",
+				data: [{!!$weekdatad!!}],
 				backgroundColor: "transparent",
 				borderColor: "#09ad95",
 				pointBackgroundColor: "#fff",
