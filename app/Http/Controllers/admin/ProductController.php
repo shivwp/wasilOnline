@@ -351,24 +351,7 @@ class ProductController extends Controller
 
           $thumb=[];
           $i=0;
-          if($request->has('variant_images')) {
-            //
-            $files=$request->file('variant_images')[$k];
-              if($files) {
-                foreach($files as $file){
-                  $name=uniqid().$file->getClientOriginalName();
-                  $file->move('products/gallery', $name);
-                  $thumb[$i++]=$name;
-                }
-                $product->gallery_image=$thumb;
-                $product->update();
-              }
-          }
-
-          $variant_values = json_decode($variant[$k][0]);
-          $variant_value = [];
-          
-          $products_variants_id = DB::table('products_variants')->insertGetId([
+          $updateVariants = [
             'parent_id' => $pid,
             'p_id' => $product->id,
             'variant_id' => $variant[$k][0], //$variant->variant_id,
@@ -376,8 +359,39 @@ class ProductController extends Controller
             'variant_sku' => $variant_sku[$k][0],
             'variant_price' => $variant_price[$k][0],
             'variant_stock' => $variant_stock[$k][0],
-            'variant_images' => '["'.implode(",",$thumb).'"]', //$thumb,
-          ]);
+            //'variant_images' => '["'.implode(",",$thumb).'"]', //$thumb,
+          ];
+          // dd($request->file('variant_images')[0]);
+
+          if(isset($request->file('variant_images')[$k]) && $request->file('variant_images')[$k]) {
+            //
+            $files = $request->file('variant_images')[$k];
+              if(isset($files)) {
+                foreach($files as $file){
+                  $name=uniqid().$file->getClientOriginalName();
+                  $file->move('products/gallery', $name);
+                  $thumb[$i++]=$name;
+                }
+                $product->gallery_image=$thumb;
+                $product->update();
+
+                $updateVariants['variant_images'] = '["'.implode(",",$thumb).'"]';
+              }
+              
+          }
+          else{
+
+            $prv_img = $request->prv_img[$k];
+
+            $updateVariants['variant_images'] = implode(',', $prv_img);
+
+          }
+          // dd($updateVariants);
+
+          $variant_values = json_decode($variant[$k][0]);
+          $variant_value = [];
+          
+          $products_variants_id = DB::table('products_variants')->insertGetId($updateVariants);
 
           foreach ($variant_values as $key => $value) {
             # code...

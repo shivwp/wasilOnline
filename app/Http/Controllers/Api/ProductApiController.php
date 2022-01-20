@@ -22,11 +22,9 @@ class ProductApiController extends Controller
     public function index(Request $request)
     {
         $prod=Product::orderBy('id', 'DESC')->where('parent_id','=',0);
-
         if($request->category_id){
             $prod->where('cat_id',$request->category_id); 
         }
-
         if($request->price_range){
         $exp = explode("-",$request->price_range); 
             $min_price = $exp[0];
@@ -39,13 +37,21 @@ class ProductApiController extends Controller
             $prod->where('in_stock','>',0);     
          }
         }
+        if($request->attr_value_id){
 
-        // if(){
+            $ProductAttribute = ProductAttribute::select('product_id')->whereIn('attr_value_id',$request->attr_value_id)->groupBy('product_id')->get();
+            $proidmatch = [];
+            if(count($ProductAttribute)>0){
+                foreach($ProductAttribute as $pro_attr => $pro_value){
+                    $proidmatch[] = $pro_value->product_id;        
+                }
+            }
+            if(!empty($proidmatch)){
+                $prod->whereIn('id', $proidmatch);      
 
-        // }
-
+            }
+        }
         $product = $prod->get();
-
         if(count($product) > 0){
 
             foreach($product as $key => $val){
@@ -107,34 +113,39 @@ class ProductApiController extends Controller
         }
        
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    
+    public function newproduct(Request $request)
     {
+        $product=Product::orderBY('id','DESC')->limit('4')->get(); 
+        $products = [];
+        if(count($product)>0){
+         $products['url'] = 'sfcsd';   
+         $products['product'] = $product;
+            return response()->json(['status' => true, 'message' => "success", 'product' => $products], 200);        
+        }
+        else{
+            return response()->json(['status' => false, 'message' => "unsuccess", 'product' => []], 200);            
+        }
         
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function bestseller(Request $request){
+        $product=Product::orderBY('id','DESC')->where('best_saller',1)->limit('4')->get(); 
+        $products = [];
+        if(count($product)>0){
+         $products['url'] = 'sfcsd';   
+         $products['product'] = $product;
+            return response()->json(['status' => true, 'message' => "success", 'product' => $products], 200);        
+        }
+        else{
+            return response()->json(['status' => false, 'message' => "unsuccess", 'product' => []], 200);            
+        }
+    }
     
     public function singleproduct(Request $request){
         $product=Product::where('id','=',$request->id)->first();
@@ -196,32 +207,68 @@ class ProductApiController extends Controller
 
     public function allFilters(Request $request)
     {
-        $product = Product::where('cat_id',$request->category_id)->where('parent_id',0)->get();
-        $product_attr = [];
-        $attr_data = [];
-
-        if(count($product) > 0){
-            foreach($product as $key => $val){
-                $attr = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
-                foreach($attr as $attr_key => $attr_val){
-                    $pro_attr = Attribute::where('id',$attr_val->attr_id)->first();
-                    $pro_attr_val = AttributeValue::select('id','attr_value_name')->where('id',$pro_attr->id)->get();
-                    $attr_data[$attr_key]['id']= $attr_val->attr_id;
-                    $attr_data[$attr_key][$pro_attr->name]= $pro_attr_val;
-                   // $attr_data['attr_id'] = 
+        if($request->category_id){
+            $product = Product::where('cat_id',$request->category_id)->where('parent_id',0)->get();
+            $pro_id = [];
+            $attrdata = [];
+            if(count($product) > 0){
+                foreach($product as $key => $value){
+                    $pro_id[] = $value->id;
                 }
-            
-            }
-        $product_attr['total'] = count($product);
-        $product_attr['values'] = $attr_data;
+                if(!empty($pro_id)){
+                    $proattr = ProductAttribute::whereIn('product_id',$pro_id)->groupBy('attr_id')->get();
+                    if(count($proattr)>0){
+                        foreach($proattr as $attr_key => $attr_val){
+                            $attr = Attribute::select('id','slug')->where('id',$attr_val->attr_id)->first();
+                            $attrdata[] = $attr;
+                        }
+                        if(!empty($attrdata)){
+                            foreach($attrdata as $d => $dv){
+                                $proattragain = ProductAttribute::where('attr_id',$dv->id)->get();
+                                $attrval = [];
+                                foreach($proattragain as $ag => $proagain){
+                                   $attrval[] = $proagain->attr_value_id;
+                
+                                }
+                                $attr_value = AttributeValue::select('id','attr_id','slug')->whereIn('id',$attrval)->get();
+                                
+                              $attrdata[$d]['attribute_value'] = $attr_value;
+                            }
+                        }
+                      
+                       return response()->json(['status' => true, 'message' => "success", 'attributes' => $attrdata], 200);
+                    }
+                    else{
+                        return response()->json(['status' => false, 'message' => "unsuccess", 'attributes' => []], 200);        
+                    }
+                }
+                else{
+                    return response()->json(['status' => false, 'message' => "unsuccess", 'attributes' => []], 200);
+                }
 
-        return response()->json(['status' => true, 'message' => "success", 'attributes' => $product_attr], 200);
+            }
+            else{
+                return response()->json(['status' => false, 'message' => "unsuccess", 'attributes' => []], 200);
+            }
         }
         else{
 
-            return response()->json(['status' => false, 'message' => "unsuccess", 'attributes' => []], 200);
+            $attributes = Attribute::select('id','slug')->get();
+            if(count($attributes)>0){
+                foreach($attributes as $key => $value){
+                    $attributesValue = AttributeValue::select('id','attr_id','slug')->where('attr_id',$value->id)->get();
+                    $attributes[$key]['attributes_value'] = $attributesValue;
+                }
+                return response()->json(['status' => true, 'message' => "success", 'attributes' => $attributes], 200);
+            }
+            else{
 
+                return response()->json(['status' => false, 'message' => "unsuccess", 'attributes' => []], 200);
+
+            }
+           
         }
+        
 
         
         

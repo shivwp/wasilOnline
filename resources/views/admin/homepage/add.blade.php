@@ -62,7 +62,7 @@ $content = json_decode($homepage_content->content);
 					<input type="hidden" name="id" value="{{ isset($homepage) ? $homepage->id : '' }}">
 					<div class="form-group">
 						<label class="form-label">Title</label>
-						<input type="text" class="form-control" name="title" placeholder="Title" value="{{isset($homepage) ? $homepage->title : '' }}">
+						<input type="text" class="form-control" name="title" placeholder="Title" value="{{isset($homepage) ? $homepage->title : '' }}" required>
 					</div>
 				</div>
 
@@ -87,12 +87,12 @@ $content = json_decode($homepage_content->content);
 						@foreach($content->slider as $key => $val)
 						<div class="row slider-content">
 							<div class="col-md-6">
-								<input type="file" class="form-control" name="slider_image[{{$i}}][image]" value="" placeholder="image">
+								<input type="file" class="form-control" name="slider_image[{{$i}}][image]" value="" placeholder="image" required>
 								<input type="hidden" name="slider_image[{{$i}}][image_prev]" value="{{ isset($val->image)?$val->image:''}}">
 								<img src="{{url('img/slider/'.$val->image)}}"  height="100px">
 							</div>
 							<div class="col-md-6">
-								<input type ="text" class="form-control" name="slider_image[{{$i}}][url]" value="{{$val->url}}" placeholder="url">
+								<input type ="text" class="form-control" name="slider_image[{{$i}}][url]" value="{{$val->url}}" placeholder="url" required>
 							</div>
 						</div>
 						<?php $i++; ?>
@@ -100,10 +100,10 @@ $content = json_decode($homepage_content->content);
 						@else
 						<div class="row">
 							<div class="col-md-6">
-								<input type="file" class="form-control" name="slider_image[0][image]" value="" placeholder="image">
+								<input type="file" class="form-control" name="slider_image[0][image]" value="" placeholder="image" required>
 							</div>
 							<div class="col-md-6">
-								<input type ="text" class="form-control" name="slider_image[0][url]" value="" placeholder="url">
+								<input type ="text" class="form-control" name="slider_image[0][url]" value="" placeholder="url" required>
 							</div>
 						</div>
 						@endif
@@ -114,22 +114,22 @@ $content = json_decode($homepage_content->content);
 					<div class="row">
 						<div class="col-md-6">
 						<label class="form-label">Sale image 1</label> 
-							<input type ="file" class="form-control" name="sale_image[1][image]" value="" placeholder="banner image">
-							<input type="hidden" name="sale_image[1][sale_prev]" value="{{ isset($content->sale[0]->image)?$content->sale[0]->image:""}}">
+							<input type ="file" class="form-control" name="sale_image[1][image]" value="" placeholder="banner image" required>
+							<input type="hidden" name="sale_image[1][sale_prev]" value="{{ isset($content->sale[0]->image)?$content->sale[0]->image:""}}" >
 							@if(!empty($content->sale))
 							<img src="{{url('img/slider/'.$content->sale[0]->image)}}"  height="100px">
 							@endif
 						</div>
 						<div class="col-md-6">
 						<label class="form-label">url</label> 
-						<input type ="text" class="form-control" name="sale_image[1][url]" value="{{isset($content->sale[0]) ? $content->sale[0]->url : ''}}" placeholder="banner url">
+						<input type ="text" class="form-control" name="sale_image[1][url]" value="{{isset($content->sale[0]) ? $content->sale[0]->url : ''}}" placeholder="banner url" required>
 
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-6">
 						<label class="form-label">Sale image 2</label> 
-							<input type ="file" class="form-control" name="sale_image[2][image]" value="" placeholder="banner image">
+							<input type ="file" class="form-control" name="sale_image[2][image]" value="" placeholder="banner image" required>
 							<input type="hidden" name="sale_image[2][sale_prev]" value="{{ isset($content->sale[1]->image)?$content->sale[1]->image:""}}">
 						@if(!empty($content->sale[1]))
 						<img src="{{url('img/slider/'.$content->sale[1]->image)}}"  height="100px">
@@ -137,13 +137,13 @@ $content = json_decode($homepage_content->content);
 						</div>
 						<div class="col-md-6">
 						<label class="form-label">url</label> 
-						<input type ="text" class="form-control" name="sale_image[2][url]" value="{{isset($content->sale[1]) ? $content->sale[1]->url : ''}}" placeholder="banner url">
+						<input type ="text" class="form-control" name="sale_image[2][url]" value="{{isset($content->sale[1]) ? $content->sale[1]->url : ''}}" placeholder="banner url" required>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-6">
 						<label class="form-label">Sale image 3</label> 
-							<input type ="file" class="form-control" name="sale_image[3][image]" value="" placeholder="banner image">
+							<input type ="file" class="form-control" name="sale_image[3][image]" value="" placeholder="banner image" required>
 							<input type="hidden" name="sale_image[3][sale_prev]" value="{{ isset($content->sale[2]->image)?$content->sale[2]->image:""}}">
 						@if(!empty($content->sale[2]))
 						<img src="{{url('img/slider/'.$content->sale[2]->image)}}"  height="100px">
@@ -151,14 +151,14 @@ $content = json_decode($homepage_content->content);
 						</div>
 						<div class="col-md-6">
 						<label class="form-label">url</label> 
-						<input type ="text" class="form-control" name="sale_image[3][url]" value="{{isset($content->sale[2]) ? $content->sale[2]->url : ''}}" placeholder="banner url">
+						<input type ="text" class="form-control" name="sale_image[3][url]" value="{{isset($content->sale[2]) ? $content->sale[2]->url : ''}}" placeholder="banner url" required>
 						</div>
 					</div>
 
 				</div>
 				<div class="col-12">
 					<label class="form-label">Advertisement Images</label> 
-					<input type ="file" class="form-control" name="adv_img" value="" placeholder="banner image">
+					<input type ="file" class="form-control" name="adv_img" value="" placeholder="banner image" required>
 					<input type="hidden" name="adv_img_prev" value="{{isset($content->adv_img) ? $content->adv_img: ''}}">
 					@if(!empty($content->adv_img))
 					<img src="{{url('img/slider/'.$content->adv_img)}}"  height="100px">
@@ -166,16 +166,15 @@ $content = json_decode($homepage_content->content);
 				</div>
 				<div class="col-12">
 					<label class="form-label">Banner Image</label> 
-					<input type ="file" class="form-control" name="banner_img" value="" placeholder="banner image">
+					<input type ="file" class="form-control" name="banner_img" value="" placeholder="banner image" required>
 					<input type="hidden" name="banner_img_prev" value="{{isset($content->banner_img) ? $content->banner_img: ''}}">
 					@if(!empty($content->banner_img))
 					<img src="{{url('img/slider/'.$content->banner_img)}}"  height="100px">
 					@endif
-				
 				</div>
 				<div class="col-12">
 					<label class="form-label">Meta title</label> 
-					<input type="text" class="form-control" name="page_title" placeholder="Title" value="{{($data['Pagemeta_title'])??''}}">
+					<input type="text" class="form-control" name="page_title" placeholder="Title" value="{{($data['Pagemeta_title'])??''}}" >
 				</div>
 				<div class="col-12">
 					<label class="form-label">Meta Deatils</label> 

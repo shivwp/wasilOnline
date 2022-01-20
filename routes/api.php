@@ -25,6 +25,15 @@ Route::post('login', [App\Http\Controllers\Api\UserApiController::class, 'login'
 //register api
 Route::post('register', [App\Http\Controllers\Api\UserApiController::class, 'register']);
 
+Route::post('products', [App\Http\Controllers\Api\ProductApiController::class, 'index'] );
+Route::post('product',  [App\Http\Controllers\Api\ProductApiController::class, 'singleproduct'] );
+Route::post('new-product',  [App\Http\Controllers\Api\ProductApiController::class, 'newproduct'] );
+Route::post('best-seller-product',  [App\Http\Controllers\Api\ProductApiController::class, 'bestseller'] );
+
+Route::post('filters', [App\Http\Controllers\Api\ProductApiController::class, 'allFilters'] );
+
+Route::post('home', [App\Http\Controllers\Api\HomepageApiController::class, 'index'] );
+
 
 
 
@@ -34,9 +43,8 @@ Route::middleware('auth:api')->group(function () {
 Route::apiResource('users', 'UsersApiController');
 
 
-Route::post('products', [App\Http\Controllers\Api\ProductApiController::class, 'index'] );
-Route::post('product',  [App\Http\Controllers\Api\ProductApiController::class, 'singleproduct'] );
-Route::post('filters', [App\Http\Controllers\Api\ProductApiController::class, 'allFilters'] );
+
+
 Route::post('filter-product', [App\Http\Controllers\Api\ProductApiController::class, 'filterProduct']);
 Route::post('product-filter', [App\Http\Controllers\Api\ProductApiController::class, 'filter'] );
 Route::post('category', [App\Http\Controllers\Api\CategoryApiController::class, 'index'] );
@@ -47,9 +55,18 @@ Route::post('gift-card-user', [App\Http\Controllers\Api\GiftCardApiController::c
 Route::post('add-order', [App\Http\Controllers\Api\OrderApiController::class, 'store'] );
 
 
-Route::post('home', [App\Http\Controllers\Api\HomepageApiController::class, 'index'] );
-Route::get('cart-list', [App\Http\Controllers\Api\CartApiController::class, 'index'] );
+
+Route::post('cart-list', [App\Http\Controllers\Api\CartApiController::class, 'index'] );
 Route::post('add-cart', [App\Http\Controllers\Api\CartApiController::class, 'store'] );
 Route::post('delete-cart', [App\Http\Controllers\Api\CartApiController::class, 'destroy'] );
 
+});
+Route::get('/clear-cache', function() {
+    // 
+    Artisan::call('cache:clear');
+    Artisan::call('optimize');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    return "Cache is cleared";
 });

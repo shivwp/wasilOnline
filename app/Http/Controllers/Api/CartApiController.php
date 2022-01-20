@@ -58,6 +58,7 @@ class CartApiController extends Controller
      */
     public function store(Request $request)
     {
+        
         $userid = Auth::user()->token()->user_id;
 
         if(empty($userid)){
@@ -74,9 +75,10 @@ class CartApiController extends Controller
           $cart = Cart::updateOrCreate(['id' => $request->id],
             [
                 'user_id'                   => $userid,
-                'card_id'                   => $request->product_id,
-                'gift_card_code'            => $request->quantity,
-                'gift_card_amount'            => $request->quantity
+                'product_id'                   => $request->product_id,
+                // 'gift_card_code'            => $request->quantity,
+                //'gift_card_amount'            => $request->quantity,
+                'quantity'            => $request->quantity,
             
           ]);
         return response()->json(['status' => true, 'cart' => $cart], 200);

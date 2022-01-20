@@ -118,7 +118,7 @@
 
 						<label class="form-label">Detailed Discription</label>
 
-                                                        <div id="summernote">{{isset($product) ? $product->content : '' }}</div>
+                                                        <div id="summernote"><?php echo isset($product) ? $product->long_description : '' ?></div>
 
 					</div>
 
