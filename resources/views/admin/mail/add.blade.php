@@ -15,6 +15,9 @@
 <link href="{{ URL::asset('assets/plugins/summernote/summernote-bs4.css')}}" rel="stylesheet">
 
 <link href="{{ URL::asset('assets/plugins/wysiwyag/richtext.css')}}" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
 
 @endsection
 
@@ -45,6 +48,114 @@
 
 
 @section('content')
+
+
+
+<!-- 
+		<table style="max-width: 600px; border:1px solid red; margin:0 auto; height:  80px; background: #fff; width: 100%;">
+			<tbody>
+				<tr>
+					<th style=" vertical-align: middle;text-align: center;  height:  80px;">
+				 		<img src="{{URL::asset('assets/images/brand/logo-3.png')}}" style="max-width:140px;">
+					</th>
+				</tr>
+			
+				<tr>
+					<th style="background:#0baf4d;padding: 30px;">
+						<h5 style="font-size: 16px; font-family: 'Raleway', sans-serif; font-weight: 600; text-align: center; color: #fff;">Hello From Jimmy Smith</h5>
+						<h2 style="font-size: 34px; font-family: 'Raleway', sans-serif; font-weight: 800; text-align: center; color: #fff;margin: 0;">Thanks For Your Order!</h2>
+					</th>
+					
+				</tr>
+				<tr>
+					<th style="padding:40px 40px 0px 40px;">
+						<h5 style="font-size: 16px; font-family: 'Raleway', sans-serif; font-weight: 600;">Hi There!</h5>
+						<h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra </h6>
+						<hr>
+					</th>
+					
+				</tr>
+				<tr>
+					<th style="padding:0px 40px;">
+						<h3 style="font-size: 30px; font-family: 'Raleway', sans-serif; font-weight: 800; color:#2b2e3e;">Order Details</h3>
+
+
+					</th>
+					
+				</tr>
+
+				<tr>
+					<th style=" padding:0px 40px;display:flex; justify-content: space-between;">
+						<h4 style="font-size: 16px; font-family: 'Raleway', sans-serif; font-weight: 500; color:#8b8b8b; padding:10px 0px"> <i>Order number: 1</i></h4>
+						<h4 style="font-size: 16px; font-family: 'Raleway', sans-serif; font-weight: 500; color:#8b8b8b; padding:10px 0px"> <i>order date: Jan 18,2022</i></h4>
+					</th>
+				</tr>
+				<tr>
+				<td>
+				<table style="max-width:600px; width: 100%; ">
+				    <thead>
+				        <tr>
+				            <th style="padding: 0px 40px;" ><h4 style="font-size: 16px; font-family: 'Raleway', sans-serif; font-weight: 800;  padding:10px 0px; color: #4c4c53;"> Product</h4></th>
+				            <th style="padding: 0px 40px;"  ><h4 style="font-size: 16px; font-family: 'Raleway', sans-serif; font-weight: 800;  padding:10px 0px; color: #4c4c53;"> Quantity</h4></th>
+				            <th style="padding: 0px 40px;"  ><h4 style="font-size: 16px; font-family: 'Raleway', sans-serif; font-weight: 800;  padding:10px 0px; color: #4c4c53;"> Price</h4></th>
+				        </tr>
+				    </thead>
+				    <tbody>
+				        <tr>
+				            <td style="padding: 0px 40px;"><h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >A Study in Scariet </h6></td>
+				            <td style="padding: 0px 40px;"><h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >1 </h6></td>
+				            <td style="padding: 0px 40px;">
+				            	<h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >$10</h6>
+				            </td>
+				        </tr>
+				          <tr>
+				            <td style="padding: 0px 40px;"><h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >The Hound Of the Baskervilles </h6></td>
+				            <td style="padding: 0px 40px;"><h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >1 </h6></td>
+				            <td style="padding: 0px 40px;">
+				            	<h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >$10</h6>
+				            </td>
+				        </tr>
+				         <tr>
+				            <td style="padding: 0px 40px;"><h6 style="font-size: 16px; font-family: 'Raleway', sans-serif; font-weight: 800; color:#4c4c53; line-height: 20px; " >Subtotal:</h6></td>
+				            <td style="padding: 0px 40px;"><h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 800; color:#4c4c53; line-height: 20px; " ></h6></td>
+				            <td style="padding: 0px 40px;">
+				            	<h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >$20</h6>
+				            	
+				            </td>
+				        </tr>
+				         <tr>
+				            <td style="padding: 0px 40px;"><h6 style="font-size: 16px; font-family: 'Raleway', sans-serif; font-weight: 800; color:#4c4c53; line-height: 20px; " >total:</h6></td>
+				            <td style="padding: 0px 40px;"><h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 800; color:#4c4c53; line-height: 20px; " ></h6></td>
+				            <td style="padding: 0px 40px;">
+				            	<h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >$20</h6>
+				            </td>
+				        </tr>
+				    </tbody>
+				</table>
+
+				</td>
+			</tr>
+	
+		
+				<tr>
+					<th style=" padding:0px 40px 40px 40px;">
+						<h2 style="font-size: 30px; font-family: 'Raleway', sans-serif; font-weight: 800; color:#2b2e3e;">Billing Address</h2>
+						<h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >Sherlock Holmes Detectives Ltd.</h6>
+					
+						<h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >221B Baker Street London </h6>
+				
+						<h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >London</h6>
+						<h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >NW1 6XE</h6>
+					
+						<h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >987-654-3210 </h6>
+				
+						<h6 style="font-size: 15px; font-family: 'Raleway', sans-serif; font-weight: 400; color:#4c4c53; line-height: 20px; " >info@gmail.com</h6>
+					</th>
+				</tr>
+			</tbody>
+		</table> -->
+
+
 
 <!-- ROW-1 OPEN-->
 
@@ -188,6 +299,7 @@
 
 	</div>
 
+	
 
 
 </div>	
