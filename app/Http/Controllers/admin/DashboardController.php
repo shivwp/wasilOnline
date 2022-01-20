@@ -20,39 +20,49 @@ class DashboardController extends Controller
     public function index()
     {
 
-
-
+  
+   $d['orders']=Order::count();
    $d['currdata'] = Order::select('*')
             ->whereMonth('created_at', Carbon::now()->month)
             ->count();
-            
+    $d['percentCurrorder'] = ( $d['currdata']  / $d['orders'] )  * 100;
    
-   //dd($d['currdata']);
+ 
 
     $d['prevdata'] = Order::select('*')
             ->whereMonth('created_at', Carbon::now()->subMonth()->month)
             ->count();
-   
+    $d['percentprevorder'] = ( $d['prevdata']  / $d['orders'] )  * 100;
+    //dd( $d['prevdata']);
+    $d['comporder']=$d['percentCurrorder'] - $d['percentprevorder'];
+    $d['comporder1']=$d['percentprevorder'] - $d['percentCurrorder'];
+
+
     $role = 'user';
+    $d['users']= User::with('roles')->whereHas("roles", function($q) use($role){ $q->where('title', '=', $role);})->count();
+    
+   
     $d['curruser'] = User::with('roles')->whereHas("roles", function($q) use($role){ $q->where('title', '=', $role);})
             ->whereMonth('created_at', Carbon::now()->month)
             ->count();
+    $d['percentCurruser'] = ( $d['curruser']  / $d['users'] )  * 100;
    
-        //dd($d['curruser']);
+        
     $role = 'user';
     $d['prevuser'] = User::with('roles')->whereHas("roles", function($q) use($role){ $q->where('title', '=', $role);})
             ->whereMonth('created_at', Carbon::now()->subMonth()->month)
             ->count();
-            //dd($d['prevuser']);
-   
-        $d['orders']=Order::count();
+     $d['percentprevuser'] = ( $d['prevuser']  / $d['users'] )  * 100;
+    
+    $d['compuser']=$d['percentCurruser'] - $d['percentprevuser'];
+    $d['compuser1']=$d['percentprevuser'] - $d['percentCurruser'];
+        
         $d['readyforships']=Order::where('status','=','ready to ship')->get();
         $d['delivereds']=Order::where('status','=','delivered')->get(); 
         $d['shippeds']=Order::where('status','=','shipped')->get(); 
         $role = 'user';
-        $d['users']= User::with('roles')->whereHas("roles", function($q) use($role){ $q->where('title', '=', $role);})->count();
-         
-//dd($d['orders']);
+     
+        //dd($d['users']);
 
                 
         $d['order']=Order::select(DB::raw('YEAR(created_at) year, MONTH(created_at) month'))->get()->groupBy(function($date) {

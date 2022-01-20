@@ -117,16 +117,16 @@
 												<div class="progress h-2">
 													<div class="progress-bar bg-secondary w-50" role="progressbar"></div>
 												</div>
-												<!-- @if($currdata >  $orders)
-													<span class="d-inline-block mt-2 text-muted">{{$percentChange = ($currdata - $orders)  * 100;}}% increase</span>
+												@if($currdata >  $prevdata)
+													<span class="d-inline-block mt-2 text-muted">{{round($comporder, 2)}}%  increase</span>
 													
 												
 													@else
-													<span class="d-inline-block mt-2 text-muted">{{$percentChange = ($currdata - $orders)  * 100;}}% decrease</span> 
+													<span class="d-inline-block mt-2 text-muted">{{round($comporder1, 2)}}% decrease  </span> 
 												
 													@endif
-												 -->
-												 	<span class="d-inline-block mt-2 text-muted">4% decrease</span> 
+												
+												 	
 											</div>
 											<div class="col col-auto">
 												<div class="counter-icon bg-secondary text-secondary box-secondary-shadow ml-auto">
@@ -145,22 +145,22 @@
 												
 													@if($curruser > $prevuser)
 													<p class="text-muted">
-													<span class="text-success"><i class="fa fa-chevron-circle-up text-success ml-1"></i> {{$percentChange = (($curruser - $prevuser) / $curruser) * 100;}}%</span>
+													<span class="text-danger"><i class="fa fa-chevron-circle-down text-danger ml-1"></i> {{$percentChange = (($curruser - $prevuser) / $curruser) * 100;}}%</span>
 													last month
 													</p>
 													@else
 													<p class="text-muted">
-													<span class="text-danger"><i class="fa fa-chevron-circle-down text-danger ml-1"></i> {{$percentChange = (($prevuser - $curruser) / $prevuser) * 100;}}%</span>
+													<span class="text-success"><i class="fa fa-chevron-circle-up text-success ml-1"></i> {{$percentChange = (($prevuser - $curruser) / $prevuser) * 100;}}%</span>
 													last month
 													</p>
 													@endif
 												<div class="progress h-2">
 													<div class="progress-bar bg-primary w-50" role="progressbar"></div>
 												</div>
-												@if($curruser > $users)
-												<span class="d-inline-block mt-2 text-muted">New Clients ({{$percentChange = ($curruser /$users  )  * 100;}}%)</span>
+												@if($curruser >$prevuser)
+												<span class="d-inline-block mt-2 text-muted">New Clients ({{round($compuser, 2)}}% increase  )</span>
 												@else
-												<span class="d-inline-block mt-2 text-muted">New Clients ({{$percentChange = ($curruser /$users  )  * 100;}}%)</span>
+												<span class="d-inline-block mt-2 text-muted">New Clients ({{round($compuser1, 2)}}% decrease)</span>
 												@endif
 											</div>
 											<div class="col col-auto">
