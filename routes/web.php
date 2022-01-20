@@ -52,6 +52,7 @@ use App\Http\Controllers\admin\GeneralSettingController;
 use App\Http\Controllers\admin\WithdrowController;
 
 use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\TestimonialsController;
 
 
 
@@ -133,6 +134,12 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
     //Dashboard
 
     Route::resource('dashboard', DashboardController::class);
+
+
+    //testimonials
+
+    Route::resource('testimonials', TestimonialsController::class);
+
 
     //Category
 

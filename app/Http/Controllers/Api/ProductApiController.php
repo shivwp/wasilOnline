@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Attribute;
 use App\Models\ProductVariants;
 use App\Models\ProductAttribute;
+use App\Models\PageMeta;
 use DB;
 
 class ProductApiController extends Controller
@@ -124,8 +125,9 @@ class ProductApiController extends Controller
     {
         $product=Product::orderBY('id','DESC')->limit('4')->get(); 
         $products = [];
+        $url = PageMeta::where('key','new_product_url')->first();
         if(count($product)>0){
-         $products['url'] = 'sfcsd';   
+         $products['url'] = !empty($url->value) ? $url->value : '';   
          $products['product'] = $product;
             return response()->json(['status' => true, 'message' => "success", 'product' => $products], 200);        
         }
@@ -136,9 +138,10 @@ class ProductApiController extends Controller
     }
     public function bestseller(Request $request){
         $product=Product::orderBY('id','DESC')->where('best_saller',1)->limit('4')->get(); 
+        $url = PageMeta::where('key','best_seller_url')->first();
         $products = [];
         if(count($product)>0){
-         $products['url'] = 'sfcsd';   
+         $products['url'] = !empty($url->value) ? $url->value : '';   
          $products['product'] = $product;
             return response()->json(['status' => true, 'message' => "success", 'product' => $products], 200);        
         }

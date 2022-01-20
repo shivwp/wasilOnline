@@ -34,6 +34,8 @@ Route::post('filters', [App\Http\Controllers\Api\ProductApiController::class, 'a
 
 Route::post('home', [App\Http\Controllers\Api\HomepageApiController::class, 'index'] );
 
+Route::post('testimonials', [App\Http\Controllers\Api\TestimonialsApiController::class, 'index'] );
+
 
 
 

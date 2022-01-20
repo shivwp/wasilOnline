@@ -235,6 +235,15 @@
                         </li>
 
                         @endcan
+
+                        @can('testimonal_access')
+
+                        <li>
+
+                            <a class="side-menu__item" href="{{ route('dashboard.testimonials.index') }}"><i class="side-menu__icon icon icon-trophy"></i><span class="side-menu__label">Testimonal</span></a>
+
+                        </li>
+                        @endcan
                       
                          @can('menu_access')
                          <li>

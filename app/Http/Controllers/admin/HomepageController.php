@@ -172,6 +172,8 @@ class HomepageController extends Controller
         $metaarray=[
             'Pagemeta_title'=>$request->input('page_title'),
             'Pagemeta_details'=>$request->input('page_details'),
+            'new_product_url'=>$request->input('new_product_url'),
+            'best_seller_url'=>$request->input('best_seller_url'),
 
         ];
         foreach($metaarray as $key=> $vl){
