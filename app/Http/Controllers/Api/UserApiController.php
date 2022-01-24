@@ -33,6 +33,7 @@ use App\Setting;
 use App\UserVerifyToken;
 
 use App\MailTemplate;
+use App\Models\Mails;
 
 use App\Mail\Signup;
 
@@ -53,6 +54,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Storage;
+
+use App\Mail\RegisterMail;
 
 use App\PhoneTemp;
 
@@ -289,14 +292,22 @@ class UserApiController extends Controller
             $user->roles()->sync(4);
 
         }
+        $mail_data = Mails::where('msg_category', 'signup')->first();
+        $config = ['fromemail' => $mail_data->from_email,
+            "reply_email" => $mail_data->reply_email,
+            'subject' => $mail_data->subject, 
+            'name' => $mail_data->name,
+            'message'=>$mail_data->message,
+        ];
+      
 
+        Mail::to($request->email)->send(new RegisterMail($config));
 
-
-          return response()->json(['status' => true, 'message' => "Your account registerd successfully.",'token'=>$success, 'user' => $user], 200);
+        return response()->json(['status' => true, 'message' => "Your account registerd successfully.",'token'=>$success, 'user' => $user], 200);
 
     }
 
-
+ 
 
     public function socialLogin(Request $request){
 
@@ -513,7 +524,6 @@ class UserApiController extends Controller
                         User::where('id', '=', $request->user_id)
 
                         ->update(['password'=> $pass]);
-
 
 
                         return response()->json(['status' => true, 'message' => "Your password changed successfully"], 200);
