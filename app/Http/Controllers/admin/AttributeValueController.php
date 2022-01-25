@@ -18,7 +18,11 @@ class AttributeValueController extends Controller
     {
         $d['title'] = "Attribute Value";
         $d['buton_name'] = "ADD NEW";
-        $attributeVal=AttributeValue::all();
+          $pagination=10;
+        if(isset($_GET['paginate'])){
+            $pagination=$_GET['paginate'];
+        }
+        $attributeVal=AttributeValue::paginate($pagination)->withQueryString();
         foreach($attributeVal as $key => $val){
 
             $attribute = Attribute::where('id','=',$val->attr_id)->first();
@@ -26,12 +30,16 @@ class AttributeValueController extends Controller
 
         }
         $d['attributeVal'] = $attributeVal;
-        $pagination=10;
-        if(isset($_GET['paginate'])){
-            $pagination=$_GET['paginate'];
-        }
-        $d['attributeVal'] =AttributeValue::paginate($pagination)->withQueryString();
+      
+     
         return view('admin/attribute-value/index',$d);
+    }
+     public function attrvalues($id)
+    {
+       $d['atr']=AttributeValue::where('attr_id','=' ,$id)->get();
+
+       return view('admin/attribute-value/show',$d);
+
     }
 
     /**

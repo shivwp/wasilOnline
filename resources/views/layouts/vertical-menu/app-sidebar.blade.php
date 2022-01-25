@@ -240,7 +240,7 @@
 
                         <li>
 
-                            <a class="side-menu__item" href="{{ route('dashboard.testimonials.index') }}"><i class="side-menu__icon icon icon-trophy"></i><span class="side-menu__label">Testimonal</span></a>
+                            <a class="side-menu__item" href="{{ route('dashboard.testimonials.index') }}"><i class="side-menu__icon fe fe-message-circle"></i><span class="side-menu__label">Testimonal</span></a>
 
                         </li>
                         @endcan

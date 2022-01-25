@@ -60,7 +60,7 @@
                                             <div class="paging-section">
                                             <form method="get"  >
                                                     <h6>show</h6>
-                                                    <select id="pagination" name="paginate">
+                                                    <select id="pagination" name="paginate" class="form-control select2">
                                                         <option value="10" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 10) ? 'selected':''}}>10</option>
                                                         <option value="20" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 20) ? 'selected':''}}>20</option>
                                                         <option value="30" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 30) ? 'selected':''}}>30</option>
@@ -101,7 +101,7 @@
 
                                                         <td>
                                                                  <a class="btn btn-sm btn-primary" href="{{ url('dashboard/add-value', $item->id) }}"> Add value</a>
-                                                                 <a class="btn btn-sm btn-success" href="{{ route('dashboard.attribute-value.index') }}">view value</a>
+                                                                 <a class="btn btn-sm btn-success" href="{{ url('dashboard/show-value', $item->id) }}">view value</a>
                                                                 <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.attribute.edit', $item->id) }}"><i class="fa fa-edit"></i> </a>
 
                                                                 <form action="{{ route('dashboard.attribute.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">

@@ -50,7 +50,7 @@
 				<div class="col-12">
 						<div class="form-group">
 							<label class="form-label">Attribute Value Name</label>
-							<input type="text" class="form-control" name="attr_value" placeholder="Attribute Name" value="{{ isset($attributeVal) ? $attributeVal->attr_value_name : '' }}">
+							<input type="text" class="form-control" name="attr_value" placeholder="Attribute Name" value="{{ isset($attributeVal) ? $attributeVal->attr_value_name : '' }}" required>
 						</div>
 				</div>
 			</div>

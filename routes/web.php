@@ -152,6 +152,7 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     Route::resource('attribute', AttributeController::class);
     Route::get('add-value/{id}',[App\Http\Controllers\admin\AttributeController::class, 'addvalue']);
+    Route::get('show-value/{id}',[App\Http\Controllers\admin\AttributeValueController::class, 'attrvalues']);
     Route::POST('save-value/{id}',[App\Http\Controllers\admin\AttributeController::class, 'saveatrvalue']);
     //Attribute value
 

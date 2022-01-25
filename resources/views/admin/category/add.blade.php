@@ -74,7 +74,7 @@
 
 						<label class="form-label">Title</label>
 
-						<input type="text" class="form-control" name="title" placeholder="Title" value="{{isset($category) ? $category->title : '' }}">
+						<input type="text" class="form-control" name="title" placeholder="Title" value="{{isset($category) ? $category->title : '' }}" required>
 
 					</div>
 

@@ -46,7 +46,11 @@
 		<li class="breadcrumb-item">
 			<a href="{{ route('dashboard.product.index') }}">Product</a>
 		</li>
-		<li class="breadcrumb-item active" aria-current="page">Edit</li>
+		 @if(isset($product->id))
+                                        <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                                    @else
+                                        <li class="breadcrumb-item active" aria-current="page">Add</li>
+                                    @endif
 	</ol>
 </div>
 
@@ -690,7 +694,7 @@
 						$value = json_decode($product->gallery_image);
 						
 					@endphp
-					@foreach($value as $multidata)
+					@foreach((array)$value as $multidata)
 	                    <div class="parc">
 	                    	<span class="pip" data-title="{{$multidata}}">
 	                      	<img src="{{ url('products/gallery').'/'.$multidata ?? "" }}" alt="" width="100" height="100">

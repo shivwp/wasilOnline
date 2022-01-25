@@ -74,7 +74,7 @@
 
 						<label class="form-label">Name</label>
 
-						<input type="text" class="form-control" name="name" placeholder="Name" value="{{isset($attribute) ? $attribute->name : '' }}">
+						<input type="text" class="form-control" name="name" placeholder="Name" value="{{isset($attribute) ? $attribute->name : '' }}" required>
 
 					</div>
 

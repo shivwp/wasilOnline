@@ -29,9 +29,9 @@
 
     <ol class="breadcrumb">
 
-        <li class="breadcrumb-item"><a href="{{ route('dashboard.product.index') }}">Attribute</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('dashboard.product.index') }}">Attribute Value</a></li>
 
-        <li class="breadcrumb-item active" aria-current="page">Edit</li>
+        <li class="breadcrumb-item active" aria-current="page">Add</li>
 
     </ol>
 
@@ -70,7 +70,7 @@
 
                             <label class="form-label">Attribute Value Name</label>
 
-                            <input type="text" class="form-control" name="attr_value" placeholder="Attribute Name" value="{{ isset($attributeVal) ? $attributeVal->attr_value_name : '' }}">
+                            <input type="text" class="form-control" name="attr_value" placeholder="Attribute Name" value="{{ isset($attributeVal) ? $attributeVal->attr_value_name : '' }}" required>
 
                         </div>
 
