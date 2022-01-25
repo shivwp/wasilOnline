@@ -25,29 +25,29 @@ class ProductController extends Controller
      */
       public function index()
     {    
-        $d['title'] = "PRODUCT";
-        $d['buton_name'] = "ADD NEW";
-        if(Auth::user()->roles->first()->title == 'Admin'){
-          // $d['product']=Product::orderBy('id')->get();
-          $d['product'] = Product::leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0)->get();
+      $d['title'] = "PRODUCT";
+      $d['buton_name'] = "ADD NEW";
+      if(Auth::user()->roles->first()->title == 'Admin'){
+        // $d['product']=Product::orderBy('id')->get();
+        $d['product'] = Product::leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0);
 
-          
-        }
-        elseif(Auth::user()->roles->first()->title == 'Vendor'){
+        
+      }
+      elseif(Auth::user()->roles->first()->title == 'Vendor'){
 
-          $d['product']=Product::orderBy('id')->where('products.parent_id','=',0)->where('vendor_id','=',Auth::user()->id)->get();
+        $d['product']=Product::orderBy('id')->where('products.parent_id','=',0)->where('vendor_id','=',Auth::user()->id);
 
-        }
-        else{
-          $d['product'] = [];
-        }
-        //$d['product']=Product::orderBy('id')->get();
-         $pagination=10;
-        if(isset($_GET['paginate'])){
-            $pagination=$_GET['paginate'];
-        }
-        $d['product'] =Product::where('parent_id','=',0)->paginate($pagination)->withQueryString();
-        return view('admin/product/index',$d);
+      }
+      else{
+        $d['product'] = [];
+      }
+      //$d['product']=Product::orderBy('id')->get();
+       $pagination=10;
+      if(isset($_GET['paginate'])){
+          $pagination=$_GET['paginate'];
+      }
+      $d['product'] =$d['product']->paginate($pagination)->withQueryString();
+      return view('admin/product/index',$d);
       }
     
 
@@ -132,6 +132,9 @@ class ProductController extends Controller
             'meta_title'        => $request->input('meta_title'),
             'meta_keyword'      => $request->input('meta_keyword'),
             'meta_description'  => $request->input('meta_description'),
+            'best_saller'       => !empty($request->input('best_saller')) && ($request->input('best_saller') == 'on') ? '1' : '0',
+            'new'               => !empty($request->input('new')) && ($request->input('new') == 'on') ? '1' : '0',
+            'featured'          => !empty($request->input('featured')) && ($request->input('featured') == 'on') ? '1' : '0',
 
           ]);
 

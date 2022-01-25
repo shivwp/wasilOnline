@@ -704,6 +704,28 @@
 					<input type="file" class="form-control" name="gallery_image[]" value="" multiple>
 				</div>
 
+				<div class="col-md-4 mt-2">
+					<label class="switch">
+						<input type="checkbox" id="featured" name="featured" {{ isset($product) && ($product->featured == 1) ?  'checked' : '' }}>
+						<span class="slider round"></span>
+					</label>
+					<label for="scales">Featured</label>
+				</div>
+				<div class="col-md-4 mt-2">
+					<label class="switch">
+						<input type="checkbox" id="new" name="new" {{ isset($product) && ($product->new == 1) ?  'checked' : '' }}>
+						<span class="slider round"></span>
+					</label>
+					<label for="scales">New</label>
+				</div>
+      		<div class="col-md-4 mt-2">
+					<label class="switch">
+						<input type="checkbox" id="best_saller" name="best_saller" {{ isset($product) && ($product->best_saller == 1) ?  'checked' : '' }}>
+						<span class="slider round"></span>
+					</label>
+					<label for="scales">Best Saller</label>
+				</div>
+
 
 
 	</div>
