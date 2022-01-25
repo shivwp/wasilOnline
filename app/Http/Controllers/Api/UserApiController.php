@@ -55,7 +55,7 @@ use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Storage;
 
-use App\Mail\RegisterMail;
+use App\Mail\Mail;
 
 use App\PhoneTemp;
 
@@ -273,7 +273,7 @@ class UserApiController extends Controller
         ];
       
 
-        Mail::to($request->email)->send(new RegisterMail($config));
+        Mail::to($request->email)->send(new Mail($config));
 
         return response()->json(['status' => true, 'message' => "Your account registerd successfully.",'token'=>$success, 'user' => $user], 200);
 
