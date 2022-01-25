@@ -9,10 +9,10 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
-
+use App\Models\Product;
 use App\Models\Coupon;
-
-use Auth;
+use App\Models\Role;
+use App\Models\Category;
 
 
 
@@ -38,15 +38,16 @@ class CouponController extends Controller
 
         $d['buton_name'] = "ADD NEW";
 
-        $d['coupon']=Coupon::all();
+        //$d['coupon']=Coupon::all();
+
         $pagination=10;
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
         $d['coupon'] =Coupon::paginate($pagination)->withQueryString();
-        
 
         return view('admin/coupon/index',$d);
+        
 
     }
 
@@ -67,33 +68,41 @@ class CouponController extends Controller
     {
 
         $d['title'] = "COUPON";
-
+        $d['vendor'] = Role::where('title', 'Vendor')->first()->users()->get();
+        $d['category'] = Category::all();
         return view('admin/coupon/add',$d);
 
     }
 
 
+    public function productSearch(Request $req){
 
-    /**
+        $search =  $req->psearchTerm;
+        $datas = [];
 
-     * Store a newly created resource in storage.
+       $Product = Product::where('pname', 'like', "%{$search}%")->get();
+		
+		$data = array();
+		foreach ($Product as $d){
+			$data[] =array(
+				'id' =>$d->id,
+				'text' => $d->pname,
+			);
+		}
+        echo json_encode($data);
+		exit;
 
-     *
 
-     * @param  \Illuminate\Http\Request  $request
-
-     * @return \Illuminate\Http\Response
-
-     */
+    }
 
     public function store(Request $request)
 
     {
-
-       // dd($request);
-
+     
+      $maximum_spend = $request->maximum_spend;
+      $minimum_spend = $request->manimum_spend;
         $coupon = Coupon::updateOrCreate(
-
+            
             [
 
                 'id' => $request->id
@@ -104,29 +113,23 @@ class CouponController extends Controller
 
             // 'user_id'   => Auth::user()->id,
 
-            'code'     => $request->input('code'),
+            'code'      => $request->input('code'),
 
             'description'     => $request->input('description'),
 
-            'amount_type'     => $request->input('amount_type'),
-
-            'discount_type'     => $request->input('discount_type'),
+            'discount_type'     => $request->input('amount_type'),
 
             'coupon_amount'     => $request->input('coupon_amount'),
 
-            'allow_free_shipping'     => $request->input('allow_free_shipping'),
+            'allow_free_shipping'     => $request->input('free_shipping'),
 
             'start_date'     => $request->input('start_date'),
 
             'expiry_date'     => $request->input('expiry_date'),
 
-            'minimum_spend'     => $request->input('minimum_spend'),
+            'minimum_spend'     => $minimum_spend,
 
-            'maximum_spend'     => $request->input('maximum_spend'),
-
-            'is_indivisual'     => $request->input('is_indivisual'),
-
-            'exclude_sale_item'     => $request->input('exclude_sale_item'),
+            'maximum_spend'     => $maximum_spend,
 
             'limit_per_coupon'     => $request->input('limit_per_coupon'),
 
@@ -134,13 +137,19 @@ class CouponController extends Controller
 
             'status'     => $request->input('status'),
 
+            'vendor_id'     => json_encode($request->input('vendor_id')),
+
+            'category_id'     => json_encode($request->input('category_id')),
+            
+            'product_id'     => json_encode($request->input('product_id')),
+
+          
+
+
         ]);
 
-        $coupon->update();
-        if(Auth::user()->roles->first()->title == 'Vendor'){
-        $type='Coupon';
-       \Helper::addToLog('Coupon create or update', $type);
-       }
+
+
     return redirect('/dashboard/coupon')->with('status', 'your data is updated');
 
     }
@@ -188,6 +197,12 @@ class CouponController extends Controller
         $d['title'] = "PAGE";
 
         $d['coupon']=Coupon::findorfail($id);
+
+        $d['vendor'] = Role::where('title', 'Vendor')->first()->users()->get();
+
+        $d['category'] = Category::all();
+
+        $d['product'] = Product::all();
 
         return view('admin/coupon/add',$d);
 
@@ -238,10 +253,6 @@ class CouponController extends Controller
          $coupon = Coupon::findOrFail($id);
 
         $coupon->delete();
-        if(Auth::user()->roles->first()->title == 'Vendor'){
-        $type='Coupon';
-       \Helper::addToLog('Coupon Deleted', $type);
-       }
 
         return back();
 

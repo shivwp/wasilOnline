@@ -135,57 +135,28 @@ class UserApiController extends Controller
    
 
     public function login(Request $req)
-
     {
 
-    
-
         $validator = Validator::make($req->all(), [
-
             'email' => 'required',
-
             'password' => 'required'
-
         ]);
 
-
-
         if ($validator->fails()) {
-
             return response()->json(['status' => false,'code'=>$succcessCode, 'message' => implode("", $validator->errors()->all())], 200);
-
         }
-
-
-
         $user = User::where('email', '=', $req->email)->first();
 
-
-
        if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){
-
-
 
              $user = Auth::user();
 
              $token = auth()->user()->createToken('API Token')->accessToken;
-
-
-
         return response()->json(['status' => true,'message' => "Your account logged in successfully",'token'=>$token, 'user' => $user], 200);
-
-
-
        }
 
        else{
-
-
-
           return response()->json(['status' => false,'message' => 'User not registered', 'user' => Null], 200);
-
-
-
        }
 
     }
@@ -267,6 +238,7 @@ class UserApiController extends Controller
             $user = new User;
 
             $user->name = $request->name;
+            $user->first_name = $request->name;
 
             if($request->password){
 

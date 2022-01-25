@@ -21,6 +21,12 @@ class TestimonialsApiController extends Controller
 
         if(count($Testimonials) > 0 ){
 
+            foreach($Testimonials as $key => $val){
+
+                $val->image =   url('testimonials' . $val->image);
+
+            }
+
             return response()->json(['status' => true, 'message' => "Success",  'testimonials' => $Testimonials], 200);
 
         }

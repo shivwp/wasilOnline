@@ -36,6 +36,8 @@ Route::post('home', [App\Http\Controllers\Api\HomepageApiController::class, 'ind
 
 Route::post('testimonials', [App\Http\Controllers\Api\TestimonialsApiController::class, 'index'] );
 
+Route::post('product-attributes',[App\Http\Controllers\Api\ProductApiController::class, 'productAttributes'])->name('product-attributes');
+
 
 
 

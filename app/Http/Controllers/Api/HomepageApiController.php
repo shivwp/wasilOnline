@@ -15,15 +15,21 @@ class HomepageApiController extends Controller
      */
     public function index()
     {
-         $homepage=Homepage::all();
+         $homepage=Homepage::first();
 
-         if(!empty($homepage)){
+         $data = json_decode($homepage->content);
 
-            foreach($homepage as $key => $val){
+         if(!empty($data)){
 
-                $homepage[$key]['content'] = json_decode($val->content);
-             }
-            return response()->json(['status' => true, 'message' => "Home Page", 'home' => $homepage], 200);
+            foreach($data->slider as $key => $val){
+               $val->image = url('img/slider/' . $val->image);
+            }
+            foreach($data->sale as $s_key => $s_val){
+                $s_val->image = url('img/slider/' . $s_val->image);
+            }
+            $data->adv_img = url('img/slider/' . $data->adv_img);
+            $data->banner_img = url('img/slider/' . $data->banner_img);
+            return response()->json(['status' => true, 'message' => "Home Page", 'home' => $data], 200);
 
          }
          else{

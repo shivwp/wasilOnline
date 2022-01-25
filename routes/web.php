@@ -82,7 +82,6 @@ use App\Http\Controllers\admin\TestimonialsController;
 Route::redirect('/', '/login');
 
 
-
 Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['auth']], function (){
 
      Route::get('/', 'HomeController@index')->name('home');
@@ -105,6 +104,8 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     Route::resource('permissions', PermissionsController::class);
 
+
+
     //Product
 
     Route::resource('product', ProductController::class);
@@ -115,7 +116,9 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     //create variants
 
-    Route::post('create-varient', [ProductController::class,'createVarient'])->name('create-varient');;
+    Route::post('create-varient', [ProductController::class,'createVarient'])->name('create-varient');
+
+    Route::post('product-search', [CouponController::class,'productSearch'])->name('product-search'); 
 
 
 

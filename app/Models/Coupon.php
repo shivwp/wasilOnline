@@ -25,33 +25,20 @@ class Coupon extends Model
     protected $fillable = [
 
         'code',
-
         'description',
-
         'discount_type',
-        'amount_type',
-
         'coupon_amount',
-
         'allow_free_shipping',
-
         'start_date',
-
          'expiry_date',
-
         'minimum_spend',
-
         'maximum_spend',
-
-        'is_indivisual',
-
-        'exclude_sale_item',
-
         'limit_per_coupon',
-
          'limit_per_user',
-
-        'status'
+        'status',
+        'vendor_id',
+        'category_id',
+        'product_id'
 
     ];
 

@@ -34,29 +34,19 @@ class CategoryController extends Controller
 
         $d['title'] = "CATEGORY";
         $d['buton_name'] = "ADD NEW";
-        $category=Category::all();
-
-        foreach($category as $key => $val){
-
-            $categoryParent = Category::where('parent_id','!=',0)->where('id',$val->id)->first();
-
-            if(!empty($categoryParent)){
-
-                $Parent = Category::where('id','=',$categoryParent->parent_id)->first();
-
-
-
-                $category[$key]['parent_name'] = !empty($Parent->title) ? $Parent->title : '';
-
-            }
-
-        }
-        //$d['category'] = $category;
         $pagination=10;
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['category'] =Category::paginate($pagination)->withQueryString();
+        $category =Category::paginate($pagination)->withQueryString();
+        foreach($category as $key => $val){
+            $categoryParent = Category::where('parent_id','!=',0)->where('id',$val->id)->first();
+            if(!empty($categoryParent)){
+                $Parent = Category::where('id','=',$categoryParent->parent_id)->first();
+                $category[$key]['parent_name'] = !empty($Parent->title) ? $Parent->title : '';
+            }
+        }
+        $d['category'] = $category;
         return view('admin/category/index',$d);
     }
 
