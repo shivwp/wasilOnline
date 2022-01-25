@@ -18,7 +18,7 @@ use App\Models\Mails;
 
 
 
-class RegisterMail extends Mailable
+class Mail extends Mailable
 
 {
 
@@ -36,7 +36,7 @@ class RegisterMail extends Mailable
 
      */
 
-    public $signupdata;
+    public $data;
 
     public function __construct( $user)
 
@@ -44,7 +44,7 @@ class RegisterMail extends Mailable
 
         
 
-         $this->signupdata=$user;
+         $this->data=$user;
 
     }
 
@@ -64,11 +64,11 @@ class RegisterMail extends Mailable
 
     {
 
-         return $this->from($this->signupdata['from_email'],$this->signupdata['name'])
+         return $this->from($this->data['from_email'],$this->data['name'])
 
-        ->subject($this->signupdata['subject'])
+        ->subject($this->data['subject'])
 
-        ->markdown('mails.register');
+        ->markdown('mails.mail');
 
     }
 
