@@ -143,13 +143,6 @@ class ProductController extends Controller
          if($request->hasfile('featured_image'))
           {
             $file = $request->file('featured_image');
-<<<<<<< Updated upstream
-            $extention = $file->getClientOriginalExtension();
-            $filename = time().'.'.$extention;
-            $file->move('products/feature', $filename);
-            Product::where('id',$product->id)->update([
-                'featured_image' => $filename
-=======
             
           
             // $extention = $file->getClientOriginalExtension();
@@ -176,7 +169,6 @@ class ProductController extends Controller
 
                 'featured_image' => $input['imagename']
 
->>>>>>> Stashed changes
             ]);
           }
 
