@@ -143,11 +143,40 @@ class ProductController extends Controller
          if($request->hasfile('featured_image'))
           {
             $file = $request->file('featured_image');
+<<<<<<< Updated upstream
             $extention = $file->getClientOriginalExtension();
             $filename = time().'.'.$extention;
             $file->move('products/feature', $filename);
             Product::where('id',$product->id)->update([
                 'featured_image' => $filename
+=======
+            
+          
+            // $extention = $file->getClientOriginalExtension();
+
+            // $filename = time().'.'.$extention;
+            // $file = Image::make($file->path());
+
+            // $file->resize(250,125, function($constraint) {
+            //   //
+            //   $constraint->aspectRatio();
+            // })->save($filename);
+
+
+            $file = $request->file('featured_image');
+          
+            $input['imagename'] = time().'.'.$file->getClientOriginalExtension();
+         
+            $destinationPath = public_path('products/feature');
+            $img = Image::make($file->getRealPath());
+            $img->resize(600, 540, function ($constraint) {
+                $constraint->aspectRatio();
+            })->save($destinationPath.'/'.$input['imagename']);
+            Product::where('id',$product->id)->update([
+
+                'featured_image' => $input['imagename']
+
+>>>>>>> Stashed changes
             ]);
           }
 
