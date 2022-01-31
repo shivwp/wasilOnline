@@ -17,9 +17,9 @@ class SettingsController extends Controller
     {
         $d['title'] = "Web-settings";
 
-         $d['setting']=Setting::all();
+         $d['setting']=Setting::pluck('value', 'name');
 
-        //  dd($d['setting']);
+         // dd($d['setting']);
 
         return view('admin.site-setting',$d);
     }
@@ -43,59 +43,99 @@ class SettingsController extends Controller
     public function store(Request $request)
     {
         // dd($request);
-         $mailData=['host' => $request->host,
+        //  $mailData=['host' => $request->host,
 
-          'port' => $request->port,
+        //   'port' => $request->port,
 
-          'encrypt' =>$request->encrypt,
+        //   'encrypt' =>$request->encrypt,
 
-          'name'=>$request->sname,
+        //   'name'=>$request->sname,
 
-          'email'=>$request->semail,
+        //   'email'=>$request->semail,
 
-          'password'=>$request->password];
-            for($i=0;$i<17;$i++){
-            $name="name_".$i;
-            $value="value_".$i;
-            $id="id_".$i;
-            if($request->has($name) && $request->has($value)){
-            if($request->file($value)){
-            $setting= Setting::updateOrCreate(['id'=>$request->$id],[
-            'name'=>$request->$name,
-            'value'=>$request->file($value)->move('logo',uniqid().$request->file($value)->getClientOriginalName())
+        //   'password'=>$request->password];
+        //     for($i=0;$i<17;$i++){
+        //     $name="name_".$i;
+        //     $value="value_".$i;
+        //     $id="id_".$i;
+        //     if($request->has($name) && $request->has($value)){
+        //     if($request->file($value)){
+        //     $setting= Setting::updateOrCreate(['id'=>$request->$id],[
+        //     'name'=>$request->$name,
+        //     'value'=>$request->file($value)->move('logo',uniqid().$request->file($value)->getClientOriginalName())
 
-            ]); 
-            }else{
-            $setting= Setting::updateOrCreate(['id'=>$request->$id],[
-            'name'=>$request->$name,
-            'value'=>$request->$value
-            ]);   
-            } 
-            }
-            if($i==14){
-              $setting= Setting::updateOrCreate(['id'=>$request->$id],[
-                'name'=>$request->$name,
-                'value'=>json_encode($mailData)
-                //json_encode(['mail_type'=>$mailtype,'mail_data'=>$mailData])
+        //     ]); 
+        //     }else{
+        //     $setting= Setting::updateOrCreate(['id'=>$request->$id],[
+        //     'name'=>$request->$name,
+        //     'value'=>$request->$value
+        //     ]);   
+        //     } 
+        //     }
+        //     if($i==14){
+        //       $setting= Setting::updateOrCreate(['id'=>$request->$id],[
+        //         'name'=>$request->$name,
+        //         'value'=>json_encode($mailData)
+        //         //json_encode(['mail_type'=>$mailtype,'mail_data'=>$mailData])
     
-                ]); 
-            } 
+        //         ]); 
+        //     } 
+        // }
+        // $mailData=null;
+        // // if($request->mail=="smtp"){
+
+        //   // $mailtype=$request->mail;
+
+        //   // }elseif($request->mail=="sendmail"){
+        //   // $mailtype=$request->mail;
+        //   // }
+
+        $setting['logo'] = '';
+        $setting['name'] = $request->name;
+        $setting['country'] = $request->country;
+        $setting['state'] = $request->state;
+        $setting['city'] = $request->city;
+        $setting['postcode'] = $request->postcode;
+        $setting['help_number'] = $request->help_number;
+        $setting['email'] = $request->email;
+        $setting['pan_number'] = $request->pan_number;
+        $setting['cin_number'] = $request->cin_number;
+        $setting['gst_number'] = $request->gst_number;
+        $setting['url'] = $request->url;
+        $setting['address'] = $request->address;
+        $setting['hour'] = $request->hour;
+
+        foreach ($setting as $key => $value) {
+           
+            if($key == 'logo' ){ 
+                // 
+                $file=$request->logo;
+                $extention = $file->getClientOriginalExtension();
+                $filename = time().'.'.$extention;
+                $file->move('images/logo', $filename);
+                Setting::updateOrCreate([
+                        'name'=>$key,
+                    ], [
+                        'value'=>$filename
+                    ]);
+            }
+
+            if($value)
+            Setting::updateOrCreate([
+                        'name'=>$key,
+                    ], [
+                        'value'=>$value
+                    ]);
         }
-        $mailData=null;
-        // if($request->mail=="smtp"){
-
-          // $mailtype=$request->mail;
-
-          // }elseif($request->mail=="sendmail"){
-          // $mailtype=$request->mail;
-          // }
-       
-
-
+              
+        // $lastid =$setting->id;   
+        // $setting->save();
 
        return back();
 
     }
+
+
 
     /**
      * Display the specified resource.
@@ -103,6 +143,26 @@ class SettingsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+
+    public function language(Request $request)
+    {
+         $d['title'] = "Web-settings";
+
+         $d['setting']=Setting::all();
+
+        //  dd($d['setting']);
+
+        return view('admin.site-setting',$d);
+
+    }
+
+
+    public function currency(Request $request)
+    {
+        //
+    }
+
     public function show($id)
     {
         //

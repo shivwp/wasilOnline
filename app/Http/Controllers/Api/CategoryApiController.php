@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\Product;
 use Validator;
 
 class CategoryApiController extends Controller
@@ -15,8 +16,14 @@ class CategoryApiController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-          $category=Category::all();
+    { 
+         $category=Category::all('id','title','slug','category_image','slug','parent_id')->where('parent_id','=',0);
+
+         
+         foreach($category as $key => $val){
+           $val['count']= Product::where('cat_id','=',$val->id)->count();
+         }
+        
         return response()->json(['status' => true, 'message' => "All category list", 'user' => $category], 200);
     }
 

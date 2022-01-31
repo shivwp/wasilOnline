@@ -8,6 +8,12 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 
+use Image;
+
+
+    
+use Intervention\Image\Exception\NotReadableException;
+
 use Illuminate\Http\Request;
 
 use App\Models\Category;
@@ -187,6 +193,24 @@ class CategoryController extends Controller
 
             'status'        => $request->input('status')
         ]);
+        if($request->hasfile('category_image'))
+          {
+            $file = $request->file('category_image');
+          
+            $input['imagename'] = time().'.'.$file->getClientOriginalExtension();
+         
+            $destinationPath = public_path('category');
+            $img = Image::make($file->getRealPath());
+            $img->resize(400, 340, function ($constraint) {
+                $constraint->aspectRatio();
+            })->save($destinationPath.'/'.$input['imagename']);
+            Category::where('id',$category->id)->update([
+
+                'category_image' => $input['imagename']
+
+            ]);
+
+          }
 
        
 
