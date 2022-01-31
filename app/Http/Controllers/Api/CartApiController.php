@@ -141,20 +141,21 @@ class CartApiController extends Controller
         $validator = Validator::make($request->all(), [
             'user_id'                   => 'required',
             'card_id'                   => 'required',
-            'gift_card_code'            => 'required',
-            'gift_card_amount'           => 'required',
         ]);
 
-          $cart = Cart::updateOrCreate(['id' => $request->id],
+        $variations = $request->variation;
+        $cart = Cart::updateOrCreate(['id' => $request->id],
             [
-                'user_id'                   => $userid,
-                'product_id'                   => $request->product_id,
-                // 'gift_card_code'            => $request->quantity,
-                //'gift_card_amount'            => $request->quantity,
+                'user_id'             => $userid,
+                'product_id'          => $request->product_id,
                 'quantity'            => $request->quantity,
+                'variation'           => json_encode($variations),  
+        ]);
             
-          ]);
-        return response()->json(['status' => true, 'cart' => $cart], 200);
+        $cart['variation'] =   json_decode($cart->variation);
+             
+        
+        return response()->json(['status' => true, 'cart' =>  $cart], 200);
     }
 
     /**

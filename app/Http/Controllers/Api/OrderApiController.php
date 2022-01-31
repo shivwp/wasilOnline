@@ -191,6 +191,7 @@ class OrderApiController extends Controller
                   }
                   }
                   }
+            
          // decrease quantity in product and product variant
                if($item->product_variant_id!="" || $item->product_variant_id!=null){
                   $pv=ProductVariation::find($item->product_variant_id);
@@ -199,7 +200,8 @@ class OrderApiController extends Controller
                   $p=Product::find($item->product_id);
                   $p->stock=$p->stock-$item->quantity;
                   $p->update();
-                }      
+                }
+                }}}      
         // checking for variant product
                 $pAt=ProductVariation::with(['variantValue','variantValue.attributeV',
                 'variantValue.colorName','variantValue.attributeV',
@@ -283,9 +285,9 @@ class OrderApiController extends Controller
                     $opa->save();
                   }
                 }  
-            }
-          }
-       }
+            
+          
+       
        $this->checkStock($request);   
        Carts::where("user_id",$request->user_id)->delete();  
        $user =User::findOrFail($request->user_id);
@@ -295,10 +297,8 @@ class OrderApiController extends Controller
        if($msg['status']==true){
          Mail::to($user->email)->send(new Orders($msg));  
        }
-       }
-      }
-    }
-
+       
+}
 
     
 
@@ -349,7 +349,10 @@ class OrderApiController extends Controller
 
     public function orderHistoryDetail(Request $request){
 
-        $order=order::where('user_id','=',$request->user_id)->first();
+         $userid = Auth::user()->token()->user_id;
+        $order=order::join('ordered_products', 'ordered_products.order_id', '=', 'orders.id' )->join('products','products.id','=','ordered_products.product_id')->join('users', 'users.id', '=', 'products.vendor_id' )->join('categories', 'categories.id', '=', 'products.cat_id' )->where('user_id','=',$userid)->get();
+           
+
 
         if(!empty($order)){
              return response()->json([ 'status'=> true , 'message' => "Order History Detail", 'order' => $order], 200);
