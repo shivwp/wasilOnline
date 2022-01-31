@@ -2,6 +2,7 @@
 
 @section('css')
 
+
 <link href="{{ URL::asset('assets/plugins/ion.rangeSlider/css/ion.rangeSlider.css')}}" rel="stylesheet">
 
 <link href="{{ URL::asset('assets/plugins/ion.rangeSlider/css/ion.rangeSlider.skinSimple.css')}}" rel="stylesheet">
@@ -17,6 +18,10 @@
 <link href="{{ URL::asset('assets/plugins/select2/select2.min.css')}}" rel="stylesheet" />
 
 <link href="{{ URL::asset('assets/plugins/time-picker/jquery.timepicker.css')}}" rel="stylesheet" />
+
+<link href="{{ URL::asset('assets/plugins/summernote/summernote-bs4.css')}}" rel="stylesheet">
+
+<link href="{{ URL::asset('assets/plugins/wysiwyag/richtext.css')}}" rel="stylesheet">
 
 @endsection
 
@@ -144,6 +149,75 @@
 						
 					</div>
 				</div>
+					<div class="col-md-12">
+
+					<label class="form-label mt-0">Image</label>
+
+					<div class="dropify-wrapper" style="height: 302px;border: 1px solid #cdcdcd;">
+
+						<div class="dropify-message" >
+
+							<span class="file-icon"> <p>Drag and drop a file here or click</p>
+
+							</span>
+
+							<p class="dropify-error">Ooops, something wrong appended.</p>
+
+						</div>
+
+						<div class="dropify-loader"></div><div class="dropify-errors-container">
+
+							<ul>
+
+							</ul>
+
+						</div>
+						@if(isset($category->category_image))
+							<input type="file" class="dropify" data-height="300" data-default-file="{{asset('category/'.$category->category_image)}}" name="category_image" value="">
+							
+						@else
+							<input type="file" class="dropify" data-height="300" name="category_image" value="">
+						@endif
+						
+						
+
+						<button type="button" class="dropify-clear">Remove</button>
+
+						<div class="dropify-preview">
+
+							<span class="dropify-render">
+
+
+
+							</span>
+
+							<div class="dropify-infos"
+
+							>
+
+								<div class="dropify-infos-inner">
+
+									<p class="dropify-filename">
+
+										<span class="dropify-filename-inner"></span>
+
+									</p>
+
+									<p class="dropify-infos-message">Drag and drop or click to replace</p>
+
+								</div>
+
+							</div>
+
+						</div>
+
+					
+
+					</div>
+
+
+
+				</div>
 
 			</div>
 
@@ -189,6 +263,52 @@
 
 <script src="{{ URL::asset('assets/js/form-elements.js') }}"></script>
 
+
+
+<script src="{{ URL::asset('assets/plugins/chart/Chart.bundle.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/chart/utils.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/wysiwyag/jquery.richtext.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/wysiwyag/wysiwyag.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/summernote/summernote-bs4.js') }}"></script>
+
+<script src="{{ URL::asset('assets/js/summernote.js') }}"></script>
+
+<script src="{{ URL::asset('assets/js/formeditor.js') }}"></script>
+
+<script>     
+
+ $('document').ready(function() {
+
+    $('.note-codable').attr('name', 'content');
+
+    var pre_editor_val = $('input[name="content"]').val();
+
+    $('textarea[name="content"]').val(pre_editor_val);
+
+    $('.note-editable.card-block').html(pre_editor_val);
+
+    $('button[type="submit"]').click(function(editor_val){
+
+        if(!jQuery('.codeview').lenght){
+
+            var editor_val = $('.note-editable.card-block').html();
+
+            $('textarea[name="content"]').val(editor_val);
+
+        }
+
+    });
+
+  });
+
+</script>
+
+
+
 <script>
 
 	$(document).ready(function() {
@@ -198,6 +318,9 @@
 	});
 
 </script>
+
+
+
 
 <script>
 

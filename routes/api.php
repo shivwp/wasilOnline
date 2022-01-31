@@ -30,6 +30,7 @@ Route::post('product',  [App\Http\Controllers\Api\ProductApiController::class, '
 Route::post('new-product',  [App\Http\Controllers\Api\ProductApiController::class, 'newproduct'] );
 Route::post('best-seller-product',  [App\Http\Controllers\Api\ProductApiController::class, 'bestseller'] );
 Route::post('trending-product',  [App\Http\Controllers\Api\ProductApiController::class, 'trendingProduct'] );
+Route::post('feature-product',  [App\Http\Controllers\Api\ProductApiController::class, 'Featureproduct'] );
 
 Route::post('filters', [App\Http\Controllers\Api\ProductApiController::class, 'allFilters'] );
 

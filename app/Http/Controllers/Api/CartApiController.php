@@ -141,34 +141,21 @@ class CartApiController extends Controller
          $validator = Validator::make($request->all(), [
             'user_id'                   => 'required',
             'card_id'                   => 'required',
-            // 'gift_card_code'            => 'required',
-            // 'gift_card_amount'           => 'required',
         ]);
 
-        $product = Product::where('id',$request->product_id)->first();
-
-        if(!empty($product)){
-
-            // $already = Cart::where('product_id',$product->id)->where('user_id',$userid)->first();
-            // if(!empty($already)){
-            //     return response()->json(['status' => false,'message'=>'product already exist in cart'], 200);        
-            // }
-
-            $cart = Cart::updateOrCreate(['id' => $request->id],
-                [
-                'user_id'                   => $userid,
-                'product_id'                   => $product->id,
+        $variations = $request->variation;
+        $cart = Cart::updateOrCreate(['id' => $request->id],
+            [
+                'user_id'             => $userid,
+                'product_id'          => $request->product_id,
                 'quantity'            => $request->quantity,
-                // 'attr_id'            => $request->attr_id,
-                // 'attr_val_id'            => $request->attr_val_id,
-
-                ]);
-            return response()->json(['status' => true,'message'=>'success'], 200);  
-        }
-
-       
-
-     
+                'variation'           => json_encode($variations),  
+        ]);
+            
+        $cart['variation'] =   json_decode($cart->variation);
+             
+        
+        return response()->json(['status' => true, 'cart' =>  $cart], 200);
     }
 
     /**
