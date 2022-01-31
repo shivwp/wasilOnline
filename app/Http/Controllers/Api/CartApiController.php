@@ -138,23 +138,37 @@ class CartApiController extends Controller
             return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
         }
 
-        $validator = Validator::make($request->all(), [
+         $validator = Validator::make($request->all(), [
             'user_id'                   => 'required',
             'card_id'                   => 'required',
-            'gift_card_code'            => 'required',
-            'gift_card_amount'           => 'required',
+            // 'gift_card_code'            => 'required',
+            // 'gift_card_amount'           => 'required',
         ]);
 
-          $cart = Cart::updateOrCreate(['id' => $request->id],
-            [
+        $product = Product::where('id',$request->product_id)->first();
+
+        if(!empty($product)){
+
+            // $already = Cart::where('product_id',$product->id)->where('user_id',$userid)->first();
+            // if(!empty($already)){
+            //     return response()->json(['status' => false,'message'=>'product already exist in cart'], 200);        
+            // }
+
+            $cart = Cart::updateOrCreate(['id' => $request->id],
+                [
                 'user_id'                   => $userid,
-                'product_id'                   => $request->product_id,
-                // 'gift_card_code'            => $request->quantity,
-                //'gift_card_amount'            => $request->quantity,
+                'product_id'                   => $product->id,
                 'quantity'            => $request->quantity,
-            
-          ]);
-        return response()->json(['status' => true, 'cart' => $cart], 200);
+                // 'attr_id'            => $request->attr_id,
+                // 'attr_val_id'            => $request->attr_val_id,
+
+                ]);
+            return response()->json(['status' => true,'message'=>'success'], 200);  
+        }
+
+       
+
+     
     }
 
     /**

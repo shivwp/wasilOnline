@@ -29,6 +29,7 @@ Route::post('products', [App\Http\Controllers\Api\ProductApiController::class, '
 Route::post('product',  [App\Http\Controllers\Api\ProductApiController::class, 'singleproduct'] );
 Route::post('new-product',  [App\Http\Controllers\Api\ProductApiController::class, 'newproduct'] );
 Route::post('best-seller-product',  [App\Http\Controllers\Api\ProductApiController::class, 'bestseller'] );
+Route::post('trending-product',  [App\Http\Controllers\Api\ProductApiController::class, 'trendingProduct'] );
 
 Route::post('filters', [App\Http\Controllers\Api\ProductApiController::class, 'allFilters'] );
 
