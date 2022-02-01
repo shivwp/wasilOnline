@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\admin;
-
+use Image;
 use App\Http\Controllers\Controller;
+use Intervention\Image\Exception\NotReadableException;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
@@ -121,12 +122,14 @@ class ProductController extends Controller
             ' tax_type'         => $request->input('tax'),
             'short_description' => $request->input('example-textarea-input'),
             'long_description'  => $request->input('content'),
-            // 'discount_type'     => $request->input("discount_type"),
-            // 'discount'          => $request->input('discount'),
+            'offer_start_date'    => $request->discount_start,
+            'offer_end_date'          => $request->discount_end,
+            'offer_discount'          => $request->offer_discount,
             'in_stock'          => $request->input('stock'),
             'best_saller'               => !empty($request->input('check2')) && ($request->input('check1') == 'on') ? '1' : '0',
             'new'               => !empty($request->input('check2')) && ($request->input('check2') == 'on') ? '1' : '0',
             'featured'               => !empty($request->input('check2')) && ($request->input('check3') == 'on') ? '1' : '0',
+            'top_hunderd'               => !empty($request->input('top_hundred')) && ($request->input('top_hundred') == 'on') ? '1' : '0',
             'shipping_type'     => $request->input("shipping_type"),
             'shipping_charge'   => $request->input("shipping_price"),
             'meta_title'        => $request->input('meta_title'),
@@ -343,11 +346,12 @@ class ProductController extends Controller
             'p_price'           => $parent_product->p_price,
             's_price'           => $variant_price[$k][0],
             'tax_apply'       => $parent_product->tax_apply,
-            ' tax_type'       => $parent_product->tax,
+            'tax_type'       => $parent_product->tax,
             'short_description' => $parent_product->short_description,
             'long_description' => $parent_product->content,
-            // 'discount_type'    => $parent_product->discount_type,
-            // 'discount'          => $parent_product->discount,
+            'offer_start_date'    => $parent_product->discount_start,
+            'offer_end_date'          => $parent_product->discount_end,
+            'offer_discount'          => $parent_product->offer_discount,
             'in_stock'          => $variant_stock[$k][0],
             'shipping_type'    =>$parent_product->shipping_type,
             'shipping_charge'    => $parent_product->shipping_price,
@@ -600,6 +604,9 @@ class ProductController extends Controller
         $product =Product::where('id',$id)->first();
         if ($product != null) {
             $product->delete();
+            ProductAttribute::where('product_id',$id)->delete();
+            ProductVariants::where('parent_id',$id)->delete();
+            DB::table('variations')->where('parent_id',$id)->delete();
             return redirect('dashboard/product');
         }
     

@@ -79,6 +79,10 @@ Route::post('cart-list', [App\Http\Controllers\Api\CartApiController::class, 'in
 Route::post('add-cart', [App\Http\Controllers\Api\CartApiController::class, 'store'] );
 Route::post('delete-cart', [App\Http\Controllers\Api\CartApiController::class, 'destroy'] );
 
+Route::post('add-to-wishlist', [App\Http\Controllers\Api\WishlistApiController::class, 'store'] );
+Route::post('remove-from-wishlist', [App\Http\Controllers\Api\WishlistApiController::class, 'destroy'] );
+Route::post('wishlist', [App\Http\Controllers\Api\WishlistApiController::class, 'index'] );
+
 });
 Route::get('/clear-cache', function() {
     // 

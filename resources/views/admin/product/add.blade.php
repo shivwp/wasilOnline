@@ -577,6 +577,24 @@
 					</div>
 
 				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="form-label">Offer Start Date</label>
+						<input type="date" class="form-control" name="discount_start" placeholder="discount" value="{{isset($product) ? $product->offer_start_date : '' }}" required>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="form-label">Offer End Date</label>
+						<input type="date" class="form-control" name="discount_end" placeholder="discount" value="{{isset($product) ? $product->offer_end_date : '' }}" required>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="form-label">Discount</label>
+						<input type="number" class="form-control" name="offer_discount" placeholder="discount" value="{{isset($product) ? $product->offer_discount : '' }}" required>
+					</div>
+				</div>
 
 				<div class="col-md-12">
 
@@ -704,27 +722,36 @@
 					<input type="file" class="form-control" name="gallery_image[]" value="" multiple>
 				</div>
 
-				<div class="col-md-4 mt-2">
+				<div class="col-md-3 mt-2">
 					<label class="switch">
 						<input type="checkbox" id="featured" name="featured" {{ isset($product) && ($product->featured == 1) ?  'checked' : '' }}>
 						<span class="slider round"></span>
 					</label>
 					<label for="scales">Featured</label>
 				</div>
-				<div class="col-md-4 mt-2">
+				<div class="col-md-3 mt-2">
 					<label class="switch">
 						<input type="checkbox" id="new" name="new" {{ isset($product) && ($product->new == 1) ?  'checked' : '' }}>
 						<span class="slider round"></span>
 					</label>
 					<label for="scales">New</label>
 				</div>
-      		<div class="col-md-4 mt-2">
-					<label class="switch">
-						<input type="checkbox" id="best_saller" name="best_saller" {{ isset($product) && ($product->best_saller == 1) ?  'checked' : '' }}>
-						<span class="slider round"></span>
-					</label>
-					<label for="scales">Best Saller</label>
+				<div class="col-md-3 mt-2">
+						<label class="switch">
+							<input type="checkbox" id="best_saller" name="best_saller" {{ isset($product) && ($product->best_saller == 1) ?  'checked' : '' }}>
+							<span class="slider round"></span>
+						</label>
+						<label for="scales">Best Saller</label>
 				</div>
+				@if(Auth::user()->roles->first()->title == "Admin")	
+					<div class="col-md-3 mt-2">
+							<label class="switch">
+								<input type="checkbox" id="top" name="top_hundred" {{ isset($product) && ($product->top_hunderd == 1) ?  'checked' : '' }}>
+								<span class="slider round"></span>
+							</label>
+							<label for="scales">Top 100</label>
+					</div>
+				@endif
 
 
 

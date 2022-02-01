@@ -205,7 +205,7 @@ class CouponController extends Controller
 
     {
 
-        $d['title'] = "PAGE";
+        $d['title'] = "Coupon";
 
         $d['coupon']=Coupon::findorfail($id);
 

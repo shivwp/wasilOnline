@@ -55,7 +55,15 @@ class ProductApiController extends Controller
 
             }
         }
+        if(!empty($request->page) && !empty($request->limit)){
+            $page = $request->page;
+            $limit = $request->limit;
+            $product = $prod->limit($limit)->offset(($page - 1) * $limit)->get();
+
+        }
+        else{
         $product = $prod->get();
+        }
         if(count($product) > 0){
             foreach($product as $key => $val){
                 $data = [];
@@ -197,7 +205,7 @@ class ProductApiController extends Controller
     
     public function newproduct(Request $request)
     {
-        $product=Product::orderBY('id','DESC')->limit('8')->get(); 
+        $product=Product::orderBY('id','DESC')->where('parent_id','=',0)->limit('8')->get(); 
         $products = [];
         $url = PageMeta::where('key','new_product_url')->first();
         if(count($product)>0){
@@ -271,7 +279,7 @@ class ProductApiController extends Controller
         
     }
     public function bestseller(Request $request){
-        $product=Product::where('best_saller',1)->limit('5')->get(); 
+        $product=Product::where('best_saller',1)->where('parent_id','=',0)->limit('5')->get(); 
         $products = [];
         if(count($product)>0){
          $products['url'] = 'sfcsd';
@@ -348,7 +356,7 @@ class ProductApiController extends Controller
 
     public function trendingProduct(Request $request){
 
-        $product=Product::orderBY('avg_rating','DESC')->limit('7')->get(); 
+        $product=Product::orderBY('avg_rating','DESC')->where('parent_id','=',0)->limit('7')->get(); 
         $products = [];
         if(count($product)>0){
          $products['url'] = 'sfcsd';
@@ -428,7 +436,7 @@ class ProductApiController extends Controller
 
     
      public function Featureproduct(Request $request){
-        $product=Product::where('featured',1)->limit('8')->get(); 
+        $product=Product::where('featured',1)->where('parent_id','=',0)->limit('8')->get(); 
         $products = [];
         if(count($product)>0){
          $products['url'] = 'sfcsd';
@@ -707,10 +715,24 @@ class ProductApiController extends Controller
 
             if(!empty($catId)){
 
-                $product=Product::where('parent_id',0)->whereIn('cat_id',$catId)
-                                ->orWhereIn('cat_id_2', $catId)
-                                ->orWhereIn('cat_id_3', $catId)
-                                ->get();  
+                if(!empty($request->page) && !empty($request->limit)){
+                    $page = $request->page;
+                    $limit = $request->limit;
+                    $product=Product::where('parent_id',0)->whereIn('cat_id',$catId)
+                    ->orWhereIn('cat_id_2', $catId)
+                    ->orWhereIn('cat_id_3', $catId)
+                    ->limit($limit)
+                    ->offset(($page - 1) * $limit)
+                    ->get(); 
+
+                }
+                else{
+                    $product=Product::where('parent_id',0)->whereIn('cat_id',$catId)
+                    ->orWhereIn('cat_id_2', $catId)
+                    ->orWhereIn('cat_id_3', $catId)
+                    ->get();  
+                }
+              
                 if(count($product)>0){
                     foreach($product as $key => $val){
                         $data = [];
@@ -788,8 +810,14 @@ class ProductApiController extends Controller
 
         }
         else{
-
+            if(!empty($request->page) && !empty($request->limit)){
+                $page = $request->page;
+                $limit = $request->limit;
+            $product=Product::orderBy('id', 'DESC')->where('parent_id',0)->where('pname', 'like', "%{$request->search}%")->limit($limit)->offset(($page - 1) * $limit)->get();
+            }
+            else{
             $product=Product::orderBy('id', 'DESC')->where('parent_id',0)->where('pname', 'like', "%{$request->search}%")->get();
+            }
             foreach($product as $key => $val){
                 $data = [];
                 $gallery = json_decode($val->gallery_image);
