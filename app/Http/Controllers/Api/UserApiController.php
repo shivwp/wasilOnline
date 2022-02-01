@@ -10,6 +10,8 @@ use App\Http\Controllers\Controller;
 
 use App\Models\PasswordReset;
 
+use Laravel\Socialite\Facades\Socialite;
+
 use App\Notifications\PasswordResetRequest;
 
 use App\Notifications\PasswordResetSuccess;
@@ -34,7 +36,7 @@ use App\UserVerifyToken;
 
 use App\MailTemplate;
 use App\Models\Mails;
-
+use App\Models\SocialAccount;
 use App\Mail\Signup;
 
 use App\Newsletter as Chimp;
@@ -279,152 +281,81 @@ class UserApiController extends Controller
 
     }
 
- 
 
-    public function socialLogin(Request $request){
-
-
-
-         $errorCode =  Config::get('constants.code.error');
-
-        $succcessCode =  Config::get('constants.code.success');
-
-
-
-        $validator = Validator::make($request->all(), [
-
-            'social_id' => 'required',
-
-            'social_type' => 'required'
-
-        ]);
-
-
-
-        if ($validator->fails()) {
-
-            $er = [];
-
-            $i = 0;
-
-            foreach ($validator->errors() as $err) {
-
-                $er[$i++] = $err[0];
-
-                return $err;
-
+     public function social(Request $request) {
+        try{
+            $validator = Validator::make($request->all(), [  
+                'provider' => 'in:google,facebook',          
+                'access_token' => 'required',
+            ]);
+            if ($validator->fails())
+                throw new Error(implode(",",$validator->messages()->all()));
+            
+            $social_user = Socialite::driver($request->provider)->stateless()->userFromToken($request->input('access_token'));
+            
+            if(!$social_user){
+                throw new Error( Str::replaceArray('?', [$request->provider], __('messages.invalid_social')) );
             }
+            $token = Str::random(80);
 
-         
+            $account = SocialAccount::where("provider_user_id",$social_user->getId())
+                    ->where("provider",$request->provider)
+                    ->with('user')->first();
 
-             return response()->json(['status' => false,'code'=>$succcessCode, 'message' => implode("", $validator->errors()->all()), 'user' => Null], 200);
+            if($account){
+                // if($account->user->status == 0){
+                //     throw new Error('Your account is deactivated.');
+                // }
 
-        }
+                $user = User::where(["id"=>$account->user->id])->first();
+                $user->api_token = hash('sha256', $token);
+                $user->device_id = $request->input('device_id') ? $request->input('device_id') : "";
+                $user->device_token = $request->input('device_token') ? $request->input('device_token') : "";
+                $user->save();
 
+                $data = new \stdClass();
+                $data->token = $user->createToken(env('APP_NAME'))->accessToken;
+                return response()->json(['data'=>$data,'status'=>true,'message'=>'verify_success'], $this->success);
+            } else { 
+                $fname = $social_user->getName() ? $social_user->getName(): "";
+                $lname = $social_user->getNickname() ? $social_user->getNickname(): "";
 
+                $loginEmail = $social_user->getEmail() ? $social_user->getEmail() : $social_user->getId().'@'.$request->provider.'.com';
+                
+                $loginName =  $fname. $lname;
 
-        $user = User::where('social_id', '=', $request->social_id)
-
-                        ->where('social_type','=',$request->social_type)
-
-                        ->where('social_type','!=','manual')
-
-                        ->first();
-
-
-
-        if(!empty($user)){
-
-
-
-         if($user->active_status == "inactive"){
-
-
-
-            return response()->json(['status' => false, 'message' => "The email has already been registred. currently in inactive mode.to active your account mail on  customerservices@office-share.io", 'user' => Null], 200);
-
-
-
-        }
-
-        else{
-
-
-
-             if($user->remember_token != null){
-
-
-
-                        if(isset($request->firebase_token)){
-
-
-
-                           $location = DB::table('user_device_token')->insert([
-
-                            'device_token'           => $request->firebase_token,
-
-                            'user_id'               => $user->id,
-
-                             'platform_type'         =>  $request->platform_type,
-
-                             'device_id'                 =>  $request->device_id,
-
-                            ]);
-
-
-
-                        }
-
-
-
-                foreach($user->roles as $key => $item){
-
-                    $user['user_role_type'] = $item->title;
-
+                // create new user and social login if user with social id not found.
+                $user = User::where("email", $loginEmail)->first();
+                if(!$user){  
+                    $user = new User;
+                    $user->email = $loginEmail;
+                    $user->first_name = $loginName;
+                    $user->social_id = $social_user->getId();
+                    $user->password = Hash::make('social');
+                    $user->api_token = hash('wasil256', $token);
+                    $user->device_id = $request->input('device_id') ? $request->input('device_id') : "";
+                    $user->device_token = $request->input('device_token') ? $request->input('device_token') : "";
+                    $user->save();
                 }
+                $social_account = new SocialAccount;
+                $social_account->provider = $request->provider;
+                $social_account->provider_user_id = $social_user->getId();
+                $social_account->user_id = $user->id;
+                $social_account->save();
 
-                unset($user->roles);
+                $data = new \stdClass();
 
-
-
-                        return response()->json(['status' => true, 'code'=>$succcessCode, 'message' => " Your account login with ".$request->social_type." sucessfully", 'user' => $user], 200);
-
-
-
-                 }
-
-               else{
-
-
-
-                        return response()->json(["status" => false,'code'=>$errorCode,'message' => "Email not verified",'user' => null], 200);  
-
-                }
-
+                $data->token = $user->createToken(env('APP_NAME'))->accessToken;
+                return response()->json(['data'=>$data,'status'=>true,'message'=>'verify_success'], $this->success);
+                
+            }
+        } catch(\Thuserowable $th){
+            return response()->json([
+                "message" => $th->getMessage(),
+            ], 400);
         }
 
-
-
-               
-
-
-
-        }
-
-        else{
-
-
-
-        return response()->json(["status" => false,'code'=>$succcessCode,'message' => "user not found",'user' => null], 200);
-
-
-
-        }
-
-
-
-    }
-
+    } 
 
 
 

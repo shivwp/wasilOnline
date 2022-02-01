@@ -25,6 +25,10 @@ Route::post('login', [App\Http\Controllers\Api\UserApiController::class, 'login'
 //register api
 Route::post('register', [App\Http\Controllers\Api\UserApiController::class, 'register']);
 
+//social
+Route::post('social', [App\Http\Controllers\Api\UserApiController::class, 'social']);
+
+
 Route::post('products', [App\Http\Controllers\Api\ProductApiController::class, 'index'] );
 Route::post('product',  [App\Http\Controllers\Api\ProductApiController::class, 'singleproduct'] );
 Route::post('new-product',  [App\Http\Controllers\Api\ProductApiController::class, 'newproduct'] );
@@ -35,6 +39,11 @@ Route::post('top-hundered', [App\Http\Controllers\Api\ProductApiController::clas
 //Route::post('user-locations', [App\Http\Controllers\Api\ProductApiController::class, 'userLocations'] );
 Route::post('trending-product',  [App\Http\Controllers\Api\ProductApiController::class, 'trendingProduct'] );
 Route::post('feature-product',  [App\Http\Controllers\Api\ProductApiController::class, 'Featureproduct'] );
+Route::post('category', [App\Http\Controllers\Api\CategoryApiController::class, 'index'] );
+Route::post('currency',  [App\Http\Controllers\Api\CurrencyController::class, 'index'] );
+Route::post('menus',  [App\Http\Controllers\Api\MenuController::class, 'index'] );
+Route::post('news-latter',  [App\Http\Controllers\Api\NewslatterApiController::class, 'store'] );
+Route::post('category-list', [App\Http\Controllers\Api\CategoryApiController::class, 'categorylist'] );
 
 Route::post('filters', [App\Http\Controllers\Api\ProductApiController::class, 'allFilters'] );
 
