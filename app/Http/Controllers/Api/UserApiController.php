@@ -37,6 +37,7 @@ use App\UserVerifyToken;
 use App\MailTemplate;
 use App\Models\Mails;
 use App\Models\SocialAccount;
+use App\Models\Address;
 use App\Mail\Signup;
 
 use App\Newsletter as Chimp;
@@ -132,8 +133,39 @@ class UserApiController extends Controller
 
 
 
+  public function userdetails()
+    {
+        if (Auth::guard('api')->check()) {
+            $user = Auth::guard('api')->user();
+        } 
+        $user_id = $user->id;
+        
+      
+        $data= User::where('id','=',$user_id)->get(); 
+        if(!empty($data)){
+             return response()->json([ 'status'=> true , 'message' => "done", 'order' => $data], 200);
+        }else{
+             return response()->json([ 'status'=> false ,'message' => "fail", 'order' => []], 200);
+        }
+    }
 
+    public function myaddress()
+    {
+        if (Auth::guard('api')->check()) {
+            $user = Auth::guard('api')->user();
+        } 
+        $user_id = $user->id;
+      
+        $shipping= Address::where('address_type','=','billing')->where('user_id','=',$user_id)->get(); 
 
+        $billing= Address::where('address_type','=','shipping')->where('user_id','=',$user_id)->get();
+
+        if(!empty($shipping && $billing)){
+             return response()->json([ 'status'=> true , 'message' => "done", 'billing address' => $billing, 'shipping address' =>$shipping], 200);
+        }else{
+             return response()->json([ 'status'=> false ,'message' => "fail", 'order' => []], 200);
+        }
+    }
 
    
 
@@ -303,9 +335,7 @@ class UserApiController extends Controller
                     ->with('user')->first();
 
             if($account){
-                // if($account->user->status == 0){
-                //     throw new Error('Your account is deactivated.');
-                // }
+       
 
                 $user = User::where(["id"=>$account->user->id])->first();
                 $user->api_token = hash('sha256', $token);
@@ -315,7 +345,7 @@ class UserApiController extends Controller
 
                 $data = new \stdClass();
                 $data->token = $user->createToken(env('APP_NAME'))->accessToken;
-                return response()->json(['data'=>$data,'status'=>true,'message'=>'verify_success'], $this->success);
+                return response()->json(['data'=>$data,'status'=>true,'message'=>'verify_success']);
             } else { 
                 $fname = $social_user->getName() ? $social_user->getName(): "";
                 $lname = $social_user->getNickname() ? $social_user->getNickname(): "";
@@ -332,7 +362,7 @@ class UserApiController extends Controller
                     $user->first_name = $loginName;
                     $user->social_id = $social_user->getId();
                     $user->password = Hash::make('social');
-                    $user->api_token = hash('wasil256', $token);
+                    $user->api_token = hash('sha256', $token);
                     $user->device_id = $request->input('device_id') ? $request->input('device_id') : "";
                     $user->device_token = $request->input('device_token') ? $request->input('device_token') : "";
                     $user->save();
@@ -346,7 +376,7 @@ class UserApiController extends Controller
                 $data = new \stdClass();
 
                 $data->token = $user->createToken(env('APP_NAME'))->accessToken;
-                return response()->json(['data'=>$data,'status'=>true,'message'=>'verify_success'], $this->success);
+                return response()->json(['data'=>$data,'status'=>true,'message'=>'verify_success']);
                 
             }
         } catch(\Thuserowable $th){

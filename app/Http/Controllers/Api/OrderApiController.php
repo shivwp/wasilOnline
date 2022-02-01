@@ -6,10 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Address;
+use App\Models\Product;
 use App\Models\Orderedproduct;
 use App\Models\User;
-
-
 use Auth;
 class OrderApiController extends Controller
 {
@@ -20,7 +19,40 @@ class OrderApiController extends Controller
      */
     public function index()
     {
-        //
+        if (Auth::guard('api')->check()) {
+            $user = Auth::guard('api')->user();
+        } 
+        $user_id = $user->id;
+
+      
+        $orders= Order::orderBy('orders.created_at','DESC')->limit('4')->where('orders.user_id','=',$user_id)->get(); 
+
+        foreach($orders as $key=>$value){
+             
+           
+            // $orders[$key]['featured_image'] = url('category/' .   $orders->featured_image);
+            // $orders[$key]['gallery_image'] = url('category/' .   $orders->gallery_image);
+            $orders[$key]['orders']= Product::where('id','=',$value->id)->get();
+
+        }
+        if(!empty $orders[$key]['gallery_image']){
+            foreach($orders as $key=>$value){
+             
+           
+            // $orders[$key]['featured_image'] = url('category/' .   $orders->featured_image);
+            // $orders[$key]['gallery_image'] = url('category/' .   $orders->gallery_image);
+            $orders[$key]['orders']= Product::where('id','=',$value->id)->get();
+         
+        }
+        }
+        
+
+
+        if(!empty($orders)){
+             return response()->json([ 'status'=> true , 'message' => "done", 'order' => $orders], 200);
+        }else{
+             return response()->json([ 'status'=> false ,'message' => "fail", 'order' => []], 200);
+        }
     }
 
     /**
