@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '305a41226144cf22384ca35f442cd632a2ebb864',
+        'reference' => '09f61b4db742e3e0bb77b61deb333191bffbe3c8',
         'name' => 'laravel/laravel',
         'dev' => true,
     ),
@@ -415,6 +415,15 @@
                 0 => 'v8.77.1',
             ),
         ),
+        'intervention/image' => array(
+            'pretty_version' => '2.7.1',
+            'version' => '2.7.1.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../intervention/image',
+            'aliases' => array(),
+            'reference' => '744ebba495319501b873a4e48787759c72e3fb8c',
+            'dev_requirement' => false,
+        ),
         'kodova/hamcrest-php' => array(
             'dev_requirement' => true,
             'replaced' => array(
@@ -436,7 +445,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '305a41226144cf22384ca35f442cd632a2ebb864',
+            'reference' => '09f61b4db742e3e0bb77b61deb333191bffbe3c8',
             'dev_requirement' => false,
         ),
         'laravel/passport' => array(

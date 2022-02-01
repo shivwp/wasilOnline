@@ -177,6 +177,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
 
     ],
 
@@ -232,6 +233,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Helper'       => App\Helper\Helper::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'Image' => Intervention\Image\Facades\Image::class,
     ],
 
 ];
