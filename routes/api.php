@@ -29,6 +29,10 @@ Route::post('products', [App\Http\Controllers\Api\ProductApiController::class, '
 Route::post('product',  [App\Http\Controllers\Api\ProductApiController::class, 'singleproduct'] );
 Route::post('new-product',  [App\Http\Controllers\Api\ProductApiController::class, 'newproduct'] );
 Route::post('best-seller-product',  [App\Http\Controllers\Api\ProductApiController::class, 'bestseller'] );
+Route::post('search-product', [App\Http\Controllers\Api\ProductApiController::class, 'searchProduct'] );
+Route::post('value-of-the-day', [App\Http\Controllers\Api\ProductApiController::class, 'valueOfTheDay'] );
+Route::post('top-hundered', [App\Http\Controllers\Api\ProductApiController::class, 'topHunderd'] );
+//Route::post('user-locations', [App\Http\Controllers\Api\ProductApiController::class, 'userLocations'] );
 Route::post('trending-product',  [App\Http\Controllers\Api\ProductApiController::class, 'trendingProduct'] );
 Route::post('feature-product',  [App\Http\Controllers\Api\ProductApiController::class, 'Featureproduct'] );
 

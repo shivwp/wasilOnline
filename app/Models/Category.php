@@ -76,5 +76,12 @@ class Category extends Model
 
     }
 
+    public function coupn()
+    {
+        return $this->belongsToMany(Coupon::class);
+
+    }
+    
+
 }
 

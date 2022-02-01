@@ -42,5 +42,25 @@ class Coupon extends Model
 
     ];
 
+    public function product()
+    {
+        return $this->belongsToMany(Product::class);
+
+    }
+
+    public function category()
+    {
+        return $this->belongsToMany(Category::class);
+
+    }
+
+    public function vendor()
+    {
+        return $this->belongsToMany(User::class);
+
+    }
+
+    
+
 }
 

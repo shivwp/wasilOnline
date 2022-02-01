@@ -13,6 +13,7 @@ use App\Models\Product;
 use App\Models\Coupon;
 use App\Models\Role;
 use App\Models\Category;
+use DB;
 
 
 
@@ -143,10 +144,20 @@ class CouponController extends Controller
             
             'product_id'     => json_encode($request->input('product_id')),
 
-          
-
-
         ]);
+
+        if(!empty($request->id)){
+
+            DB::table('coupon_product')->where('coupon_id',$request->id)->delete();
+            DB::table('category_coupon')->where('coupon_id',$request->id)->delete();
+            DB::table('coupon_user')->where('coupon_id',$request->id)->delete();
+
+        }
+        $coupon->product()->sync($request->input('product_id'),[]);
+
+        $coupon->category()->sync($request->input('category_id'),[]);
+        
+        $coupon->vendor()->sync($request->input('vendor_id'),[]);
 
 
 

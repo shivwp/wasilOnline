@@ -38,7 +38,11 @@ class Product extends Model
         'meta_keyword',
         'parent_id',
         'commission',
-        'meta_description'
+        'meta_description',
+        'offer_start_date',
+        'offer_end_date',
+        'offer_discount',
+        'top_hunderd'
     ];
 
   public function category()
@@ -48,6 +52,12 @@ class Product extends Model
   public function product_attr()  
     {
         return $this->hasMany(ProductAttribute::class,'product_id');
+    }
+
+  public function coupn()
+    {
+        return $this->belongsToMany(Coupon::class);
+
     }
     
 }

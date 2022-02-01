@@ -11,6 +11,8 @@ use App\Models\Attribute;
 use App\Models\ProductVariants;
 use App\Models\ProductAttribute;
 use App\Models\PageMeta;
+use App\Models\Coupon;
+use Carbon;
 use Validator;
 use DB;
 
@@ -687,6 +689,353 @@ class ProductApiController extends Controller
         return response()->json(['status' => true, 'message' => "success", 'data' => $data], 200);
       
     }
+
+
+    public function searchProduct(Request $request){
+        
+        $category = Category::where('title', 'like', "%{$request->search}%")->get();
+
+        if(count($category) > 0){
+
+            $catId =  [];
+
+            foreach($category as $key => $value){
+
+                $catId[] = $value->id;
+
+            }
+
+            if(!empty($catId)){
+
+                $product=Product::where('parent_id',0)->whereIn('cat_id',$catId)
+                                ->orWhereIn('cat_id_2', $catId)
+                                ->orWhereIn('cat_id_3', $catId)
+                                ->get();  
+                if(count($product)>0){
+                    foreach($product as $key => $val){
+                        $data = [];
+                        $gallery = json_decode($val->gallery_image);
+                        if(!empty($gallery)){
+                            foreach ($gallery as $key1 => $value) {
+                                $value1 = url('products/gallery/' . $value);
+                                $data[] = $value1;
+                            }
+                        $product[$key]['gallery_image'] = $data;
+                        }
+                        if(!empty($val->featured_image)){
+                        $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
+                        }
+                        if($val->product_type == "single"){
+                            $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
+                            if(count($productAttributes)>0){
+                                foreach($productAttributes as $attr_key => $attr_val){
+                                    $attr = Attribute::select('id','slug')->where('id',$attr_val->attr_id)->first();
+                                    $attrdata[] = $attr;
+                                }
+                                if(!empty($attrdata)){
+                                    foreach($attrdata as $d => $dv){
+                                        $proattragain = ProductAttribute::where('attr_id',$dv->id)->get();
+                                        $attrval = [];
+                                        foreach($proattragain as $ag => $proagain){
+                                            $attrval[] = $proagain->attr_value_id;
+                        
+                                        }
+                                        $attr_value = AttributeValue::select('id','attr_id','slug')->whereIn('id',$attrval)->get();
+                                        
+                                        $attrdata[$d]['attribute_value'] = $attr_value;
+                                    }
+                                }
+                                $product[$key]['attributes'] = $attrdata;
+                            }
+                        }
+                        else{
+                            $productVariants = ProductVariants::select('parent_id','p_id','variant_value','variant_sku','variant_price','variant_stock','variant_images')->where('parent_id',$val->id)->get();
+                            if(count($productVariants) > 0){
+                                $arr_attr = [];
+                                $variants_img = [];
+                                foreach($productVariants as $v_k => $v_val){
+                                    foreach(json_decode($v_val->variant_value) as $key_var =>   $val_var) {
+                                        $attrval = AttributeValue::where('id', $val_var)->first();
+                                        $arr_attr[$key_var]['key'] = $attrval->attr_value_name;
+                                        $arr_attr[$key_var]['value'] = $val_var; 
+                                        $productVariants[$v_k]['variant_value'] = $arr_attr;
+                                    }
+                                    if(!empty($v_val->variant_images)){
+                                        foreach(json_decode($v_val->variant_images) as $key_var_img =>   $val_var_img) {
+                                            $variants_img[] = url('products/gallery/' . $val_var_img);
+                                            $productVariants[$v_k]['variant_images'] = $variants_img;
+                                        }
+                                    }
+                                    
+                                }
+                                $prod[$key]['variants'] = $productVariants;
+                            }
+                        }
+            
+                        
+            
+                    } 
+                }
+                                
+            return response()->json(['status' => true, 'message' => "products", 'product' => $prod], 200);
+
+            }
+            else{
+
+            return response()->json(['status' => false, 'message' => "products", 'product' => []], 200);
+
+            }
+
+        }
+        else{
+
+            $product=Product::orderBy('id', 'DESC')->where('parent_id',0)->where('pname', 'like', "%{$request->search}%")->get();
+            foreach($product as $key => $val){
+                $data = [];
+                $gallery = json_decode($val->gallery_image);
+                if(!empty($gallery)){
+                    foreach ($gallery as $key1 => $value) {
+                        $value1 = url('products/gallery/' . $value);
+                        $data[] = $value1;
+                    }
+                $product[$key]['gallery_image'] = $data;
+                }
+                if(!empty($val->featured_image)){
+                $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
+                }
+                if($val->product_type == "single"){
+                    $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
+                    if(count($productAttributes)>0){
+                        foreach($productAttributes as $attr_key => $attr_val){
+                            $attr = Attribute::select('id','slug')->where('id',$attr_val->attr_id)->first();
+                            $attrdata[] = $attr;
+                        }
+                        if(!empty($attrdata)){
+                            foreach($attrdata as $d => $dv){
+                                $proattragain = ProductAttribute::where('attr_id',$dv->id)->get();
+                                $attrval = [];
+                                foreach($proattragain as $ag => $proagain){
+                                    $attrval[] = $proagain->attr_value_id;
+                
+                                }
+                                $attr_value = AttributeValue::select('id','attr_id','slug')->whereIn('id',$attrval)->get();
+                                
+                                $attrdata[$d]['attribute_value'] = $attr_value;
+                            }
+                        }
+                        $product[$key]['attributes'] = $attrdata;
+                    }
+                }
+                else{
+                    $productVariants = ProductVariants::select('parent_id','p_id','variant_value','variant_sku','variant_price','variant_stock','variant_images')->where('parent_id',$val->id)->get();
+                    if(count($productVariants) > 0){
+                        $arr_attr = [];
+                        $variants_img = [];
+                        foreach($productVariants as $v_k => $v_val){
+                            foreach(json_decode($v_val->variant_value) as $key_var =>   $val_var) {
+                                $attrval = AttributeValue::where('id', $val_var)->first();
+                                $arr_attr[$key_var]['key'] = $attrval->attr_value_name;
+                                $arr_attr[$key_var]['value'] = $val_var; 
+                                $productVariants[$v_k]['variant_value'] = $arr_attr;
+                            }
+                            if(!empty($v_val->variant_images)){
+                                foreach(json_decode($v_val->variant_images) as $key_var_img =>   $val_var_img) {
+                                    $variants_img[] = url('products/gallery/' . $val_var_img);
+                                    $productVariants[$v_k]['variant_images'] = $variants_img;
+                                }
+                            }
+                            
+                        }
+                        $product[$key]['variants'] = $productVariants;
+                    }
+                }
+    
+                
+    
+            }  
+            $products['product'] = $product;
+
+            if(count($product)>0){
+
+                return response()->json(['status' => true, 'message' => "products", 'product' => $product], 200);
+
+            }
+            else{
+
+                return response()->json(['status' => false, 'message' => "products", 'product' => []], 200);
+
+            }
+
+        }
+        
+
+    }
+
+    public function valueOfTheDay(Request $request){
+
+        $currentDate  = Carbon\Carbon::now()->toDateString();
+
+       $products = Product::where('parent_id',0)->whereDate('offer_end_date','>=',$currentDate)->get(); 
+
+       if(count($products)>0){
+
+            foreach($products as $key => $val){
+                $data = [];
+                $gallery = json_decode($val->gallery_image);
+                if(!empty($gallery)){
+                    foreach ($gallery as $key1 => $value) {
+                        $value1 = url('products/gallery/' . $value);
+                        $data[] = $value1;
+                    }
+                $product[$key]['gallery_image'] = $data;
+                }
+                if(!empty($val->featured_image)){
+                $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
+                }
+                if($val->product_type == "single"){
+                    $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
+                    if(count($productAttributes)>0){
+                        foreach($productAttributes as $attr_key => $attr_val){
+                            $attr = Attribute::select('id','slug')->where('id',$attr_val->attr_id)->first();
+                            $attrdata[] = $attr;
+                        }
+                        if(!empty($attrdata)){
+                            foreach($attrdata as $d => $dv){
+                                $proattragain = ProductAttribute::where('attr_id',$dv->id)->get();
+                                $attrval = [];
+                                foreach($proattragain as $ag => $proagain){
+                                    $attrval[] = $proagain->attr_value_id;
+                
+                                }
+                                $attr_value = AttributeValue::select('id','attr_id','slug')->whereIn('id',$attrval)->get();
+                                
+                                $attrdata[$d]['attribute_value'] = $attr_value;
+                            }
+                        }
+                        $product[$key]['attributes'] = $attrdata;
+                    }
+                }
+                else{
+                    $productVariants = ProductVariants::select('parent_id','p_id','variant_value','variant_sku','variant_price','variant_stock','variant_images')->where('parent_id',$val->id)->get();
+                    if(count($productVariants) > 0){
+                        $arr_attr = [];
+                        $variants_img = [];
+                        foreach($productVariants as $v_k => $v_val){
+                            foreach(json_decode($v_val->variant_value) as $key_var =>   $val_var) {
+                                $attrval = AttributeValue::where('id', $val_var)->first();
+                                $arr_attr[$key_var]['key'] = $attrval->attr_value_name;
+                                $arr_attr[$key_var]['value'] = $val_var; 
+                                $productVariants[$v_k]['variant_value'] = $arr_attr;
+                            }
+                            if(!empty($v_val->variant_images)){
+                                foreach(json_decode($v_val->variant_images) as $key_var_img =>   $val_var_img) {
+                                    $variants_img[] = url('products/gallery/' . $val_var_img);
+                                    $productVariants[$v_k]['variant_images'] = $variants_img;
+                                }
+                            }
+                            
+                        }
+                        $product[$key]['variants'] = $productVariants;
+                    }
+                }
+
+                
+
+            } 
+
+        return response()->json(['status' => true, 'message' => "success", 'product' => $products], 200);  
+
+       }
+       else{
+
+        return response()->json(['status' => false, 'message' => "no products", 'product' => []], 200);   
+       }
+
+
+
+    }
+
+    public function topHunderd(Request $request){
+
+        $products = Product::where('parent_id',0)->where('top_hunderd',1)->get(); 
+
+        if(count($products)>0){
+ 
+             foreach($products as $key => $val){
+                 $data = [];
+                 $gallery = json_decode($val->gallery_image);
+                 if(!empty($gallery)){
+                     foreach ($gallery as $key1 => $value) {
+                         $value1 = url('products/gallery/' . $value);
+                         $data[] = $value1;
+                     }
+                 $product[$key]['gallery_image'] = $data;
+                 }
+                 if(!empty($val->featured_image)){
+                 $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
+                 }
+                 if($val->product_type == "single"){
+                     $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
+                     if(count($productAttributes)>0){
+                         foreach($productAttributes as $attr_key => $attr_val){
+                             $attr = Attribute::select('id','slug')->where('id',$attr_val->attr_id)->first();
+                             $attrdata[] = $attr;
+                         }
+                         if(!empty($attrdata)){
+                             foreach($attrdata as $d => $dv){
+                                 $proattragain = ProductAttribute::where('attr_id',$dv->id)->get();
+                                 $attrval = [];
+                                 foreach($proattragain as $ag => $proagain){
+                                     $attrval[] = $proagain->attr_value_id;
+                 
+                                 }
+                                 $attr_value = AttributeValue::select('id','attr_id','slug')->whereIn('id',$attrval)->get();
+                                 
+                                 $attrdata[$d]['attribute_value'] = $attr_value;
+                             }
+                         }
+                         $product[$key]['attributes'] = $attrdata;
+                     }
+                 }
+                 else{
+                     $productVariants = ProductVariants::select('parent_id','p_id','variant_value','variant_sku','variant_price','variant_stock','variant_images')->where('parent_id',$val->id)->get();
+                     if(count($productVariants) > 0){
+                         $arr_attr = [];
+                         $variants_img = [];
+                         foreach($productVariants as $v_k => $v_val){
+                             foreach(json_decode($v_val->variant_value) as $key_var =>   $val_var) {
+                                 $attrval = AttributeValue::where('id', $val_var)->first();
+                                 $arr_attr[$key_var]['key'] = $attrval->attr_value_name;
+                                 $arr_attr[$key_var]['value'] = $val_var; 
+                                 $productVariants[$v_k]['variant_value'] = $arr_attr;
+                             }
+                             if(!empty($v_val->variant_images)){
+                                 foreach(json_decode($v_val->variant_images) as $key_var_img =>   $val_var_img) {
+                                     $variants_img[] = url('products/gallery/' . $val_var_img);
+                                     $productVariants[$v_k]['variant_images'] = $variants_img;
+                                 }
+                             }
+                             
+                         }
+                         $product[$key]['variants'] = $productVariants;
+                     }
+                 }
+ 
+                 
+ 
+             } 
+ 
+         return response()->json(['status' => true, 'message' => "success", 'product' => $products], 200);  
+ 
+        }
+        else{
+ 
+         return response()->json(['status' => false, 'message' => "no products", 'product' => []], 200);   
+        }
+
+    }
+
+
 
 
 
