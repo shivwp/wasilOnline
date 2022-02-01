@@ -397,9 +397,9 @@
 
                             <ul class="slide-menu">
 
-                               <li><a href="{{ route('dashboard.language') }}" class="slide-item">Language</a></li>
+                          
 
-                               <li><a href="{{ route('dashboard.currency') }}" class="slide-item">Currency</a></li>
+                               <li><a href="{{ route('dashboard.currency.index') }}" class="slide-item">Currency</a></li>
                                
                                 <li><a href="{{ route('dashboard.mail.index') }}" class="slide-item">Mail Template</a></li>
 

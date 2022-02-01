@@ -18,13 +18,13 @@ class CategoryApiController extends Controller
     public function index()
     { 
          $category=Category::all('id','title','slug','category_image','slug','parent_id')->where('parent_id','=',0);
-
          
          foreach($category as $key => $val){
            $val['count']= Product::where('cat_id','=',$val->id)->count();
+            $val['child_category']= Category::all('id','title','slug','category_image','slug','parent_id')->where('parent_id','=',$val->id);
          }
-        
-        return response()->json(['status' => true, 'message' => "All category list", 'user' => $category], 200);
+      
+        return response()->json(['status' => true, 'message' => "All category list", 'data' => $category], 200);
     }
 
     /**
@@ -32,6 +32,19 @@ class CategoryApiController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function categorylist()
+    {
+       $categorylist=Category::all('id','title','slug','category_image','slug','parent_id');
+
+         foreach($categorylist as $key => $val){
+          
+         }  
+        
+        return response()->json(['status' => true, 'message' => "All category list", 'data' => $categorylist], 200);
+    }
+
+
     public function create()
     {
         //

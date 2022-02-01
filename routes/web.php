@@ -191,7 +191,7 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
     // settings
     Route::resource('settings', SettingsController::class);
     Route::post('language',[App\Http\Controllers\SettingsController::class, 'language'])->name('language');
-    Route::post('currency',[App\Http\Controllers\SettingsController::class, 'currency'])->name('currency');
+    // Route::post('currency',[App\Http\Controllers\SettingsController::class, 'currency'])->name('currency');
   
 
 

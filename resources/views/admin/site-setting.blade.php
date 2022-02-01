@@ -124,12 +124,7 @@
           <label>Official Hour Type</label>
              <input type="text" class="form-control" id="exampleInputuname_1" name="hour" value="{{($setting['hour'])??''}}">
         </div>
-         <div class="col-sm-6">
-          <label>Language</label>
-          <select class="form-control" multiple="multiple">
-            <option selected="selected">English</option>
-          </select>
-        </div>
+    
         <div class="col-sm-6">
           <label>Currency</label>
            <select class="form-control" multiple="multiple">
@@ -163,6 +158,21 @@
 @endsection
 
 @section('js')
+<script type="text/javascript">
+$('select').select2({
+  createTag: function (params) {
+    // Don't offset to create a tag if there is no @ symbol
+    if (params.term.indexOf('@') === -1) {
+      // Return null to disable tag creation
+      return null;
+    }
 
+    return {
+      id: params.term,
+      text: params.term
+    }
+  }
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 @endsection
