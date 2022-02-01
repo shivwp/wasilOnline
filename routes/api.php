@@ -44,6 +44,9 @@ Route::post('currency',  [App\Http\Controllers\Api\CurrencyController::class, 'i
 Route::post('menus',  [App\Http\Controllers\Api\MenuController::class, 'index'] );
 Route::post('news-latter',  [App\Http\Controllers\Api\NewslatterApiController::class, 'store'] );
 Route::post('category-list', [App\Http\Controllers\Api\CategoryApiController::class, 'categorylist'] );
+Route::post('orders', [App\Http\Controllers\Api\OrderApiController::class, 'index'] );
+Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
+Route::post('address', [App\Http\Controllers\Api\UserApiController::class, 'myaddress'] );
 
 Route::post('filters', [App\Http\Controllers\Api\ProductApiController::class, 'allFilters'] );
 
