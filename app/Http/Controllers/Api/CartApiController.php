@@ -132,30 +132,84 @@ class CartApiController extends Controller
     public function store(Request $request)
     {
         
-        $userid = Auth::user()->token()->user_id;
+        // $userid = Auth::user()->token()->user_id;
 
-        if(empty($userid)){
-            return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
-        }
+        // if(empty($userid)){
+        //     return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
+        // }
 
-         $validator = Validator::make($request->all(), [
-            'user_id'                   => 'required',
-            'card_id'                   => 'required',
-        ]);
+        //  $validator = Validator::make($request->all(), [
+        //     'user_id'                   => 'required',
+        //     'card_id'                   => 'required',
+        // ]);
 
-        $variations = $request->variation;
-        $cart = Cart::updateOrCreate(['id' => $request->id],
-            [
-                'user_id'             => $userid,
-                'product_id'          => $request->product_id,
-                'quantity'            => $request->quantity,
-                'variation'           => json_encode($variations),  
-        ]);
+        // $variations = $request->variation;
+        // $cart = Cart::updateOrCreate(['id' => $request->id],
+        //     [
+        //         'user_id'             => $userid,
+        //         'product_id'          => $request->product_id,
+        //         'quantity'            => $request->quantity,
+        //         'variation'           => json_encode($variations),  
+        // ]);
             
-        $cart['variation'] =   json_decode($cart->variation);
+        // $cart['variation'] =   json_decode($cart->variation);
              
         
-        return response()->json(['status' => true, 'cart' =>  $cart], 200);
+        // return response()->json(['status' => true, 'cart' =>  $cart], 200);
+       
+
+        
+            // 
+            $userid = Auth::user()->token()->user_id;
+
+            $cart = Cart::where('product_id', $request->product_id)->where('user_id', $userid)->first(); 
+
+
+            $variations = $request->variation;
+
+            $id = $request->product_id;
+            
+            if(!isset($request->quantity)) {
+                $quantity = 1; 
+            } else {
+                $quantity = $request->quantity;
+            }
+
+            // if cart is empty then this is the first product
+
+            $variations = $request->variation;
+
+            if(!$cart) {
+                $cart_added = Cart::create([
+                    'user_id'             => $userid,
+                    'product_id'          => $request->product_id,
+                    'quantity'            => $request->quantity,
+                    'variation'           => json_encode($variations), 
+                ]);
+                
+            }
+
+            //if cart not empty then check if this product exist then increment quantity
+            if($cart) {
+                // 
+                $quantity = $cart->quantity + $quantity;
+                $cart_added = Cart::updateOrCreate([
+                    'id' => $cart->id],[
+                    "quantity" => $quantity,
+                ]);
+            }
+
+
+          
+            $cart_added = Cart::where('user_id', $userid)->get();
+            foreach($cart_added as $key =>$value){
+                  $cart_added[$key]['variation'] =  json_decode($cart->variation);
+            }
+           return response()->json(['status' => true, 'msg' =>$cart_added]); 
+    
+
+
+       
     }
 
     /**
