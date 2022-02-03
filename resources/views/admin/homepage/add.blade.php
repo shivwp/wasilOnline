@@ -99,11 +99,14 @@ $content = json_decode($homepage_content->content);
 						@endforeach
 						@else
 						<div class="row">
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<input type="file" class="form-control" name="slider_image[0][image]" value="" placeholder="image" >
 							</div>
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<input type ="text" class="form-control" name="slider_image[0][url]" value="" placeholder="url" required>
+							</div>
+							<div class="col-md-4">
+								<input type ="text" class="form-control" name="slider_image[0][reponsive_banner]" value="" placeholder="responsive-banner" required>
 							</div>
 						</div>
 						@endif
