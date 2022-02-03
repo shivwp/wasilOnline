@@ -139,13 +139,11 @@ class UserApiController extends Controller
             $user = Auth::guard('api')->user();
         } 
         $user_id = $user->id;
-        
-      
         $data= User::where('id','=',$user_id)->get(); 
         if(!empty($data)){
-             return response()->json([ 'status'=> true , 'message' => "done", 'order' => $data], 200);
+             return response()->json([ 'status'=> true , 'message' => "done", 'User details' => $data], 200);
         }else{
-             return response()->json([ 'status'=> false ,'message' => "fail", 'order' => []], 200);
+             return response()->json([ 'status'=> false ,'message' => "fail", 'User details' => []], 200);
         }
     }
 
@@ -163,7 +161,7 @@ class UserApiController extends Controller
         if(!empty($shipping && $billing)){
              return response()->json([ 'status'=> true , 'message' => "done", 'billing address' => $billing, 'shipping address' =>$shipping], 200);
         }else{
-             return response()->json([ 'status'=> false ,'message' => "fail", 'order' => []], 200);
+             return response()->json([ 'status'=> false ,'message' => "fail", 'Address' => []], 200);
         }
     }
 

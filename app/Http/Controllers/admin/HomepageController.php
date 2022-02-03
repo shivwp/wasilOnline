@@ -106,6 +106,7 @@ class HomepageController extends Controller
               }
             }
         }
+
         $thumb_sale=[];
       
         if($request->has('sale_image')) {
