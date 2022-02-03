@@ -27,7 +27,6 @@ class CartApiController extends Controller
 
         if(empty($userid)){
          
-         
             return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
         }
 

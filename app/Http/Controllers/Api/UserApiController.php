@@ -133,20 +133,57 @@ class UserApiController extends Controller
 
 
 
-  public function userdetails()
+    public function userdetails()
     {
         if (Auth::guard('api')->check()) {
             $user = Auth::guard('api')->user();
         } 
         $user_id = $user->id;
         
-      
+    
         $data= User::where('id','=',$user_id)->get(); 
         if(!empty($data)){
-             return response()->json([ 'status'=> true , 'message' => "done", 'order' => $data], 200);
+            return response()->json([ 'status'=> true , 'message' => "success", 'user' => $data], 200);
         }else{
-             return response()->json([ 'status'=> false ,'message' => "fail", 'order' => []], 200);
+            return response()->json([ 'status'=> false ,'message' => "unsuccess", 'user' => []], 200);
         }
+    }
+    
+    public function edituserdetails(Request $request){
+        $userid = Auth::user()->token()->user_id;
+        if(empty($userid)){
+            return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
+        }
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'display_name' => 'required',
+            'email' => 'required',
+            'phone' => 'required',
+            'password' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+        }
+
+        if($request->password){
+
+            $pass = Hash::make($request->password);
+
+       }
+
+        User::where('id',$userid)->update([
+
+            'first_name' =>$request->first_name,
+            'last_name' =>$request->last_name,
+            'email' =>$request->email,
+            'phone' =>$request->phone,
+            'password' =>$pass,
+        ]);
+
+        return response()->json([ 'status'=> true , 'message' => "success"], 200);
+
     }
 
     public function myaddress()
@@ -154,17 +191,75 @@ class UserApiController extends Controller
         if (Auth::guard('api')->check()) {
             $user = Auth::guard('api')->user();
         } 
+
+        if(!isset($user)){
+         
+            return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
+        }
+
         $user_id = $user->id;
       
-        $shipping= Address::where('address_type','=','billing')->where('user_id','=',$user_id)->get(); 
+        // $shipping= Address::where('address_type','=','billing')->where('user_id','=',$user_id)->get(); 
 
-        $billing= Address::where('address_type','=','shipping')->where('user_id','=',$user_id)->get();
+        // $billing= Address::where('address_type','=','shipping')->where('user_id','=',$user_id)->get();
 
-        if(!empty($shipping && $billing)){
-             return response()->json([ 'status'=> true , 'message' => "done", 'billing address' => $billing, 'shipping address' =>$shipping], 200);
+        $UserAddresses= Address::where('user_id','=',$user_id)->get();
+
+        if(count($UserAddresses) > 0){
+             return response()->json([ 'status'=> true , 'message' => "success", 'address' => $UserAddresses], 200);
         }else{
-             return response()->json([ 'status'=> false ,'message' => "fail", 'order' => []], 200);
+             return response()->json([ 'status'=> false ,'message' => "unsuccess", 'address' => []], 200);
         }
+    }
+
+    public function editaddresses(Request $request){
+
+        if (Auth::guard('api')->check()) {
+            $user = Auth::guard('api')->user();
+        } 
+
+        if(!isset($user)){
+         
+            return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
+        }
+
+        $validator = Validator::make($request->all(), [
+            'first_name'                            => 'required',
+            'last_name'                             => 'required',
+            'phone'                                 => 'required',
+            'alternate_phone'                       => 'required',
+            'address_type'                          => 'required',
+            'address'                               => 'required',
+            'address2'                              => 'required',
+            'city'                                  => 'required',
+            'country'                               => 'required',
+            'state'                                 => 'required',
+            'zip_code'                              => 'required',
+            'landmark'                              => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => false,'message' => implode("", $validator->errors()->all())], 200);
+        }
+
+        $Address =     Address::updateOrCreate(['id'    => $request->id],[
+            'user_id'        => $user->id,
+            'first_name'        => $request->first_name,
+            'last_name'         => $request->last_name,
+            'phone'             => $request->phone,
+            'alternate_phone'   => $request->alternate_phone,
+            'address_type'      => $request->address_type,
+            'address'           => $request->address,
+            'address2'          => $request->address2,
+            'city'              => $request->city,
+            'country'           => $request->country,
+            'state'             => $request->state,
+            'zip_code'          => $request->zip_code,
+            'landmark'          => $request->landmark
+        ]);
+
+        return response()->json(['status' => true,'message' => 'success'], 200);
+
+
     }
 
    

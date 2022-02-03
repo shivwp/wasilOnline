@@ -45,8 +45,10 @@ Route::post('menus',  [App\Http\Controllers\Api\MenuController::class, 'index'] 
 Route::post('news-latter',  [App\Http\Controllers\Api\NewslatterApiController::class, 'store'] );
 Route::post('category-list', [App\Http\Controllers\Api\CategoryApiController::class, 'categorylist'] );
 Route::post('orders', [App\Http\Controllers\Api\OrderApiController::class, 'index'] );
-Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
-Route::post('address', [App\Http\Controllers\Api\UserApiController::class, 'myaddress'] );
+Route::post('get-in-touch', [App\Http\Controllers\Api\GetInTouchApiController::class, 'store'] );
+
+
+
 
 Route::post('filters', [App\Http\Controllers\Api\ProductApiController::class, 'allFilters'] );
 
@@ -75,7 +77,11 @@ Route::post('order-history', [App\Http\Controllers\Api\OrderApiController::class
 Route::post('gift-cards', [App\Http\Controllers\Api\GiftCardApiController::class, 'index'] );
 Route::post('gift-card-user', [App\Http\Controllers\Api\GiftCardApiController::class, 'store'] );
 Route::post('add-order', [App\Http\Controllers\Api\OrderApiController::class, 'store'] );
+Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
+Route::post('edit-account', [App\Http\Controllers\Api\UserApiController::class, 'edituserdetails'] );
 
+Route::post('address', [App\Http\Controllers\Api\UserApiController::class, 'myaddress'] );
+Route::post('edit-address', [App\Http\Controllers\Api\UserApiController::class, 'editaddresses'] );
 
 
 Route::post('cart-list', [App\Http\Controllers\Api\CartApiController::class, 'index'] );
