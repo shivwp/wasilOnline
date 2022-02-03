@@ -25,31 +25,25 @@ class OrderApiController extends Controller
         $user_id = $user->id;
 
       
-        $orders= Order::orderBy('orders.created_at','DESC')->limit('4')->where('orders.user_id','=',$user_id)->get(); 
+        $orders= Order::join('ordered_products', 'ordered_products.order_id', '=', 'orders.id' )->orderBy('orders.created_at','DESC')->limit('4')->where('orders.user_id','=',$user_id)->get(); 
 
-        foreach($orders as $key=>$value){
-             
-           
-            // $orders[$key]['featured_image'] = url('category/' .   $orders->featured_image);
-            // $orders[$key]['gallery_image'] = url('category/' .   $orders->gallery_image);
-            $orders[$key]['orders']= Product::where('id','=',$value->id)->get();
+        foreach ($orders as $key => $value) {
 
-        }
-        if(!empty $orders[$key]['gallery_image']){
-            foreach($orders as $key=>$value){
-             
+            $ordered_product=Product::where('id','=',$value->id)->get();
+            foreach ($ordered_product as $key => $value) {
+                // code...
+
+                 $value['featured_image'] = url('products/feature/'. $value->featured_image);
+                 $value['gallery_image'] = json_decode($value->gallery_image);
            
-            // $orders[$key]['featured_image'] = url('category/' .   $orders->featured_image);
-            // $orders[$key]['gallery_image'] = url('category/' .   $orders->gallery_image);
-            $orders[$key]['orders']= Product::where('id','=',$value->id)->get();
-         
+                 
+            }
+            $orders[$key]['products']= $ordered_product;
         }
-        }
-        
 
 
         if(!empty($orders)){
-             return response()->json([ 'status'=> true , 'message' => "done", 'order' => $orders], 200);
+             return response()->json([ 'status'=> true , 'message' => "my orders", 'order' => $orders], 200);
         }else{
              return response()->json([ 'status'=> false ,'message' => "fail", 'order' => []], 200);
         }

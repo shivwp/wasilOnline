@@ -185,9 +185,18 @@ class CartApiController extends Controller
                 
             }
           
+<<<<<<< Updated upstream
             $cart_data = Cart::where('user_id', $userid)->get();
             foreach($cart_data as $key =>$value){
                   $cart_data[$key]['variation'] =  json_decode($value->variation);
+=======
+            $cart_added = Cart::all('id','user_id','variation','quantity','product_id')->where('user_id', $userid);
+            foreach($cart_added as $key =>$value){
+         
+                $cart_added[$key]['product']=Product::where('id','=',$value->product_id)->get();
+                $cart_added[$key]['variation'] =  json_decode($cart->variation);
+
+>>>>>>> Stashed changes
             }
            return response()->json(['status' => true, 'msg' =>$cart_data]); 
     

@@ -62,7 +62,9 @@ Route::post('product-attributes',[App\Http\Controllers\Api\ProductApiController:
 
 
 Route::middleware('auth:api')->group(function () {
-
+Route::post('orders', [App\Http\Controllers\Api\OrderApiController::class, 'index'] );
+Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
+Route::post('address', [App\Http\Controllers\Api\UserApiController::class, 'myaddress'] );
 // Users
 Route::apiResource('users', 'UsersApiController');
 
