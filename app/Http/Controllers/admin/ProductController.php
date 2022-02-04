@@ -539,7 +539,8 @@ class ProductController extends Controller
 
 
 
-
+        $width = 600;
+        $height = 540;
 
          if($request->hasfile('featured_image'))
 
@@ -549,42 +550,31 @@ class ProductController extends Controller
 
 
 
+           
             $file = $request->file('featured_image');
-
-            
-
-          
-
-
-
-
-
-            $file = $request->file('featured_image');
-
-          
-
             $input['imagename'] = time().'.'.$file->getClientOriginalExtension();
-
-         
-
             $destinationPath = 'products/feature';
-
             $img = Image::make($file->getRealPath());
+            // $img->resize(600, 540, function ($constraint) {
+            //     $constraint->aspectRatio();
+            // })->save($destinationPath.'/'.$input['imagename']);
+            // $img->fit(600,540)->save($destinationPath.'/'.$input['imagename']);
+            // we need to resize image, otherwise it will be cropped 
+            if ($img->width() > $width) { 
+                $img->resize($width, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
 
-            $img->resize(600, 540, function ($constraint) {
+            if ($img->height() > $height) {
+                $img->resize(null, $height, function ($constraint) {
+                    $constraint->aspectRatio();
+                }); 
+            }
 
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$input['imagename']);
-
+            $img->resizeCanvas($width, $height, 'center', false, '#0000')->save($destinationPath.'/'.$input['imagename']);;
             Product::where('id',$product->id)->update([
-
-
-
                 'featured_image' => $input['imagename']
-
-
-
             ]);
 
 

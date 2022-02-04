@@ -15,19 +15,33 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {   
+
         $d['title'] = "ORDER";
         $d['buton_name'] = "ADD NEW";
+        $req=$request->status;
 
         if(Auth::user()->roles->first()->title == 'Admin'){
-
-        $d['order']=Order::where('status', '<>' , 'delivered');
-       
+            if(isset($_GET['status'])){
+                
+                $d['order']=Order::where('status', '=' , $req);
+            }else{
+                $d['order']=Order::orderBy('id', 'DESC');
+            }
         }
+
+       
+        
         elseif(Auth::user()->roles->first()->title == 'Vendor'){
-         
-            $d['order']=Order::join('ordered_products', 'ordered_products.order_id', '=', 'orders.id' )->join('products','products.id','=','ordered_products.product_id')->where('products.vendor_id','=','Auth::user()->id')->where('orders.status', '<>' , 'delivered');
+            if(isset($_GET['status'])){
+                
+                 $d['order']=Order::join('ordered_products', 'ordered_products.order_id', '=', 'orders.id' )->join('products','products.id','=','ordered_products.product_id')->where('products.vendor_id','=','Auth::user()->id')->where('status', '=' , $req);
+            }else{
+                  $d['order']=Order::join('ordered_products', 'ordered_products.order_id', '=', 'orders.id' )->join('products','products.id','=','ordered_products.product_id')->where('products.vendor_id','=','Auth::user()->id')->where('orders.status', '<>' , 'delivered')->orderBy('id', 'DESC');
+            }
+      
+           
         }
         else{
           $d['order'] = [];

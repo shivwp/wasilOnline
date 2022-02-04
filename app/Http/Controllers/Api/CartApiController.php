@@ -132,21 +132,7 @@ class CartApiController extends Controller
     public function store(Request $request)
     {
         
-        $userid = Auth::user()->token()->user_id;
-
-        if(empty($userid)){
-            return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
-        }
-
-         $validator = Validator::make($request->all(), [
-            'product_id'                 => 'required',
-            'quantity'                   => 'required',
-            'variation'                  => 'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['status' => false,'code'=>$succcessCode, 'message' => implode("", $validator->errors()->all())], 200);
-        }
-            $userid = Auth::user()->token()->user_id;
+         $userid = Auth::user()->token()->user_id;
 
             $cart = Cart::where('product_id', $request->product_id)->where('user_id', $userid)->first(); 
 
@@ -165,7 +151,7 @@ class CartApiController extends Controller
 
             $variations = $request->variation;
 
-            if(empty($cart)) {
+            if(!$cart) {
                 $cart_added = Cart::create([
                     'user_id'             => $userid,
                     'product_id'          => $request->product_id,
@@ -174,22 +160,38 @@ class CartApiController extends Controller
                 ]);
                 
             }
-            else{
 
-                 //if cart not empty then check if this product exist then increment quantity
+            //if cart not empty then check if this product exist then increment quantity
+            if($cart) {
+                // 
                 $quantity = $cart->quantity + $quantity;
                 $cart_added = Cart::updateOrCreate([
                     'id' => $cart->id],[
                     "quantity" => $quantity,
                 ]);
+            }
+
+
+          
+        $cart_added = Cart::all('id','user_id','variation','quantity','product_id')->where('user_id', $userid);
+            
+            foreach($cart_added as $key => $value){
+                $product = Product::where('id','=',$value->product_id)->first();
+                $cart = Cart::where('product_id', $request->product_id)->where('user_id', $userid)->first(); 
+                $quanity = (int)$value->getAttributes()['quantity'];
+                $s_price = (int)$product->s_price;
+                $cart_added[$key]['product']= Product::where('id','=',$value->product_id)->get();
+                $cart_added[$key]['variation'] =  json_decode($cart->variation);
+                $cart_added[$key]['product']['s_price'] = $s_price;
+                $total_price_val[] = $s_price*$quanity;
                 
             }
-          
-            $cart_data = Cart::where('user_id', $userid)->get();
-            foreach($cart_data as $key =>$value){
-                  $cart_data[$key]['variation'] =  json_decode($value->variation);
-            }
-           return response()->json(['status' => true, 'msg' =>$cart_data]); 
+
+           
+
+            $cart_added['total_price']= array_sum($total_price_val);
+
+           return response()->json(['status' => true, 'msg' =>$cart_added]); 
     
 
 

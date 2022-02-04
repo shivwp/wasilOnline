@@ -25,6 +25,13 @@ class WithdrowController extends Controller
             $pagination=$_GET['paginate'];
         }
 
+        $d['title'] = "Request Withdrow";
+        $d['min_withdrwal_limit'] = Setting::where('id',89)->first();
+        $d['max_withdrwal_limit'] = Setting::where('id',90)->first();
+        $d['withdrwal_threshould'] = Setting::where('id',92)->first();
+        $authUser = Auth::user();
+        $d['authUser'] = $authUser;
+
         $withdrow =Withdrow::with('vendor');
         
         if(Auth::user()->roles->first()->title == 'Admin'){
@@ -61,12 +68,9 @@ class WithdrowController extends Controller
         $authUser = Auth::user();
         $d['authUser'] = $authUser;
         if($authUser->vendor_wallet >= $d['min_withdrwal_limit']->value){
-
             return view('admin/withdrow/add',$d);
-
         }
         else{
-
             return view('admin/withdrow/show',$d);
 
         }

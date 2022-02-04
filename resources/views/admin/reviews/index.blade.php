@@ -61,7 +61,9 @@
                                                             @endif
                                                             @endfor
                                                         </td>
+                                                     
                                                         <td>
+                                                               @can('delete_review')
                                                             <form action="{{ route('dashboard.review.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">
 
                                                                         <input type="hidden" name="_method" value="DELETE">
@@ -71,7 +73,10 @@
                                                                         <button type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}"><i class="fa fa-trash"></i></button>
 
                                                             </form>
+                                                            
+                                                            @endcan
                                                         </td>
+                                                     
                                                          
                                                     </tr>
                                                     @endforeach

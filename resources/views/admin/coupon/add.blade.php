@@ -90,7 +90,9 @@
 	        </div>
             <div class="row">
                 <input type="hidden" name="id" value="{{ isset($coupon) ? $coupon->id : ''}}">
+          
                 <div class="col-md-6">
+                    @if(Auth::user()->roles->first()->title == "Admin") 
                     <div class="form-group">
                         <label class="form-label">Select Vendor</label>
                         <select class="form-control select2" name="vendor_id[]" id="" multiple>
@@ -107,6 +109,7 @@
                         @endif
                         </select>
                     </div>
+                    @endif
                     <div class="form-group">
                         <label class="form-label">Select Product</label>
                         <select class="form-control select2 product_search" name="product_id[]" id="product_search" multiple="">

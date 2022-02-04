@@ -579,6 +579,12 @@
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
+						<label class="form-label">Discount</label>
+						<input type="number" class="form-control" name="offer_discount" placeholder="discount" value="{{isset($product) ? $product->offer_discount : '' }}" required>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
 						<label class="form-label">Offer Start Date</label>
 						<input type="date" class="form-control" name="discount_start" placeholder="discount" value="{{isset($product) ? $product->offer_start_date : '' }}" required>
 					</div>
@@ -589,50 +595,13 @@
 						<input type="date" class="form-control" name="discount_end" placeholder="discount" value="{{isset($product) ? $product->offer_end_date : '' }}" required>
 					</div>
 				</div>
-				<div class="col-md-6">
-					<div class="form-group">
-						<label class="form-label">Discount</label>
-						<input type="number" class="form-control" name="offer_discount" placeholder="discount" value="{{isset($product) ? $product->offer_discount : '' }}" required>
-					</div>
-				</div>
+				
+
+				
 
 				<div class="col-md-12">
-
-					<div class="form-group">
-
-						<label class="form-label">Meta Title</label>
-
-						<input type="text" class="form-control" name="meta_title" placeholder="Meta Title" value="{{isset($product) ? $product->meta_title : '' }}" required>
-
-					</div>
-
-				</div>
-
-				<div class="col-md-12">
-
-					<div class="form-group">
-
-						<label class="form-label">Meta Keyword</label>
-
-						<textarea name="meta_keyword" class="form-control" placeholder="Meta Keyword" value="" rows="6" required>{{isset($product) ? $product->meta_keyword : '' }}</textarea>
-
-					</div>
-
-				</div>
-
-				<div class="col-md-12">
-
-					<div class="form-group">
-
-						<label class="form-label">Meta Discription</label>
-
-						<textarea name="meta_description" class="form-control" placeholder="Meta Description" value="{{isset($product) ? $product->meta_description : '' }}" rows="6" required>{{isset($product) ? $product->meta_description : '' }}</textarea>
-
-					</div>
-
-				</div>
-
-				<div class="col-md-12">
+					<h4 class="mt-5">Product Images</h4>
+       				<hr >
 
 					<label class="form-label mt-0">Featured Image</label>
 
@@ -722,6 +691,46 @@
 					<input type="file" class="form-control" name="gallery_image[]" value="" multiple>
 				</div>
 
+		
+				<div class="col-md-12">
+		 			<h4 class="mt-5">Meta Data</h4>
+       				<hr >
+					<div class="form-group">
+
+						<label class="form-label">Meta Title</label>
+
+						<input type="text" class="form-control" name="meta_title" placeholder="Meta Title" value="{{isset($product) ? $product->meta_title : '' }}" required>
+
+					</div>
+
+				</div>
+
+				<div class="col-md-12">
+
+					<div class="form-group">
+
+						<label class="form-label">Meta Keyword</label>
+
+						<textarea name="meta_keyword" class="form-control" placeholder="Meta Keyword" value="" rows="6" required>{{isset($product) ? $product->meta_keyword : '' }}</textarea>
+
+					</div>
+
+				</div>
+
+				<div class="col-md-12">
+
+					<div class="form-group">
+
+						<label class="form-label">Meta Discription</label>
+
+						<textarea name="meta_description" class="form-control" placeholder="Meta Description" value="{{isset($product) ? $product->meta_description : '' }}" rows="6" required>{{isset($product) ? $product->meta_description : '' }}</textarea>
+
+					</div>
+
+				</div>
+
+				
+				
 				<div class="col-md-3 mt-2">
 					<label class="switch">
 						<input type="checkbox" id="featured" name="featured" {{ isset($product) && ($product->featured == 1) ?  'checked' : '' }}>
@@ -736,6 +745,7 @@
 					</label>
 					<label for="scales">New</label>
 				</div>
+				@if(Auth::user()->roles->first()->title == "Admin")	
 				<div class="col-md-3 mt-2">
 						<label class="switch">
 							<input type="checkbox" id="best_saller" name="best_saller" {{ isset($product) && ($product->best_saller == 1) ?  'checked' : '' }}>
@@ -743,7 +753,6 @@
 						</label>
 						<label for="scales">Best Saller</label>
 				</div>
-				@if(Auth::user()->roles->first()->title == "Admin")	
 					<div class="col-md-3 mt-2">
 							<label class="switch">
 								<input type="checkbox" id="top" name="top_hundred" {{ isset($product) && ($product->top_hunderd == 1) ?  'checked' : '' }}>

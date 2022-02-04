@@ -27,6 +27,80 @@
 @endsection
 @section('content')
                         <!-- ROW-1 OPEN-->
+                         @if(Auth::user()->roles->first()->title == 'Vendor')
+           
+                         <div class="card">
+                            <form  method="post" action="{{route('dashboard.withdrow.store')}}" enctype="multipart/form-data">
+
+                                    @csrf
+
+                                    <div class="card-body">
+                                        <div class="row mb-2">
+                                            <div class="col-md-12">
+                                            <span>Your Current Balance: <strong>{{$authUser->vendor_wallet ?? ''}}</strong></span>
+
+                                                <br>
+                                                <span>Minimum Withdrow Amount: <strong>{{$max_withdrwal_limit->value ?? ''}}</strong></span>
+                                                <br>
+                                                <span>Minimum Withdrow Amount: <strong>{{$min_withdrwal_limit->value ?? ''}}</strong></span>
+                                                <br>
+                                                <span>Withdrow Threshold: <strong>{{$withdrwal_threshould->value ?? ''}} Days</strong></span>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row">
+
+                                            <input type="hidden" name="id" value="{{ isset($tax) ? $tax->id : '' }}">
+
+                                            <div class="col-md-6">
+
+                                                <div class="form-group">
+
+                                                    <label class="form-label">Withdow Amount</label>
+
+                                                    <input type="number" class="form-control" name="amount" placeholder="amount" value="" min="500" required>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-md-6">
+
+                                                <div class="form-group">
+
+                                                    <label class="form-label">Payment method</label>
+
+                                                <select class="form-control select2" name="method">
+                                                    <option value="stripe">Bank</option>
+                                                    <option value="paypal">PayPal</option>
+                                                </select>
+
+                                                </div>
+
+                                            </div>
+
+
+
+                                        </div>
+
+                                       
+
+                                         @if(isset($tax->id))
+                                                <button class="btn btn-success-light mt-3 " type="submit">Update</button>
+                                            @else
+                                                <button class="btn btn-success-light mt-3 " type="submit">Request</button>
+                                            @endif
+                                    </div>
+
+
+
+                                </form>
+
+                                    
+
+                                </div> 
+                     @endif
                             <!-- ROW-1 OPEN -->
                             <div class="row">
                             <div class="col-md-12 col-lg-12">
@@ -69,6 +143,7 @@
                                                         <th class="wd-15p">Status</th>
                                                         <th class="wd-15p">Method</th>
                                                         <th class="wd-15p">Note</th>
+                                                        <th class="wd-15p">Date</th>
                                                         @if(Auth::user()->roles->first()->title == "Admin")
                                                         <th class="wd-15p">Action</th>
                                                         @endif
@@ -92,6 +167,7 @@
                                                             </td>
                                                             <td>{{ $item->method ?? '' }}</td>
                                                             <td>{{ $item->note ?? '' }}</td>
+                                                            <td>{{ $item->created_at->format('d/m/Y') ?? '' }}</td>
                                                             @if(Auth::user()->roles->first()->title == "Admin")
                                                             <td>
                                                             <button  type="button" class="btn btn-sm btn-secondary accept" data-toggle="modal" data-target="#exampleModal" value="{{$item->id}}" >

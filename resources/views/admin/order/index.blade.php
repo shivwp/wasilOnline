@@ -27,7 +27,7 @@
                                             <div class="paging-section">
                                             <form method="get">
                                                     <h6>show</h6>
-                                                    <select id="pagination" name="paginate">
+                                                    <select id="pagination" name="paginate" class="form-control select2">
                                                         <option value="10" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 10) ? 'selected':''}}>10</option>
                                                         <option value="20" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 20) ? 'selected':''}}>20</option>
                                                         <option value="30" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 30) ? 'selected':''}}>30</option>
@@ -36,6 +36,21 @@
                                                    <input type="submit" name="" style="display:none;">
                                                </form>
                                                 <div id="pagination">{{{ $order->links() }}}</div>
+                                                <form method="get" class="get-filter" id="filter-submit">
+                                                    <h6>Status Filter</h6>
+                                                    <select id="filter-status" name="status" class="form-control select2">
+                                                    <option value="">all</option>
+                                                        <option value="in process" {{ (request()->get('status') == 'in process') ? 'selected' : '' }}>in process</option>
+                                                        <option value="shipped"{{ (request()->get('status') == 'shipped') ? 'selected' : '' }}>shipped</option>
+                                                        <option value="packed" {{ (request()->get('status') == 'packed') ? 'selected' : '' }}>packed</option>
+                                                         <option value="refunded" {{ (request()->get('status') == 'refunded') ? 'selected' : '' }}>refunded</option>
+                                                        <option value="cancelled"{{ (request()->get('status') == 'cancelled') ? 'selected' : '' }}>cancelled</option>
+                                                        <option value="delivered" {{ (request()->get('status') == 'delivered') ? 'selected' : '' }}>delivered</option>
+                                                         <option value="out for delivery" {{ (request()->get('status') == '1') ? 'selected' : '' }}>out for delivery</option>
+                                                        <option value="return"{{ (request()->get('status') == 'return') ? 'selected' : '' }}>return</option>
+                                                        <option value="ready to ship" {{ (request()->get('status') == 'ready to ship') ? 'selected' : '' }}>ready to ship</option>
+                                                    </select>
+                                            </form>
                                                </div>
                                             <table id="" class="table table-striped table-bordered text-nowrap w-100">
                                                 <thead>
@@ -117,7 +132,12 @@ $(document).ready(function() {
     $form.find('input[type=submit]').click();
     console.log( $form);
   });
+
+  $('#filter-status').on('change', function() {
+        $('#filter-submit').submit();
+    });
 });
 </script>
+
 @endsection
  

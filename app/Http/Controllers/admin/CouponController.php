@@ -14,6 +14,7 @@ use App\Models\Coupon;
 use App\Models\Role;
 use App\Models\Category;
 use DB;
+use Auth;
 
 
 
@@ -102,6 +103,9 @@ class CouponController extends Controller
      
       $maximum_spend = $request->maximum_spend;
       $minimum_spend = $request->manimum_spend;
+      
+      $vendor_id=Auth::user()->id;
+     
         $coupon = Coupon::updateOrCreate(
             
             [
@@ -115,6 +119,8 @@ class CouponController extends Controller
             // 'user_id'   => Auth::user()->id,
 
             'code'      => $request->input('code'),
+
+            'vendor_id'      => $vendor_id,
 
             'description'     => $request->input('description'),
 
@@ -137,8 +143,6 @@ class CouponController extends Controller
             'limit_per_user'     => $request->input('limit_per_user'),
 
             'status'     => $request->input('status'),
-
-            'vendor_id'     => json_encode($request->input('vendor_id')),
 
             'category_id'     => json_encode($request->input('category_id')),
             
