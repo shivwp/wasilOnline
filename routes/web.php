@@ -53,7 +53,7 @@ use App\Http\Controllers\admin\WithdrowController;
 
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\TestimonialsController;
-
+use App\Http\Controllers\Controller;
 
 
 
@@ -104,7 +104,9 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     Route::resource('permissions', PermissionsController::class);
 
-
+    Route::get('country', [VendorSettingController::class, 'countrylist'])->name('country'); 
+    Route::post('fetch-states', [VendorSettingController::class, 'fetchState']);
+    Route::post('fetch-cities', [VendorSettingController::class, 'fetchCity']);
 
     //Product
 
@@ -120,6 +122,7 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     Route::post('product-search', [CouponController::class,'productSearch'])->name('product-search'); 
 
+ 
 
 
     //Order

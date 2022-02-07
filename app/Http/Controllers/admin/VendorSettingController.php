@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\VendorSetting;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\State;
+use App\Models\Country;
+use App\Models\City;
 use Auth;
 use Hash;
 use Redirect;
@@ -18,7 +21,10 @@ class VendorSettingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+
+ 
+     public function index(Request $request)
+
     {
         $data['title'] = "Vendors";
         $data['buton_name'] = "Add New";
@@ -44,20 +50,21 @@ class VendorSettingController extends Controller
         return view('admin.vendor-details.vendor-list',$data);
         
     }
-     public function index2()
+     public function index2(Request $request)
     {
         // 
         $vender_id = Auth::user()->id;
         $data['title'] = "Vendor-settings";
         $data['setting']=VendorSetting::where('vendor_id', '=' , $vender_id)->first();
-
         $data['data'] = $this->getVendorMeta($vender_id);
-        // dd($data);
+        $data['countries'] = Country::get(["name", "id"]);
+        $data['states'] = State::where("country_id",$request->country_id)->get(["state_name", "state_id"]);
+        $data['cities'] = City::where("state_id",$request->state_id)->get(["city_name", "city_id"]);
         return view('admin.vendor-setting',$data);
     }
     public function index3()
     {
-          $data['title'] = "Vendor-settings";
+        $data['title'] = "Vendor-settings";
         return view('admin.vendor-setting-admin',$data);
     }
 
@@ -80,7 +87,7 @@ class VendorSettingController extends Controller
      */
     public function store(Request $request)
     {
-     //dd($request->vendor_id); 
+    // dd($request); 
 
         if(Auth::user()->roles->first()->title == 'Admin'){
             // isset($request->vender_id)
@@ -276,4 +283,22 @@ class VendorSettingController extends Controller
     {
         //
     }
+
+   public function countrylist()
+    {
+        $data['countries'] = Country::get(["name", "id"]);
+        return view('admin.address.add', $data);
+    }
+    public function fetchState(Request $request)
+    {
+
+        $data['states'] = State::where("country_id",$request->country_id)->get(["state_name", "state_id"]);
+        return response()->json($data);
+    }
+    public function fetchCity(Request $request)
+    {
+        $data['cities'] = City::where("state_id",$request->state_id)->get(["city_name", "city_id"]);
+        return response()->json($data);
+    }
+
 }
