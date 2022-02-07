@@ -211,6 +211,24 @@ class CategoryController extends Controller
             ]);
 
           }
+           if($request->hasfile('category_image_banner'))
+          {
+            $file = $request->file('category_image_banner');
+          
+            $input['imagename'] = time().'.'.$file->getClientOriginalExtension();
+         
+            $destinationPath = public_path('category');
+            $img = Image::make($file->getRealPath());
+            $img->resize(400, 340, function ($constraint) {
+                $constraint->aspectRatio();
+            })->save($destinationPath.'/'.$input['imagename']);
+            Category::where('id',$category->id)->update([
+
+                'category_image_banner' => $input['imagename']
+
+            ]);
+
+          }
 
        
 

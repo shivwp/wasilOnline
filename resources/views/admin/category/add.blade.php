@@ -218,6 +218,75 @@
 
 
 				</div>
+						<div class="col-md-12">
+
+					<label class="form-label mt-0">Banner Image</label>
+
+					<div class="dropify-wrapper" style="height: 302px;border: 1px solid #cdcdcd;">
+
+						<div class="dropify-message" >
+
+							<span class="file-icon"> <p>Drag and drop a file here or click</p>
+
+							</span>
+
+							<p class="dropify-error">Ooops, something wrong appended.</p>
+
+						</div>
+
+						<div class="dropify-loader"></div><div class="dropify-errors-container">
+
+							<ul>
+
+							</ul>
+
+						</div>
+						@if(isset($category->category_image_banner))
+							<input type="file" class="dropify" data-height="300" data-default-file="{{asset('category/'.$category->category_image_banner)}}" name="category_image_banner" value="">
+							
+						@else
+							<input type="file" class="dropify" data-height="300" name="category_image_banner" value="">
+						@endif
+						
+						
+
+						<button type="button" class="dropify-clear">Remove</button>
+
+						<div class="dropify-preview">
+
+							<span class="dropify-render">
+
+
+
+							</span>
+
+							<div class="dropify-infos"
+
+							>
+
+								<div class="dropify-infos-inner">
+
+									<p class="dropify-filename">
+
+										<span class="dropify-filename-inner"></span>
+
+									</p>
+
+									<p class="dropify-infos-message">Drag and drop or click to replace</p>
+
+								</div>
+
+							</div>
+
+						</div>
+
+					
+
+					</div>
+
+
+
+				</div>
 
 			</div>
 
