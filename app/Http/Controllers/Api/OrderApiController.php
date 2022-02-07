@@ -23,7 +23,6 @@ class OrderApiController extends Controller
             $user = Auth::guard('api')->user();
         } 
         $user_id = $user->id;
-
       
         $orders= Order::join('ordered_products', 'ordered_products.order_id', '=', 'orders.id' )->orderBy('orders.created_at','DESC')->limit('4')->where('orders.user_id','=',$user_id)->get(); 
 

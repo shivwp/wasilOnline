@@ -75,7 +75,7 @@ class GiftCardController extends Controller
             // 'user_id'   => Auth::user()->id,
             'title'             => $request->input('title'),
             'description'       => $request->input('description'),
-            'amount'            => $request->input('amount'),
+            'amount'            => $request->input('amount_val'),
             'valid_days'        => $request->input('valid_days'),
             'status'        => $request->input('status'),
             
@@ -86,7 +86,7 @@ class GiftCardController extends Controller
                 $file = $request->file('image');
                 $extention = $file->getClientOriginalExtension();
                 $filename = time().'.'.$extention;
-                $file->move('images/giftcard/', $filename);
+                $file->move('giftcard/', $filename);
                    DB::enableQueryLog(); 
                 GiftCard::where('id',$GiftCard->id)->update([
 
@@ -147,7 +147,7 @@ class GiftCardController extends Controller
            $GiftCard->delete();
             $type='GiftCard';
             \Helper::addToLog('Gift card create or update', $type);
-            return redirect('dashboard/category')->with('success', 'Student deleted successfully');
+            return redirect('dashboard/gift-card')->with('success', 'Student deleted successfully');
         }
     }
 }

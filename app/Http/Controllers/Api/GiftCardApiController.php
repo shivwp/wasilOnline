@@ -7,9 +7,13 @@ use Illuminate\Http\Request;
 use App\Models\GiftCard;
 use App\Models\GiftCardUser;
 use App\Models\User;
+use App\Models\Setting;
+use App\Models\Mails;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use App\Mail\GiftCardEmail;
 use Validator;
+use Mail;
 
 
 use Auth;
@@ -53,11 +57,15 @@ class GiftCardApiController extends Controller
      */
     public function store(Request $request)
     {
+        $userid = Auth::user()->token()->user_id;
+
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required',
             'card_id' => 'required',
             'card_amount' => 'required',
-            'gift_expiry_date' => 'required',
+            'recipient_email' => 'required',
+            'user_name' => 'required',
+            'message' => 'required',
+            'quanatity' => 'required',
         ]);
 
         $card = GiftCard::find($request->card_id);
@@ -77,7 +85,7 @@ class GiftCardApiController extends Controller
     
                     $userGiftCard = GiftCardUser::create([
     
-                        'user_id' => $request->user_id,
+                        'user_id' => $userid,
                         'card_id' => $request->card_id,
                         'gift_card_code' => $code,
                         'gift_card_amount' => $request->card_amount,
@@ -101,7 +109,7 @@ class GiftCardApiController extends Controller
     
                 $userGiftCard = GiftCardUser::create([
     
-                    'user_id' => $request->user_id,
+                    'user_id' => $userid,
                     'card_id' => $request->card_id,
                     'gift_card_code' => $code,
                     'gift_card_amount' => $request->card_amount,
@@ -127,13 +135,13 @@ class GiftCardApiController extends Controller
         $basicinfo=['{code}'=>$userGiftCard->gift_card_code,
        //'{recipient_name}'=>$giftuser->recipient_name,
         ];
-        $msgData=MailTemplate::where('msg_category','giftcard')->first();
-        $replMsg=MailTemplate::where('msg_category','giftcard')->pluck('message')->first();
+        $msgData=Mails::where('msg_category','giftcard')->first();
+        $replMsg=Mails::where('msg_category','giftcard')->pluck('message')->first();
         foreach($basicinfo as $key=> $info){
         $replMsg=str_replace($key,$info,$replMsg);
         }
-        $config=['fromemail'=>$msgData->from_email,"replyemail"=>$msgData->reply_email,'msg'=>$replMsg,'subject'=>$msgData->subject,'name'=>$msgData->name];
-        Mail::to($userEmail->email)->send(new GiftUser($config)); 
+        $config=['fromemail'=>$msgData->from_email,"replyemail"=>$msgData->reply_email,'message'=>$replMsg,'subject'=>$msgData->subject,'name'=>$msgData->name];
+        Mail::to($userEmail->email)->send(new GiftCardEmail($config)); 
 
     }
     /**

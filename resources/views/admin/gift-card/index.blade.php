@@ -81,7 +81,7 @@
                                                                  <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.gift-card.edit', $item->id) }}"><i class="fa fa-edit"></i> </a>
                                                                  
                                                                
-                                                                    <form action="{{ route('dashboard.category.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">
+                                                                    <form action="{{ route('dashboard.gift-card.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">
                                                                         <input type="hidden" name="_method" value="DELETE">
                                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                                         <button type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}"><i class="fa fa-trash"></i></button>

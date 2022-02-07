@@ -18,6 +18,8 @@
 
 <link href="{{ URL::asset('assets/plugins/time-picker/jquery.timepicker.css')}}" rel="stylesheet" />
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" integrity="sha512-xmGTNt20S0t62wHLmQec2DauG9T+owP9e6VU8GigI0anN7OXLip9i7IwEhelasml2osdxX71XcYm6BQunTQeQg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 @endsection
 
 @section('page-header')
@@ -84,7 +86,10 @@
 
 						<label class="form-label">Amount</label>
 
-						<input type="text" class="form-control" name="amount" placeholder="amount"  value="{{isset($GiftCard) ? $GiftCard->amount : '' }}">
+						
+
+						<input type="text" name="amount" value="" data-role="tagsinput" id="tags" class="form-control">
+						<input type="hidden" name="amount_val" id="tag_val" value="">
 
 					</div>
 
@@ -210,7 +215,32 @@
 
 </div>
 
-</div>					
+</div>	
+<style>
+	.bootstrap-tagsinput {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    display: block;
+    padding: 4px 6px;
+    color: #555;
+    vertical-align: middle;
+    border-radius: 4px;
+    max-width: 100%;
+    line-height: 22px;
+    cursor: text;
+}
+.bootstrap-tagsinput input {
+    border: none;
+    box-shadow: none;
+    outline: none;
+    background-color: transparent;
+    padding: 0 6px;
+    margin: 0;
+    width: auto;
+    max-width: inherit;
+}
+</style>				
 
 @endsection
 
@@ -242,12 +272,23 @@
 
 <script src="{{ URL::asset('assets/js/form-elements.js') }}"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js" integrity="sha512-VvWznBcyBJK71YKEKDMpZ0pCVxjNuKwApp4zLF3ul+CiflQi6aIJR+aZCP/qWsoFBA28avL5T5HA+RE+zrGQYg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script>
 
 	$(document).ready(function() {
 
 		$('#dataTable').DataTable();
 
+	});
+	$(document).ready(function() {
+		$("#tags").change(function(){
+			
+			var tagval = $('input[name="amount"]').val();
+			$('#tag_val').val(tagval);
+
+		
+		});
 	});
 
 </script>

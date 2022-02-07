@@ -88,7 +88,9 @@ Route::post('edit-address', [App\Http\Controllers\Api\UserApiController::class, 
 
 Route::post('cart-list', [App\Http\Controllers\Api\CartApiController::class, 'index'] );
 Route::post('add-cart', [App\Http\Controllers\Api\CartApiController::class, 'store'] );
+Route::post('qty-update', [App\Http\Controllers\Api\CartApiController::class, 'qtyupdate'] );
 Route::post('delete-cart', [App\Http\Controllers\Api\CartApiController::class, 'destroy'] );
+Route::post('add-wallet-amount', [App\Http\Controllers\Api\UserApiController::class, 'addWalletAmounty'] );
 
 Route::post('add-to-wishlist', [App\Http\Controllers\Api\WishlistApiController::class, 'store'] );
 Route::post('remove-from-wishlist', [App\Http\Controllers\Api\WishlistApiController::class, 'destroy'] );

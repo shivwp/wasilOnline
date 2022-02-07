@@ -36,6 +36,8 @@ use App\UserVerifyToken;
 
 use App\MailTemplate;
 use App\Models\Mails;
+use App\Models\GiftCardUser;
+use App\Models\GiftCardLog;
 use App\Models\SocialAccount;
 use App\Models\Address;
 use App\Mail\Signup;
@@ -405,6 +407,77 @@ class UserApiController extends Controller
         Mail::to($request->email)->send(new Mailtemp($config));
 
         return response()->json(['status' => true, 'message' => "Your account registerd successfully.",'token'=>$success, 'user' => $user], 200);
+
+    }
+
+    public function addWalletAmounty(Request $request){
+
+        if (Auth::guard('api')->check()) {
+            $user = Auth::guard('api')->user();
+            $user_id = $user->id;
+        } 
+        if(!isset($user_id)){
+            return response()->json(['status' => false, 'message' => 'user not found'], 200);      
+        }
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $er = [];
+            $i = 0;
+            foreach ($validator->errors() as $err) {
+                $er[$i++] = $err[0];
+                return $err;
+            }
+            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all()), 'user' => Null], 200);
+
+        }
+        $giftcaradamount = GiftCardUser::where('gift_card_code',$request->giftcardcode)->first();
+
+        $alreadyused = GiftCardLog::where('gift_card_code',$request->giftcardcode)->first();
+
+        if(!empty($alreadyused)){
+            return response()->json(['status' => false, 'message' => "card Already used"], 200); 
+        }
+
+        if(!empty($giftcaradamount)){
+            $userwallet = User::where('id',$user_id)->first();
+            if(empty($userwallet)){
+                return response()->json(['status' => false, 'message' => "user not found"], 200); 
+            }
+            $updatewalletamount = $userwallet->user_wallet + $giftcaradamount->gift_card_amount;
+            User::where('id',$user_id)->update([
+
+                'user_wallet' => $updatewalletamount
+            ]);
+
+            GiftCardUser::where('id',$giftcaradamount->id)->update([
+
+                'gift_card_amount' => 0
+
+            ]);
+
+            GiftCardLog::create([
+
+                'user_id' => $user_id,
+                'card_id' => $giftcaradamount->card_id,
+                'gift_card_code' => $request->giftcardcode,
+                'gift_card_amount' => $giftcaradamount->gift_card_amount,
+                'note' => 'gift card redeem to user wallet',
+            ]);
+
+            return response()->json(['status' => false, 'message' => "gift card amount added to cart successfully"], 200); 
+
+        }
+        else{
+
+            return response()->json(['status' => false, 'message' => "gift card not found"], 200); 
+
+        }
+      
+
 
     }
 

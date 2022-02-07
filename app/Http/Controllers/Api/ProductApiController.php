@@ -12,6 +12,9 @@ use App\Models\ProductVariants;
 use App\Models\ProductAttribute;
 use App\Models\PageMeta;
 use App\Models\Coupon;
+use App\Models\Cart;
+use App\Models\Wishlist;
+use Auth;
 use Carbon;
 use Validator;
 use DB;
@@ -78,6 +81,33 @@ class ProductApiController extends Controller
                 if(!empty($val->featured_image)){
                 $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
                 }
+                //cart & wishlist
+                    if (Auth::guard('api')->check()) {
+                        $user = Auth::guard('api')->user();
+                        $user_id = $user->id;
+                    } 
+                    if(isset($user_id)){
+                        $Cart =    Cart::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                        if(!empty($Cart)){
+                            $product[$key]['in_cart'] = true;
+                        }
+                        else{
+                            $product[$key]['in_cart'] = false;     
+                        }
+                        $wishlist = Wishlist::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                        if(!empty($wishlist)){
+                            $product[$key]['in_wishlist'] = true;
+                        }
+                        else{
+                            $product[$key]['in_wishlist'] = false;    
+
+                        }
+                    }
+                    else{
+                        $product[$key]['in_cart'] = false;
+                        $product[$key]['in_wishlist'] = false;
+
+                    }
                 if($val->product_type == "single"){
                     $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
                     if(count($productAttributes)>0){
@@ -98,6 +128,8 @@ class ProductApiController extends Controller
                                 $attrdata[$d]['attribute_value'] = $attr_value;
                             }
                         }
+                        //cart 
+
                         $product[$key]['attributes'] = $attrdata;
                     }
                 }
@@ -124,8 +156,7 @@ class ProductApiController extends Controller
                         $product[$key]['variants'] = $productVariants;
                     }
                 }
-
-                
+                 
 
             }
             return response()->json(['status' => true, 'message' => "All product list", 'product' => $product], 200);
@@ -222,6 +253,33 @@ class ProductApiController extends Controller
             if(!empty($val->featured_image)){
             $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
             }
+             //cart & wishlist
+             if (Auth::guard('api')->check()) {
+                $user = Auth::guard('api')->user();
+                $user_id = $user->id;
+            } 
+            if(isset($user_id)){
+                $Cart =    Cart::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                if(!empty($Cart)){
+                    $product[$key]['in_cart'] = true;
+                }
+                else{
+                    $product[$key]['in_cart'] = false;     
+                }
+                $wishlist = Wishlist::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                if(!empty($wishlist)){
+                    $product[$key]['in_wishlist'] = true;
+                }
+                else{
+                    $product[$key]['in_wishlist'] = false;    
+
+                }
+            }
+            else{
+                $product[$key]['in_cart'] = false;
+                $product[$key]['in_wishlist'] = false;
+
+            }
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
                 if(count($productAttributes)>0){
@@ -295,6 +353,33 @@ class ProductApiController extends Controller
             }
             if(!empty($val->featured_image)){
             $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
+            }
+             //cart & wishlist
+             if (Auth::guard('api')->check()) {
+                $user = Auth::guard('api')->user();
+                $user_id = $user->id;
+            } 
+            if(isset($user_id)){
+                $Cart =    Cart::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                if(!empty($Cart)){
+                    $product[$key]['in_cart'] = true;
+                }
+                else{
+                    $product[$key]['in_cart'] = false;     
+                }
+                $wishlist = Wishlist::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                if(!empty($wishlist)){
+                    $product[$key]['in_wishlist'] = true;
+                }
+                else{
+                    $product[$key]['in_wishlist'] = false;    
+
+                }
+            }
+            else{
+                $product[$key]['in_cart'] = false;
+                $product[$key]['in_wishlist'] = false;
+
             }
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -372,6 +457,33 @@ class ProductApiController extends Controller
             }
             if(!empty($val->featured_image)){
             $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
+            }
+             //cart & wishlist
+             if (Auth::guard('api')->check()) {
+                $user = Auth::guard('api')->user();
+                $user_id = $user->id;
+            } 
+            if(isset($user_id)){
+                $Cart =    Cart::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                if(!empty($Cart)){
+                    $product[$key]['in_cart'] = true;
+                }
+                else{
+                    $product[$key]['in_cart'] = false;     
+                }
+                $wishlist = Wishlist::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                if(!empty($wishlist)){
+                    $product[$key]['in_wishlist'] = true;
+                }
+                else{
+                    $product[$key]['in_wishlist'] = false;    
+
+                }
+            }
+            else{
+                $product[$key]['in_cart'] = false;
+                $product[$key]['in_wishlist'] = false;
+
             }
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -453,6 +565,33 @@ class ProductApiController extends Controller
             if(!empty($val->featured_image)){
             $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
             }
+             //cart & wishlist
+             if (Auth::guard('api')->check()) {
+                $user = Auth::guard('api')->user();
+                $user_id = $user->id;
+            } 
+            if(isset($user_id)){
+                $Cart =    Cart::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                if(!empty($Cart)){
+                    $product[$key]['in_cart'] = true;
+                }
+                else{
+                    $product[$key]['in_cart'] = false;     
+                }
+                $wishlist = Wishlist::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                if(!empty($wishlist)){
+                    $product[$key]['in_wishlist'] = true;
+                }
+                else{
+                    $product[$key]['in_wishlist'] = false;    
+
+                }
+            }
+            else{
+                $product[$key]['in_cart'] = false;
+                $product[$key]['in_wishlist'] = false;
+
+            }
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
                 if(count($productAttributes)>0){
@@ -516,12 +655,40 @@ class ProductApiController extends Controller
         if(!empty($product)){
             $product->featured_image = url('products/feature/'. $product->featured_image);
             $gallery_data = [];
-                if(!empty($product->gallery_image)){
+           // dd($product->gallery_image);
+                if($product->gallery_image != "null"){
                     foreach(json_decode($product->gallery_image) as $gall_val){
                         $value1 = url('products/gallery/' . $gall_val);
                         $gallery_data[] = $value1;
                     }
                     $product->gallery_image = $gallery_data;
+                }
+                 //cart & wishlist
+                 if (Auth::guard('api')->check()) {
+                    $user = Auth::guard('api')->user();
+                    $user_id = $user->id;
+                } 
+                if(isset($user_id)){
+                    $Cart =    Cart::where('user_id',$user_id)->where('product_id',$product->id)->first();
+                    if(!empty($Cart)){
+                        $product['in_cart'] = true;
+                    }
+                    else{
+                        $product['in_cart'] = false;     
+                    }
+                    $wishlist = Wishlist::where('user_id',$user_id)->where('product_id',$product->id)->first();
+                    if(!empty($wishlist)){
+                        $product['in_wishlist'] = true;
+                    }
+                    else{
+                        $product['in_wishlist'] = false;    
+
+                    }
+                }
+                else{
+                    $product['in_cart'] = false;
+                    $product['in_wishlist'] = false;
+
                 }
                 if($product->product_type == "single"){
                     $productAttributes = ProductAttribute::where('product_id',$product->id)->groupBy('attr_id')->get();
@@ -712,112 +879,41 @@ class ProductApiController extends Controller
                 $catId[] = $value->id;
 
             }
-
-            if(!empty($catId)){
-
-                if(!empty($request->page) && !empty($request->limit)){
-                    $page = $request->page;
-                    $limit = $request->limit;
-                    $product=Product::where('parent_id',0)->whereIn('cat_id',$catId)
-                    ->orWhereIn('cat_id_2', $catId)
-                    ->orWhereIn('cat_id_3', $catId)
-                    ->limit($limit)
-                    ->offset(($page - 1) * $limit)
-                    ->get(); 
-
-                }
-                else{
-                    $product=Product::where('parent_id',0)->whereIn('cat_id',$catId)
-                    ->orWhereIn('cat_id_2', $catId)
-                    ->orWhereIn('cat_id_3', $catId)
-                    ->get();  
-                }
-              
-                if(count($product)>0){
-                    foreach($product as $key => $val){
-                        $data = [];
-                        $gallery = json_decode($val->gallery_image);
-                        if(!empty($gallery)){
-                            foreach ($gallery as $key1 => $value) {
-                                $value1 = url('products/gallery/' . $value);
-                                $data[] = $value1;
-                            }
-                        $product[$key]['gallery_image'] = $data;
-                        }
-                        if(!empty($val->featured_image)){
-                        $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
-                        }
-                        if($val->product_type == "single"){
-                            $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
-                            if(count($productAttributes)>0){
-                                foreach($productAttributes as $attr_key => $attr_val){
-                                    $attr = Attribute::select('id','slug')->where('id',$attr_val->attr_id)->first();
-                                    $attrdata[] = $attr;
-                                }
-                                if(!empty($attrdata)){
-                                    foreach($attrdata as $d => $dv){
-                                        $proattragain = ProductAttribute::where('attr_id',$dv->id)->get();
-                                        $attrval = [];
-                                        foreach($proattragain as $ag => $proagain){
-                                            $attrval[] = $proagain->attr_value_id;
-                        
-                                        }
-                                        $attr_value = AttributeValue::select('id','attr_id','slug')->whereIn('id',$attrval)->get();
-                                        
-                                        $attrdata[$d]['attribute_value'] = $attr_value;
-                                    }
-                                }
-                                $product[$key]['attributes'] = $attrdata;
-                            }
-                        }
-                        else{
-                            $productVariants = ProductVariants::select('parent_id','p_id','variant_value','variant_sku','variant_price','variant_stock','variant_images')->where('parent_id',$val->id)->get();
-                            if(count($productVariants) > 0){
-                                $arr_attr = [];
-                                $variants_img = [];
-                                foreach($productVariants as $v_k => $v_val){
-                                    foreach(json_decode($v_val->variant_value) as $key_var =>   $val_var) {
-                                        $attrval = AttributeValue::where('id', $val_var)->first();
-                                        $arr_attr[$key_var]['key'] = $attrval->attr_value_name;
-                                        $arr_attr[$key_var]['value'] = $val_var; 
-                                        $productVariants[$v_k]['variant_value'] = $arr_attr;
-                                    }
-                                    if(!empty($v_val->variant_images)){
-                                        foreach(json_decode($v_val->variant_images) as $key_var_img =>   $val_var_img) {
-                                            $variants_img[] = url('products/gallery/' . $val_var_img);
-                                            $productVariants[$v_k]['variant_images'] = $variants_img;
-                                        }
-                                    }
-                                    
-                                }
-                                $prod[$key]['variants'] = $productVariants;
-                            }
-                        }
-            
-                        
-            
-                    } 
-                }
-                                
-            return response()->json(['status' => true, 'message' => "products", 'product' => $prod], 200);
-
-            }
-            else{
-
-            return response()->json(['status' => false, 'message' => "products", 'product' => []], 200);
-
-            }
-
         }
-        else{
+
+        if(!empty($catId)){
+
             if(!empty($request->page) && !empty($request->limit)){
                 $page = $request->page;
                 $limit = $request->limit;
-            $product=Product::orderBy('id', 'DESC')->where('parent_id',0)->where('pname', 'like', "%{$request->search}%")->limit($limit)->offset(($page - 1) * $limit)->get();
+                $product=Product::where('parent_id',0)->whereIn('cat_id',$catId)
+                ->orWhereIn('cat_id_2', $catId)
+                ->orWhereIn('cat_id_3', $catId)
+                ->limit($limit)
+                ->offset(($page - 1) * $limit)
+                ->get(); 
+
             }
             else{
-            $product=Product::orderBy('id', 'DESC')->where('parent_id',0)->where('pname', 'like', "%{$request->search}%")->get();
+
+                $product=Product::where('parent_id',0)->whereIn('cat_id',$catId)
+                ->orWhereIn('cat_id_2', $catId)
+                ->orWhereIn('cat_id_3', $catId)
+                ->get(); 
             }
+        }
+        else{
+            if(!empty($request->page) && !empty($request->limit)){
+            
+                $product=Product::where('parent_id',0)->where('pname', 'like', "%{$request->search}%")->limit($limit)
+                ->offset(($page - 1) * $limit)->get();  
+
+            }
+            else{
+                $product=Product::where('parent_id',0)->where('pname', 'like', "%{$request->search}%")->get();  
+            }
+        }
+        if(count($product)>0){
             foreach($product as $key => $val){
                 $data = [];
                 $gallery = json_decode($val->gallery_image);
@@ -830,6 +926,33 @@ class ProductApiController extends Controller
                 }
                 if(!empty($val->featured_image)){
                 $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
+                }
+                //cart & wishlist
+                if (Auth::guard('api')->check()) {
+                    $user = Auth::guard('api')->user();
+                    $user_id = $user->id;
+                } 
+                if(isset($user_id)){
+                    $Cart =    Cart::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                    if(!empty($Cart)){
+                        $product[$key]['in_cart'] = true;
+                    }
+                    else{
+                        $product[$key]['in_cart'] = false;     
+                    }
+                    $wishlist = Wishlist::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                    if(!empty($wishlist)){
+                        $product[$key]['in_wishlist'] = true;
+                    }
+                    else{
+                        $product[$key]['in_wishlist'] = false;    
+
+                    }
+                }
+                else{
+                    $product[$key]['in_cart'] = false;
+                    $product[$key]['in_wishlist'] = false;
+
                 }
                 if($val->product_type == "single"){
                     $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -880,22 +1003,12 @@ class ProductApiController extends Controller
     
                 
     
-            }  
-            $products['product'] = $product;
-
-            if(count($product)>0){
-
-                return response()->json(['status' => true, 'message' => "products", 'product' => $product], 200);
-
-            }
-            else{
-
-                return response()->json(['status' => false, 'message' => "products", 'product' => []], 200);
-
-            }
-
+            } 
+            return response()->json(['status' => true, 'message' => "products", 'product' => $product], 200);
         }
-        
+        else{
+            return response()->json(['status' => false, 'message' => "products", 'product' => []], 200);
+        }
 
     }
 
@@ -915,11 +1028,39 @@ class ProductApiController extends Controller
                         $value1 = url('products/gallery/' . $value);
                         $data[] = $value1;
                     }
-                $product[$key]['gallery_image'] = $data;
+                $products[$key]['gallery_image'] = $data;
                 }
                 if(!empty($val->featured_image)){
-                $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
+                $products[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
                 }
+                 //cart & wishlist
+                 if (Auth::guard('api')->check()) {
+                    $user = Auth::guard('api')->user();
+                    $user_id = $user->id;
+                } 
+                if(isset($user_id)){
+                    $Cart =    Cart::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                    if(!empty($Cart)){
+                        $products[$key]['in_cart'] = true;
+                    }
+                    else{
+                        $products[$key]['in_cart'] = false;     
+                    }
+                    $wishlist = Wishlist::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                    if(!empty($wishlist)){
+                        $products[$key]['in_wishlist'] = true;
+                    }
+                    else{
+                        $products[$key]['in_wishlist'] = false;    
+
+                    }
+                }
+                else{
+                    $products[$key]['in_cart'] = false;
+                    $products[$key]['in_wishlist'] = false;
+
+                }
+                
                 if($val->product_type == "single"){
                     $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
                     if(count($productAttributes)>0){
@@ -1002,6 +1143,33 @@ class ProductApiController extends Controller
                  if(!empty($val->featured_image)){
                  $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
                  }
+                  //cart & wishlist
+                 if (Auth::guard('api')->check()) {
+                    $user = Auth::guard('api')->user();
+                    $user_id = $user->id;
+                } 
+                if(isset($user_id)){
+                    $Cart =    Cart::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                    if(!empty($Cart)){
+                        $products[$key]['in_cart'] = true;
+                    }
+                    else{
+                        $products[$key]['in_cart'] = false;     
+                    }
+                    $wishlist = Wishlist::where('user_id',$user_id)->where('product_id',$val->id)->first();
+                    if(!empty($wishlist)){
+                        $products[$key]['in_wishlist'] = true;
+                    }
+                    else{
+                        $products[$key]['in_wishlist'] = false;    
+
+                    }
+                }
+                else{
+                    $product[$key]['in_cart'] = false;
+                    $product[$key]['in_wishlist'] = false;
+
+                }
                  if($val->product_type == "single"){
                      $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
                      if(count($productAttributes)>0){

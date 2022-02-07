@@ -15,6 +15,7 @@ class GiftCardLog extends Model
         'card_id',
         'gift_card_code',
         'gift_card_amount',
-        'gift_expiry_date'
+        'gift_expiry_date',
+        'note'
     ];
 }
