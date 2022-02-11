@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\Coupon;
 use App\Models\Cart;
 use App\Models\OrderMeta;
+use Validator;
 use Auth;
 class OrderApiController extends Controller
 {
@@ -257,6 +258,20 @@ class OrderApiController extends Controller
        
     }
 
+    public function orderTracking(Request $request){
+        $validator = Validator::make($request->all(), [
+            'orderid' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+        }
+
+        $order = Order::findOrFail($request->orderid)->first();
+
+        return response()->json([ 'status'=> true , 'message' => "Order History Detail", 'order' => $order->status], 200);
+    }
+
    
 
     /**
@@ -315,8 +330,17 @@ class OrderApiController extends Controller
             foreach($orders as $key => $val){
                 $meta1 = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','billing_address')->first();
                 $meta2 = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','shipping_address')->first();
-                //dd($meta1);
-               $orders[$key]['meta'] = $meta1->meta_value;
+                $total_price = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','total_price')->first();
+                $currency_sign = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','currency_sign')->first();
+                $shipping_price = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','shipping_price')->first();
+               $orders[$key]['billing'] = json_decode($meta1->meta_value);
+               $orders[$key]['shipping'] = json_decode($meta2->meta_value);
+               $orders[$key]['total_price'] = $total_price->meta_value;
+               $orders[$key]['currency_sign'] = $currency_sign->meta_value;
+               $orders[$key]['shipping_price'] = $shipping_price->meta_value;
+            //    $orders[$key]['meta'] = $data;
+            //    $orders[$key]['meta'] = $data;
+
             }
              return response()->json([ 'status'=> true , 'message' => "Order History Detail", 'order' => $orders], 200);
         }else{
