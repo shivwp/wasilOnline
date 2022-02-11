@@ -332,8 +332,8 @@ class ProductApiController extends Controller
 
         }
          $products['product'] = $product;
-          $banner['image']  = url('images/'. $banner->value);
-            return response()->json(['status' => true, 'message' => "success",'banner'=>$banner['image'], 'product' => $products], 200);        
+         $banner['image']  = url('images/'. $banner->value);
+         return response()->json(['status' => true, 'message' => "success",'banner'=>$banner['image'], 'product' => $products], 200);        
         }
         else{
             return response()->json(['status' => false, 'message' => "unsuccess", 'product' => []], 200);            
@@ -1023,7 +1023,6 @@ class ProductApiController extends Controller
        $products = Product::where('parent_id',0)->whereDate('offer_end_date','>=',$currentDate)->get(); 
        $banner = Setting::where('name','=','value_banner')->first('value');
 
-
        if(count($products)>0){
 
             foreach($products as $key => $val){
@@ -1115,10 +1114,10 @@ class ProductApiController extends Controller
                 }
 
                 
-            $banner['image']  = url('images/'. $banner->value);
+                $banner['image']  = url('images/'. $banner->value);
             } 
 
-        return response()->json(['status' => true, 'message' => "success", 'banner'=>  $banner['image'] , 'product' => $products], 200);  
+            return response()->json(['status' => true, 'message' => "success", 'banner'=>  $banner['image'] , 'product' => $products], 200);
 
        }
        else{
@@ -1132,7 +1131,7 @@ class ProductApiController extends Controller
 
     public function topHunderd(Request $request){
 
-        $products = Product::where('parent_id',0)->where('top_hunderd',1)->get();
+        $products = Product::where('parent_id',0)->where('top_hunderd',1)->get(); 
         $banner = Setting::where('name','=','top_banner')->first('value'); 
 
         if(count($products)>0){
@@ -1225,12 +1224,13 @@ class ProductApiController extends Controller
                  }
  
                  
-                $banner['image']  = url('images/'. $banner->value);
+                 $banner['image']  = url('images/'. $banner->value);
              } 
  
-         return response()->json(['status' => true, 'message' => "success", 'banner'=>  $banner['image'] , 'product' => $products], 200);  
+             return response()->json(['status' => true, 'message' => "success", 'banner'=>  $banner['image'] , 'product' => $products], 200);  
  
         }
+        // return response()->json(['status' => true, 'message' => "success", 'banner'=>  $banner['image'] , 'product' => $products], 200);  
         else{
  
          return response()->json(['status' => false, 'message' => "no products", 'product' => []], 200);   
@@ -1268,6 +1268,7 @@ class ProductApiController extends Controller
         return response()->json(['status' => true,'message' => "success" ,"data"=>$feedback], 200);
 
     }
+
 
 
 

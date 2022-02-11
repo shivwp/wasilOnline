@@ -64,7 +64,6 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Mail\Mailtemp;
 
-
 use App\PhoneTemp;
 
 use App\UserCompany;
@@ -305,6 +304,7 @@ class UserApiController extends Controller
 
         }
     }
+
    
 
    
@@ -450,7 +450,6 @@ class UserApiController extends Controller
         return response()->json(['status' => true, 'message' => "Your account registerd successfully.",'token'=>$success, 'user' => $user], 200);
 
     }
-
 
     public function vendorlogin(Request $req)
     {
@@ -613,7 +612,6 @@ class UserApiController extends Controller
             ]);
 
     }
-
     public function addWalletAmounty(Request $request){
 
         if (Auth::guard('api')->check()) {
@@ -1316,7 +1314,7 @@ class UserApiController extends Controller
         }
 
     }
-     public function userforgot(Request $request){
+    public function userforgot(Request $request){
         $validator = Validator::make($request->all(), [
             'email' => 'required',
         ]);

@@ -16,7 +16,7 @@ class OrderController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-   {   
+    {   
         $d['title'] = "ORDER";
         $d['buton_name'] = "ADD NEW";
         $req=$request->status;
@@ -30,7 +30,7 @@ class OrderController extends Controller
             }
         }
 
-       
+
 
         elseif(Auth::user()->roles->first()->title == 'Vendor'){
             if(isset($_GET['status'])){
@@ -53,7 +53,7 @@ class OrderController extends Controller
         $d['order'] =$d['order']->paginate($pagination)->withQueryString();
         return view('admin/order/index',$d);
     }
-    
+
     public function deliveredorders()
     {                           
         $d['title'] = "ORDER";

@@ -64,7 +64,7 @@ class Mailtemp extends Mailable
 
     {
 
-        return $this->from($this->data['from_email'],$this->data['name'])
+         return $this->from($this->data['from_email'],$this->data['name'])
 
         ->subject($this->data['subject'])
 
