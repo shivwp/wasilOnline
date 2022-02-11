@@ -13,7 +13,9 @@ use App\Models\ProductAttribute;
 use App\Models\PageMeta;
 use App\Models\Coupon;
 use App\Models\Cart;
+use App\Models\Setting;
 use App\Models\Wishlist;
+use App\Models\Feedback;
 use Auth;
 use Carbon;
 use Validator;
@@ -237,6 +239,7 @@ class ProductApiController extends Controller
     public function newproduct(Request $request)
     {
         $product=Product::orderBY('id','DESC')->where('parent_id','=',0)->limit('8')->get(); 
+        $banner = Setting::where('name','=','arrival_banner')->first('value');
         $products = [];
         $url = PageMeta::where('key','new_product_url')->first();
         if(count($product)>0){
@@ -329,7 +332,8 @@ class ProductApiController extends Controller
 
         }
          $products['product'] = $product;
-            return response()->json(['status' => true, 'message' => "success", 'product' => $products], 200);        
+          $banner['image']  = url('images/'. $banner->value);
+            return response()->json(['status' => true, 'message' => "success",'banner'=>$banner['image'], 'product' => $products], 200);        
         }
         else{
             return response()->json(['status' => false, 'message' => "unsuccess", 'product' => []], 200);            
@@ -1017,6 +1021,8 @@ class ProductApiController extends Controller
         $currentDate  = Carbon\Carbon::now()->toDateString();
 
        $products = Product::where('parent_id',0)->whereDate('offer_end_date','>=',$currentDate)->get(); 
+       $banner = Setting::where('name','=','value_banner')->first('value');
+
 
        if(count($products)>0){
 
@@ -1109,10 +1115,10 @@ class ProductApiController extends Controller
                 }
 
                 
-
+            $banner['image']  = url('images/'. $banner->value);
             } 
 
-        return response()->json(['status' => true, 'message' => "success", 'product' => $products], 200);  
+        return response()->json(['status' => true, 'message' => "success", 'banner'=>  $banner['image'] , 'product' => $products], 200);  
 
        }
        else{
@@ -1126,7 +1132,8 @@ class ProductApiController extends Controller
 
     public function topHunderd(Request $request){
 
-        $products = Product::where('parent_id',0)->where('top_hunderd',1)->get(); 
+        $products = Product::where('parent_id',0)->where('top_hunderd',1)->get();
+        $banner = Setting::where('name','=','top_banner')->first('value'); 
 
         if(count($products)>0){
  
@@ -1218,10 +1225,10 @@ class ProductApiController extends Controller
                  }
  
                  
- 
+                $banner['image']  = url('images/'. $banner->value);
              } 
  
-         return response()->json(['status' => true, 'message' => "success", 'product' => $products], 200);  
+         return response()->json(['status' => true, 'message' => "success", 'banner'=>  $banner['image'] , 'product' => $products], 200);  
  
         }
         else{
@@ -1231,7 +1238,36 @@ class ProductApiController extends Controller
 
     }
 
+    public function feedback()
+    {
+        //
 
+    }
+    public function feedbacksave( Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'rating' => 'required',
+            'discription' => 'required',
+            'follow_up' => 'required',
+            'order_id' => 'required'
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+        }
+
+       $feedback = Feedback::create([
+            'rating'      => $request->rating,
+            'discription'     => $request->discription,
+            'follow_up'     => $request->follow_up,
+            'order_id'     => $request->order_id,
+          
+        ]);
+
+        return response()->json(['status' => true,'message' => "success" ,"data"=>$feedback], 200);
+
+    }
 
 
 

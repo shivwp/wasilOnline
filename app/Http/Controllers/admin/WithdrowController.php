@@ -24,6 +24,12 @@ class WithdrowController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
+         $d['title'] = "Request Withdrow";
+        $d['min_withdrwal_limit'] = Setting::where('id',89)->first();
+        $d['max_withdrwal_limit'] = Setting::where('id',90)->first();
+        $d['withdrwal_threshould'] = Setting::where('id',92)->first();
+        $authUser = Auth::user();
+        $d['authUser'] = $authUser;
 
         $withdrow =Withdrow::with('vendor');
         

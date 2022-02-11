@@ -1,29 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Reviews;
-use Auth;
+use DB;
 
-class ReviewController extends Controller
+class UserLocationApiController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $d['title'] = "Reviews";
-        $d['review']=Reviews::all();
-        $pagination=10;
-        if(isset($_GET['paginate'])){
-            $pagination=$_GET['paginate'];
-        }
-        $d['review'] =Reviews::paginate($pagination)->withQueryString();
-        return view('admin.reviews.index',$d);
+
+      
+       $data = DB::table('cities')->pluck('name');
+      
+        return response()->json(['status' => true, 'message' => "city names", 'data' => $data], 200);
     }
 
     /**
@@ -89,12 +85,6 @@ class ReviewController extends Controller
      */
     public function destroy($id)
     {
-        $review = Review::findOrFail($id);
-        $review->delete();
-        if(Auth::user()->roles->first()->title == 'Vendor'){
-        $type='Review';
-       \Helper::addToLog('Review Deleted', $type);
-       }
-        return back();
+        //
     }
 }
