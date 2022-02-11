@@ -46,11 +46,11 @@ class CategoryController extends Controller
         }
         $q=Category::select('*');
         if($request->search){
-              $q->where('title', 'like', "%$request->search%");  
-            }
+            $q->where('title', 'like', "%$request->search%");  
+        }
 
         $category =$q->paginate($pagination)->withQueryString();
-         
+        
         foreach($category as $key => $val){
             $categoryParent = Category::where('parent_id','!=',0)->where('id',$val->id)->first();
             if(!empty($categoryParent)){

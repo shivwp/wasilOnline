@@ -122,7 +122,7 @@ class SettingsController extends Controller
                         'value'=>$filename
                     ]);
             }
-              
+            
             if($key == 'value_banner'   && $request->hasfile('value_banner')){ 
       
                 $file=$request->value_banner;

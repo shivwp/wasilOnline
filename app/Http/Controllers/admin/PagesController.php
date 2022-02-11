@@ -52,11 +52,11 @@ class PagesController extends Controller
                 'id' => $request->id
             ],
             [
-                // 'user_id'   => Auth::user()->id,
+            // 'user_id'   => Auth::user()->id,
             'title'     => $request->input('title'),
             'content'     => $request->input('content'),
-
-            ]);
+            
+        ]);
         $metaarray=[
 
             'Pagemeta_title'=>$request->input('page_title'),
@@ -78,7 +78,7 @@ class PagesController extends Controller
         }
        
         
-    $page->update();
+   $page->update();
     return redirect('/dashboard/pages')->with('status', 'your data is updated');
     
     }

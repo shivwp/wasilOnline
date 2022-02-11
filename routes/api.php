@@ -76,6 +76,7 @@ Route::post('product-attributes',[App\Http\Controllers\Api\ProductApiController:
 
 Route::middleware('auth:api')->group(function () {
 Route::post('orders', [App\Http\Controllers\Api\OrderApiController::class, 'index'] );
+Route::post('order-track', [App\Http\Controllers\Api\OrderApiController::class, 'orderTracking'] );
 Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
 Route::post('address', [App\Http\Controllers\Api\UserApiController::class, 'myaddress'] );
 Route::post('delete-address', [App\Http\Controllers\Api\UserApiController::class, 'deleteaddresses'] );
@@ -93,6 +94,7 @@ Route::post('order-history', [App\Http\Controllers\Api\OrderApiController::class
 Route::post('gift-cards', [App\Http\Controllers\Api\GiftCardApiController::class, 'index'] );
 Route::post('wallet-transaction-gift', [App\Http\Controllers\Api\GiftCardApiController::class, 'index2'] );
 Route::post('gift-card-user', [App\Http\Controllers\Api\GiftCardApiController::class, 'store'] );
+Route::post('wallet-transaction', [App\Http\Controllers\Api\GiftCardApiController::class, 'index2'] );
 Route::post('add-order', [App\Http\Controllers\Api\OrderApiController::class, 'store'] );
 Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
 Route::post('edit-account', [App\Http\Controllers\Api\UserApiController::class, 'edituserdetails'] );

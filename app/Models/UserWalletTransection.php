@@ -5,18 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class GiftCard extends Model
+class UserWalletTransection extends Model
 {
     use HasFactory;
-    protected $table = "gift_card";
+        protected $table = "user_wallet_transection";
 
     protected $fillable = [
-        'title',
-        'description',
-        'image',
+        'user_id',
         'amount',
-        'valid_days',
-        'status',
-        'prodduct_id'
+        'amount_type',
+        'description'
     ];
 }

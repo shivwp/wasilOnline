@@ -152,7 +152,7 @@ class AttributeController extends Controller
     {
 
         $d['attribute']=Attribute::findorfail($id);
-         $d['attributeVal']=AttributeValue::findorfail($id);
+        $d['attributeVal']=AttributeValue::findorfail($id);
 
         $d['title'] = "ATTRIBUTE";
 

@@ -18,7 +18,6 @@ class CategoryApiController extends Controller
     public function index()
     { 
          $category=Category::all('id','title','slug','category_image','category_image_banner','slug','parent_id')->where('parent_id','=',0);
-      
          
          foreach($category as $key => $val){
             $val['count']= Product::where('cat_id','=',$val->id)->count();
