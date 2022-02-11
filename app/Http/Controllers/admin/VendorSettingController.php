@@ -60,15 +60,23 @@ class VendorSettingController extends Controller
         $data['vendor_details']=VendorSetting::where('vendor_id', '=' , $vender_id)->pluck('value', 'name');
         $data['data'] = $this->getVendorMeta($vender_id);
         $data['countries'] = Country::get(["name", "id"]);
-        if (isset($data['countries'])){    
-        $data['states'] = State::where("country_id",$data['vendor_details']['country'])->get(["state_name", "state_id"]);
-        $data['cities'] = City::where("state_id",$data['vendor_details']['state'])->get(["city_name", "city_id"]);
+      if(isset($data['vendor_details']['country']) && !empty($data['vendor_details']['country'])){
+
+            $data['states'] = State::where("country_id",$data['vendor_details']['country'])->get(["state_name", "state_id"]);
         }
         else{
-        $data['states'] = State::where("country_id",$request->country_id)->get(["state_name", "state_id"]);
-        $data['cities'] = City::where("state_id",$request->state_id)->get(["city_name", "city_id"]);
+
+             $data['states'] = State::where("country_id",$request->country_id)->get(["state_name", "state_id"]);
         }
-        
+
+         if(isset($data['vendor_details']['state']) && !empty($data['vendor_details']['state'])){
+
+              $data['cities'] = City::where("state_id",$data['vendor_details']['state'])->get(["city_name", "city_id"]);
+
+         }
+         else{
+             $data['cities'] = City::where("state_id",$request->state_id)->get(["city_name", "city_id"]);
+         }
         //dd($data['setting']);
         return view('admin.vendor-setting',$data);
     }
