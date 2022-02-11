@@ -269,7 +269,7 @@ class OrderApiController extends Controller
 
         $order = Order::findOrFail($request->orderid)->first();
 
-        return response()->json([ 'status'=> true , 'message' => "Order History Detail", 'order' => $order->status], 200);
+        return response()->json([ 'status'=> true , 'message' => "success", 'order' => $order->status], 200);
     }
 
    

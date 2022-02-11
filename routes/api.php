@@ -79,6 +79,8 @@ Route::post('category', [App\Http\Controllers\Api\CategoryApiController::class, 
 Route::post('order-history', [App\Http\Controllers\Api\OrderApiController::class, 'orderHistoryDetail'] );
 Route::post('gift-cards', [App\Http\Controllers\Api\GiftCardApiController::class, 'index'] );
 Route::post('gift-card-user', [App\Http\Controllers\Api\GiftCardApiController::class, 'store'] );
+
+Route::post('wallet-transaction', [App\Http\Controllers\Api\GiftCardApiController::class, 'index2'] );
 Route::post('add-order', [App\Http\Controllers\Api\OrderApiController::class, 'store'] );
 Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
 Route::post('edit-account', [App\Http\Controllers\Api\UserApiController::class, 'edituserdetails'] );

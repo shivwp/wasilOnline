@@ -14,6 +14,7 @@ use App\Models\Mails;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use App\Mail\GiftCardEmail;
+use App\Models\UserWalletTransection;
 use Validator;
 use Mail;
 
@@ -37,6 +38,26 @@ class GiftCardApiController extends Controller
         else{
 
             return response()->json(['status' => false, 'message' => "gift cards not found", 'data' => []], 200);
+
+        }
+    }
+
+    public function index2()
+    {
+        $userid = Auth::user()->token()->user_id;
+        if(empty($userid)){
+            return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
+        }
+        $userwalletbalance = User::findorfail($userid);
+        $giftcard = UserWalletTransection::where('user_id',$userid)->get();
+
+        if(count($giftcard) > 0){
+
+            return response()->json(['status' => true, 'message' => "success",'wallet'=>$userwalletbalance->user_wallet,'data' => $giftcard], 200);
+        }
+        else{
+
+            return response()->json(['status' => false, 'message' => "unsuccess", 'data' => []], 200);
 
         }
     }
