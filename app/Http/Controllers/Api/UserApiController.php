@@ -23,6 +23,7 @@ use App\PasswordReset as AppPasswordReset;
 use App\Role;
 
 use App\Models\User;
+use App\Models\VendorSetting;
 
 use Carbon\Carbon;
 
@@ -40,6 +41,7 @@ use App\Models\GiftCardUser;
 use App\Models\GiftCardLog;
 use App\Models\SocialAccount;
 use App\Models\Address;
+use App\Models\Reviews;
 use App\Mail\Signup;
 
 use App\Newsletter as Chimp;
@@ -61,6 +63,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 use App\Mail\Mailtemp;
+
 
 use App\PhoneTemp;
 
@@ -134,7 +137,34 @@ class UserApiController extends Controller
 
 
 
+    public function review(Request $request)
+    {
+        $userid = Auth::user()->token()->user_id;
+        $User = User::where('id','=', $userid)->first();
+       
+         $validator = Validator::make($request->all(), [
+            'rating_number' => 'required',
+            'comment' => 'required',
+           
+            'product_id' => 'required'
 
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+        }
+
+       $feedback = Reviews::create([
+            'rating_number'      => $request->rating_number,
+            'comment'     => $request->comment,
+            'name'     => $User->first_name,
+            'email'     => $User->email,
+            'product_id'     => $request->product_id,
+          
+        ]);
+
+        return response()->json(['status' => true,'message' => "success" ,"data"=>$feedback], 200);
+    }
     public function userdetails()
     {
         if (Auth::guard('api')->check()) {
@@ -263,7 +293,18 @@ class UserApiController extends Controller
 
 
     }
+    public function deleteaddresses(Request $request){
 
+        $address =Address::where('id',$request->id)->first();
+
+        if ($address != null) {
+
+           $address->delete();
+
+            return response()->json(['status' => true,'message' => 'success'], 200);
+
+        }
+    }
    
 
    
@@ -407,6 +448,169 @@ class UserApiController extends Controller
         Mail::to($request->email)->send(new Mailtemp($config));
 
         return response()->json(['status' => true, 'message' => "Your account registerd successfully.",'token'=>$success, 'user' => $user], 200);
+
+    }
+
+
+    public function vendorlogin(Request $req)
+    {
+
+        $validator = Validator::make($req->all(), [
+            'email' => 'required',
+            'password' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false,'code'=>$succcessCode, 'message' => implode("", $validator->errors()->all())], 200);
+        }
+        $user = User::where('email', '=', $req->email)->first();
+
+       if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){
+
+             $user = Auth::user();
+
+             $token = auth()->user()->createToken('API Token')->accessToken;
+            
+             if($user->is_approved ){
+                return response()->json(['status' => true,'message' => "Your account logged in successfully",'token'=>$token, 'user' => $user], 200);
+             }
+             else{
+                 return response()->json(['status' => true,'message' => "Your account not approved"], 200);
+             }
+        
+       }
+
+       else{
+          return response()->json(['status' => false,'message' => 'User not registered', 'user' => Null], 200);
+       }
+
+    }
+
+
+
+     public function vendorregister(Request $request )
+
+    {
+
+
+
+        $validator = Validator::make($request->all(), [
+
+                'first_name' => 'required',
+
+                'last_name' => 'required',
+
+                'email' => 'required',
+
+                'password' => 'required|min:8',
+
+                'phone' => 'required',
+
+                'store_name' =>'required',
+
+                'store_url' => 'required',
+
+        ]);
+
+
+
+
+
+        if ($validator->fails()) {
+
+            $er = [];
+
+            $i = 0;
+
+            foreach ($validator->errors() as $err) {
+
+                $er[$i++] = $err[0];
+
+                return $err;
+
+            }
+
+         
+
+             return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all()), 'user' => Null], 200);
+
+        }
+
+
+
+        $us = User::where("email", $request->email)->first();
+
+
+
+
+
+        if(!empty($us)){
+
+
+
+        return response()->json(['status' => false, 'message' => "Your account with this email registerd.", 'user' => []], 200);
+
+
+
+        }
+
+        else{
+
+
+
+            $user = new User;
+
+          
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+
+            if($request->password){
+
+                 $pass = Hash::make($request->password);
+
+                $user->password = $pass;
+
+            }
+
+            $user->email = $request->email;
+
+            $user->phone = $request->phone;
+
+
+           
+           
+
+            $user->save();
+
+            $success['token'] =  $user->createToken('API Token')->accessToken;
+
+            $user->roles()->sync(3);
+
+            $vendor_id=$user->id;
+             
+            $vendordetail = array('store_url'=> $request->store_url,'store_name'=> $request->store_name);
+
+               foreach ($vendordetail as $key => $value) {
+                   // code...
+                 $this->savevalue($vendor_id,$key,$value);
+               }
+            
+
+        }
+       
+
+        return response()->json(['status' => true, 'message' => "Your account registerd successfully.",'token'=>$success, 'user' => $user], 200);
+
+    }
+    public function savevalue($vendor_id,$key,$value="") {
+
+        $name=$key;
+            $setting= VendorSetting::updateOrCreate([
+                'vendor_id'=> $vendor_id,
+                'name'=>$key,
+            ], [
+                'value'=>$value
+            ]);
 
     }
 
@@ -1111,6 +1315,54 @@ class UserApiController extends Controller
 
         }
 
+    }
+     public function userforgot(Request $request){
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+        ]);
+
+        if ($validator->fails()) { 
+            return response()->json(['data'=>'','status'=>false, 'message'=>$validator->errors()->all(),'token'=>'']);            
+        }else{
+           
+        $email = $request->email;
+        $userData  = User::where('email',$email)->get()->first();
+        if(!empty($userData)){
+            $token = Str::random(100);
+            $name = $userData->first_name;
+            $userData->remember_token =  $token; 
+            $userData->save();
+            $url = ('http://wasilonline.com/#/userresetpassword').'/'. $token;
+                if(!empty($email)){
+                    $details = ['email' => $email,'url' =>$url,'name' =>$name];
+                    Mail::send('emailTemplate.forgot', $details, function($message) use ($details){
+                        $message->to($details['email'])->subject('Reset Password')->from(env('MAIL_FROM_ADDRESS'));
+                    });
+                }
+                return response()->json(['token'=>$token,'status'=>true,'message'=>'Reset Password Link Send Your Email','url'=>$url]); 
+        }else{
+        return response()->json(['data'=>'','status'=>false, 'message'=>'Invalid Email'], $this->success); 
+        }
+       }
+    }
+    public function userresetpassword(Request $request ,$id){
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|min:6|max:20',
+            'confirm_password'=>'required|same:password',
+        ]);
+        if ($validator->fails()) { 
+            return response()->json(['data'=>'','status'=>false, 'message'=>$validator->errors()], $this->success);            
+        }else{
+            $data = User::where('remember_token',$id)->first();
+            if(!empty($data)){
+                $data->remember_token = '';
+                $data->password = Hash::make($request->password);
+                $data->save();   
+                return response()->json(['status'=>true,'message'=>'Your Password has been changed successfully'], $this->success);
+            }else{
+                return response()->json(['status'=>false,'message'=>'Invalid Token'], $this->success);
+            }      
+        }
     }
 
 

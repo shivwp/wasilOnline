@@ -13,6 +13,7 @@ use App\Models\City;
 use Auth;
 use Hash;
 use Redirect;
+use Validator;
 
 class VendorSettingController extends Controller
 {
@@ -56,16 +57,74 @@ class VendorSettingController extends Controller
         $vender_id = Auth::user()->id;
         $data['title'] = "Vendor-settings";
         $data['setting']=VendorSetting::where('vendor_id', '=' , $vender_id)->first();
+        $data['vendor_details']=VendorSetting::where('vendor_id', '=' , $vender_id)->pluck('value', 'name');
         $data['data'] = $this->getVendorMeta($vender_id);
         $data['countries'] = Country::get(["name", "id"]);
+        if (isset($data['countries'])){    
+        $data['states'] = State::where("country_id",$data['vendor_details']['country'])->get(["state_name", "state_id"]);
+        $data['cities'] = City::where("state_id",$data['vendor_details']['state'])->get(["city_name", "city_id"]);
+        }
+        else{
         $data['states'] = State::where("country_id",$request->country_id)->get(["state_name", "state_id"]);
         $data['cities'] = City::where("state_id",$request->state_id)->get(["city_name", "city_id"]);
+        }
+        
+        //dd($data['setting']);
         return view('admin.vendor-setting',$data);
     }
     public function index3()
     {
         $data['title'] = "Vendor-settings";
+
         return view('admin.vendor-setting-admin',$data);
+    }
+    public function vendoradd(Request $request)
+    {
+         $data['title'] = "Add-vendor";
+         return view('admin.vendor-details.add-vendor',$data);
+    }
+
+     public function vendoradded(Request $request)
+    {
+        
+    
+
+        $us = User::where("email", $request->email)->first();
+
+       
+            $user = new User;
+          
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+
+            if($request->password){
+                $pass = Hash::make($request->password);
+                $user->password = $pass;
+            }
+            $user->email = $request->email;
+
+            $user->phone = $request->phone;
+
+            $user->save();
+
+            $success['token'] =  $user->createToken('API Token')->accessToken;
+
+            $user->roles()->sync(3);
+
+            $vendor_id=$user->id;
+             
+            $vendordetail = array('store_url'=> $request->store_url,'store_name'=> $request->store_name);
+
+               foreach ($vendordetail as $key => $value) {
+                   // code...
+                 $this->savevalue($vendor_id,$key,$value);
+               }
+        
+       
+
+        // return redirect()->route('dashboard.vendorsettings');
+               dd('ssdfsffds');
+               exit();
     }
 
     /**
@@ -75,7 +134,12 @@ class VendorSettingController extends Controller
      */
     public function create()
     {
+        
         $data['title'] = "Create Vendor";
+        $data['countries'] = Country::get(["name", "id"]);
+        $data['states'] = State::get(["state_name", "state_id"]);
+        $data['cities'] = City::get(["city_name", "city_id"]);
+
          return view('admin.vendor-setting',$data);
     }
 
@@ -255,7 +319,7 @@ class VendorSettingController extends Controller
 
         $data['title'] = "Vendor-details";
         $data['setting']=VendorSetting::where('vendor_id', '=' , $id)->get();
-        
+    
         $data['data'] = $this->getVendorMeta($id);
         //dd($data['data']);
         return view('admin.vendor-details.vendor-setting',$data);

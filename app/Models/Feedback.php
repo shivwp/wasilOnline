@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class GiftCard extends Model
+class Feedback extends Model
 {
     use HasFactory;
-    protected $table = "gift_card";
+    protected $table = "feedback";
 
     protected $fillable = [
-        'title',
-        'description',
-        'image',
-        'amount',
-        'valid_days',
-        'status'
+        'id',
+        'rating',
+        'discription',
+        'follow_up',
+        'order_id'
     ];
 }

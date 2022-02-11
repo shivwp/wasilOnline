@@ -91,6 +91,9 @@ class SettingsController extends Controller
         //   // }
 
         $setting['logo'] = '';
+        $setting['value_banner'] = '';
+        $setting['top_banner'] = '';
+        $setting['arrival_banner'] = '';
         $setting['name'] = $request->name;
         $setting['country'] = $request->country;
         $setting['state'] = $request->state;
@@ -107,12 +110,52 @@ class SettingsController extends Controller
 
         foreach ($setting as $key => $value) {
            
-            if($key == 'logo' ){ 
+            if($key == 'logo'  && $request->hasfile('logo')){ 
                 // 
                 $file=$request->logo;
                 $extention = $file->getClientOriginalExtension();
                 $filename = time().'.'.$extention;
                 $file->move('images/logo', $filename);
+                Setting::updateOrCreate([
+                        'name'=>$key,
+                    ], [
+                        'value'=>$filename
+                    ]);
+            }
+              
+            if($key == 'value_banner'   && $request->hasfile('value_banner')){ 
+      
+                $file=$request->value_banner;
+      
+                $extention = $file->getClientOriginalExtension();
+                $filename = time().'.'.$extention;
+                $file->move('images', $filename);
+                Setting::updateOrCreate([
+                        'name'=>$key,
+                    ], [
+                        'value'=>$filename
+                    ]);
+            }
+               if($key == 'top_banner'   && $request->hasfile('top_banner')){ 
+      
+                $file=$request->top_banner;
+      
+                $extention = $file->getClientOriginalExtension();
+                $filename = time().'.'.$extention;
+                $file->move('images', $filename);
+                Setting::updateOrCreate([
+                        'name'=>$key,
+                    ], [
+                        'value'=>$filename
+                    ]);
+            }
+               if($key == 'arrival_banner'   && $request->hasfile('arrival_banner')){ 
+      
+                $file=$request->arrival_banner;
+      
+                $extention = $file->getClientOriginalExtension();
+                $filename = time().'.'.$extention;
+                $file->move('images', $filename);
                 Setting::updateOrCreate([
                         'name'=>$key,
                     ], [

@@ -19,66 +19,129 @@ class HomepageController extends Controller
 
     /**
 
+
+
      * Display a listing of the resource.
+
+
 
      *
 
+
+
      * @return \Illuminate\Http\Response
 
+
+
      */
+
+
 
     public function index()
 
+
+
     {
+
+
 
         // $d['title'] = "HOMEPAGE";
 
+
+
         // $d['buton_name'] = "ADD NEW";
+
+
 
         // $d['homepage']=Homepage::all();
 
+
+
         // return view('admin/homepage/index',$d);
+
+
 
     }
 
 
 
+
+
+
+
     /**
+
+
 
      * Show the form for creating a new resource.
 
+
+
      *
+
+
 
      * @return \Illuminate\Http\Response
 
+
+
      */
+
+
 
     public function create()
 
+
+
     {
 
+
+
         
+
+
 
     }
 
 
 
+
+
+
+
     /**
+
+
 
      * Store a newly created resource in storage.
 
+
+
      *
+
+
 
      * @param  \Illuminate\Http\Request  $request
 
+
+
      * @return \Illuminate\Http\Response
+
+
 
      */
 
+
+
     public function store(Request $request)
 
+
+
     {
-         $d['title'] = "Homepage";
+
+        //dd(gettype($request->sale_image[1]['image']));
+
+        $d['title'] = "Homepage";
 
         $content = [];
 
@@ -316,97 +379,199 @@ class HomepageController extends Controller
 
     return redirect('dashboard/homepage/1/edit');
 
+
+
     }
 
+
+
     /**
+
+
 
      * Display the specified resource.
 
+
+
      *
+
+
 
      * @param  int  $id
 
+
+
      * @return \Illuminate\Http\Response
 
+
+
      */
+
+
 
     public function show($id)
 
+
+
     {
+
+
 
         //
 
+
+
     }
 
+
+
     /**
+
+
 
      * Show the form for editing the specified resource.
 
+
+
      *
+
+
 
      * @param  int  $id
 
+
+
      * @return \Illuminate\Http\Response
+
+
 
      */
 
+
+
     public function edit($id)
+
     {
+
         $d['homepage']=Homepage::findorfail($id);
+
         $homepage_content=Homepage::findorfail($id);
+
         $d['homepage_content'] = json_decode($homepage_content);
+
         $page_id =$id;
+
         $d['title'] = "Homepage";
+
         $d['setting']=PageMeta::where('page_id', '=' , $id)->first();
+
         $d['data'] = $this->getPageMeta($page_id);
+
         return view('admin/homepage/add',$d);
+
     }
 
 
 
+
+
+
+
     /**
+
+
 
      * Update the specified resource in storage.
 
+
+
      *
+
+
 
      * @param  \Illuminate\Http\Request  $request
 
+
+
      * @param  int  $id
+
+
 
      * @return \Illuminate\Http\Response
 
+
+
      */
+
+
 
     public function update(Request $request, $id)
 
+
+
     {
+
+
 
         //
 
+
+
     }
+
+
+
+
 
 
 
     /**
 
+
+
      * Remove the specified resource from storage.
+
+
 
      *
 
+
+
      * @param  int  $id
+
+
 
      * @return \Illuminate\Http\Response
 
+
+
      */
+
+    public function uploadImage($file, $type) {
+        // 
+        // $name = time().'.'.$file->extension();
+        $name = uniqid().$file->getClientOriginalName();
+        $file->move('img/slider', $name);  
+        return $name;
+    }
 
     public function destroy($id)
 
+
+
     {
+
+
 
         //
 
+
+
     }
 
+
+
 }
+
+
 

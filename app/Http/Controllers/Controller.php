@@ -72,7 +72,19 @@ class Controller extends BaseController
             }
         }
     }
-      
+    public function get_country($id)
+    {
+        $country_name= Country::where($id,'=','id')->first();
+        return  $country_name->name;
+    }
+    public function get_state($id)
+    {
+        $state_name= Country::where($id,'=','id')->first();
+    }
+    public function get_city($id)
+    {
+        $city_name= Country::where($id,'=','id')->first();
+    }
 
      
 }
