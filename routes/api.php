@@ -25,6 +25,13 @@ Route::post('login', [App\Http\Controllers\Api\UserApiController::class, 'login'
 //register api
 Route::post('register', [App\Http\Controllers\Api\UserApiController::class, 'register']);
 
+//vendor register  
+Route::post('vendor-register', [App\Http\Controllers\Api\UserApiController::class, 'vendorregister']);
+Route::post('vendor-login', [App\Http\Controllers\Api\UserApiController::class, 'vendorlogin']);
+
+Route::post('/userforgot', [App\Http\Controllers\Api\UserApiController::class, 'userforgot']);
+Route::post('/userresetpassword/{id}', [App\Http\Controllers\Api\UserApiController::class, 'userresetpassword']);
+
 //social
 Route::post('social', [App\Http\Controllers\Api\UserApiController::class, 'social']);
 
@@ -45,7 +52,13 @@ Route::post('menus',  [App\Http\Controllers\Api\MenuController::class, 'index'] 
 Route::post('news-latter',  [App\Http\Controllers\Api\NewslatterApiController::class, 'store'] );
 Route::post('category-list', [App\Http\Controllers\Api\CategoryApiController::class, 'categorylist'] );
 Route::post('orders', [App\Http\Controllers\Api\OrderApiController::class, 'index'] );
+Route::post('stores', [App\Http\Controllers\Api\StoreApiController::class, 'index'] );
+Route::post('single-store', [App\Http\Controllers\Api\StoreApiController::class, 'singlestore'] );
+Route::post('single-store', [App\Http\Controllers\Api\StoreApiController::class, 'singlestore'] );
+Route::post('single-store-category', [App\Http\Controllers\Api\StoreApiController::class, 'singlestorecategory'] );
 Route::post('get-in-touch', [App\Http\Controllers\Api\GetInTouchApiController::class, 'store'] );
+//user location
+Route::post('location', [App\Http\Controllers\Api\UserLocationApiController::class, 'index'] );
 
 
 
@@ -65,6 +78,7 @@ Route::middleware('auth:api')->group(function () {
 Route::post('orders', [App\Http\Controllers\Api\OrderApiController::class, 'index'] );
 Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
 Route::post('address', [App\Http\Controllers\Api\UserApiController::class, 'myaddress'] );
+Route::post('delete-address', [App\Http\Controllers\Api\UserApiController::class, 'deleteaddresses'] );
 // Users
 Route::apiResource('users', 'UsersApiController');
 
@@ -77,10 +91,15 @@ Route::post('category', [App\Http\Controllers\Api\CategoryApiController::class, 
 
 Route::post('order-history', [App\Http\Controllers\Api\OrderApiController::class, 'orderHistoryDetail'] );
 Route::post('gift-cards', [App\Http\Controllers\Api\GiftCardApiController::class, 'index'] );
+Route::post('wallet-transaction-gift', [App\Http\Controllers\Api\GiftCardApiController::class, 'index2'] );
 Route::post('gift-card-user', [App\Http\Controllers\Api\GiftCardApiController::class, 'store'] );
 Route::post('add-order', [App\Http\Controllers\Api\OrderApiController::class, 'store'] );
 Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
 Route::post('edit-account', [App\Http\Controllers\Api\UserApiController::class, 'edituserdetails'] );
+//feedback
+Route::post('feedback', [App\Http\Controllers\Api\ProductApiController::class, 'feedbacksave'] );
+//review
+Route::post('review', [App\Http\Controllers\Api\UserApiController::class, 'review'] );
 
 Route::post('address', [App\Http\Controllers\Api\UserApiController::class, 'myaddress'] );
 Route::post('edit-address', [App\Http\Controllers\Api\UserApiController::class, 'editaddresses'] );

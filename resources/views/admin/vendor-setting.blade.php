@@ -146,13 +146,12 @@
         <div class="col-md-6">
           <div class="form-group">
             <label class="control-label ">Country</label>
-           <!--  <input type="text" class="form-control"  name="country" value="{{($data['country'])??''}}"> -->
    
             <select  id="country" name="country" class="form-control">
                             <option value="">Select Country</option>
-                            @foreach ($countries as $data)
-                            <option value="{{$data->name}}" data-id="{{$data->id}}">
-                                {{$data->name}}
+                            @foreach ($countries as $country)
+                            <option value="{{$country->id}}"{{($data['country']== $country->id)? 'selected' :''}}>
+                                {{$country->name}}
                             </option>
                             @endforeach
                         </select>
@@ -165,6 +164,11 @@
            <!--  <input type="text" class="form-control"  name="state" value="{{($data['state'])??''}}">
             -->
              <select id="state" name="state" class="form-control">
+              @foreach ($states as $state)
+                            <option value="{{$state->state_id}}" {{($data['state']== $state->state_id)? 'selected' :''}}>
+                                {{$state->state_name}}
+                            </option>
+                            @endforeach
                         </select>
  
           </div>
@@ -174,6 +178,11 @@
             <label class="control-label ">City</label>
            <!--  <input type="text" class="form-control"  name="city" value="{{($data['city'])??''}}"> -->
             <select id="city" name="city" class="form-control">
+              @foreach ($cities as $city)
+                            <option value="{{$city->city_id}}" {{($data['city']== $city->city_id)? 'selected' :''}}>
+                                {{$city->city_name}}
+                            </option>
+                            @endforeach
                         </select>
 
           </div>
@@ -367,7 +376,7 @@
     <script>
         $(document).ready(function () {
             $('#country').on('change', function () {
-                var idCountry = $(this).attr('data-id');
+                var idCountry = this.value;
                 $("#state").html('');
                 $.ajax({
                     url: "{{url('dashboard/fetch-states')}}",
@@ -381,7 +390,7 @@
                         $('#state').html('<option value="">Select State</option>');
                         $.each(result.states, function (key, value) {
                             $("#state").append('<option value="' + value
-                                .state_name + '">' + value.state_name + '</option>');
+                                .state_id + '">' + value.state_name + '</option>');
                         });
                         $('#city').html('<option value="">Select City</option>');
                       
@@ -404,7 +413,7 @@
                         $('#city').html('<option value="">Select City</option>');
                         $.each(res.cities, function (key, value) {
                             $("#city").append('<option value="' + value
-                                .city_name + '">' + value.city_name + '</option>');
+                                .city_id + '">' + value.city_name + '</option>');
                         });
                     }
                 });
