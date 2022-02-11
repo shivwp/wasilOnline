@@ -8,6 +8,8 @@ use App\Models\GiftCard;
 use App\Models\GiftCardUser;
 use App\Models\User;
 use App\Models\Setting;
+use App\Models\Cart;
+use App\Models\CustomAttributes;
 use App\Models\Mails;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
@@ -66,6 +68,7 @@ class GiftCardApiController extends Controller
             'user_name' => 'required',
             'message' => 'required',
             'quanatity' => 'required',
+            'product_id' => 'required'
         ]);
 
         $card = GiftCard::find($request->card_id);
@@ -95,9 +98,7 @@ class GiftCardApiController extends Controller
                     $this->sendGift($userGiftCard);
     
                 }
-                return response()->json(['status' => true, 'message' => "Thank's your order placed"], 200);
-    
-    
+              
             }
             else{
     
@@ -118,10 +119,32 @@ class GiftCardApiController extends Controller
                 ]);
 
                 $this->sendGift($userGiftCard);
-
-                return response()->json(['status' => true, 'message' => "Thank's your order placed"], 200);
     
             }
+             //add to cart Giftcard
+             $quantity = $request->quantity;
+             $price = $quantity *  $request->card_amount;
+             $cart_added = Cart::create([
+                 'user_id'             => $userid,
+                 'product_id'          => $request->product_id,
+                 'quantity'            => $request->quantity,
+                 "price"                => $price
+             ]);
+             // gift card custom attributes
+             $custom_attr = [
+
+                'to' =>  $request->recipient_email,
+                'from' =>  $request->user_name,
+                'message' =>  $request->message,
+                'devlivery date' =>  $request->delivery_date,
+             ];
+             CustomAttributes::create([
+                'product_id'        =>$request->product_id,
+                'custom_attributes' => json_encode($custom_attr)
+             ]);
+             
+             return response()->json(['status' => true, 'message' => "success"], 200);
+
         }else{
             return response()->json(['status' => false, 'message' => "gift cards not found", 'data' => []], 200);
          }

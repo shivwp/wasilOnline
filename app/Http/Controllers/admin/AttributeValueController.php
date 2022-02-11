@@ -34,6 +34,20 @@ class AttributeValueController extends Controller
         return view('admin/attribute-value/index',$d);
     }
 
+    public function attrValdata($attrid)
+    {
+        $d['title'] = "Attribute Value";
+        $d['buton_name'] = "ADD NEW";
+        $pagination=10;
+        if(isset($_GET['paginate'])){
+            $pagination=$_GET['paginate'];
+        }
+        $d['attr'] = Attribute::where('id',$attrid)->first();
+        $d['attributeVal'] =AttributeValue::where('attr_id',$attrid)->paginate($pagination)->withQueryString();
+        return view('admin/attribute-value/index',$d);
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -59,7 +73,8 @@ class AttributeValueController extends Controller
                     'attr_id'               => $request->input('attrid'),
                     'attr_value_name'       => $request->input('attr_value')
          ]);
-        return redirect('/dashboard/attribute-value')->with('status', 'your data is updated');
+
+         return redirect('/dashboard/attr-value/'.$attribute->attr_id)->with('status', 'your data is updated');
     }
 
     /**

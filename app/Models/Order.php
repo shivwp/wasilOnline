@@ -11,7 +11,8 @@ class Order extends Model
     protected $table = "orders";
 
     protected $fillable = [
-        'product_id',
+        'parent_id',
+        'order_id',
         'user_id',
         'status',
         'status_note',
@@ -27,4 +28,13 @@ class Order extends Model
         'payment_status',
         'receipt_amount'
     ];
+
+    public function orderMeta(){
+
+        return $this->hasMany(OrderMeta::class);
+    }
+    public function orderItem()
+    {
+    return $this->hasMany(OrderedProducts::class,'order_id');
+    }
 }

@@ -11,6 +11,7 @@ use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\ProductAttribute;
 use App\Models\ProductVariants;
+use App\Models\CustomAttributes;
 use Validator;
 use Auth;
 class CartApiController extends Controller
@@ -70,6 +71,16 @@ class CartApiController extends Controller
                                 }
                             }
                             $product['attributes'] = $attrdata;
+                        }
+                    }
+                    elseif($product->product_type == "giftcard"){
+                        $CustomAttributes = CustomAttributes::select('custom_attributes')->where('product_id',$product->id)->first();
+                        if(!empty($CustomAttributes)){
+                            $CustomAttributes->custom_attributes = json_decode($CustomAttributes->custom_attributes);
+                            $product['attributes'] = $CustomAttributes->custom_attributes;
+                        }
+                        else{
+                            $product['attributes'] = [];       
                         }
                     }
                     else{

@@ -55,7 +55,7 @@
                                                     @foreach($attributeVal as $key => $item)
                                                     <tr>
                                                         <td>{{$item->id ?? '' }}</td>
-                                                        <td>{{$item->attribute ?? '' }}</td>
+                                                        <td>{{$attr->name ?? '' }}</td>
                                                         <td>{{$item->attr_value_name ?? '' }}</td>
                                                         <td>
                                                                 <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.attribute-value.edit', $item->id) }}"><i class="fa fa-edit"></i> </a>

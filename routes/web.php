@@ -160,6 +160,8 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     Route::resource('attribute-value', AttributeValueController::class);
 
+    Route::get('attr-value/{id}',[App\Http\Controllers\admin\AttributeValueController::class, 'attrValdata'])->name('attr-value');
+
     //Gift Card
 
     Route::resource('gift-card', GiftCardController::class);

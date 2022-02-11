@@ -16,6 +16,7 @@ class GiftCard extends Model
         'image',
         'amount',
         'valid_days',
-        'status'
+        'status',
+        'prodduct_id'
     ];
 }

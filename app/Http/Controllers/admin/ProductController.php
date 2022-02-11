@@ -12,6 +12,7 @@ use App\Models\ProductVariants;
 use App\Models\User;
 use App\Models\Tax;
 use App\Helper\Helper;
+use App\Models\Product;
 use Auth;
 use DB;
 class ProductController extends Controller
@@ -170,7 +171,7 @@ class ProductController extends Controller
             }
           }
         } 
-        else {
+        elseif($request->pro_type == 'variants'){
           $this->saveVarient($request, $product->id);
         }
         if(Auth::user()->roles->first()->title == 'Vendor'){

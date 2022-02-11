@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\GiftCard;
 use App\Models\GiftCardLog;
+use App\Models\Product;
 use DB;
 
 class GiftCardController extends Controller
@@ -56,6 +57,7 @@ class GiftCardController extends Controller
     public function create()
     {
         $d['title'] = " Gift Card";
+        $d['products'] = Product::where('parent_id',0)->where('product_type','giftcard')->get();
         return view('admin/gift-card/add',$d);
     }
 

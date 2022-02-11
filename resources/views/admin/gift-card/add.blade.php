@@ -85,14 +85,24 @@
 					<div class="form-group">
 
 						<label class="form-label">Amount</label>
-
-						
-
 						<input type="text" name="amount" value="" data-role="tagsinput" id="tags" class="form-control">
 						<input type="hidden" name="amount_val" id="tag_val" value="">
 
 					</div>
 
+				</div>
+				<div class="col-md-12">
+					<div class="form-group">
+						<label class="form-label">Select Product</label>
+						<select class="form-control select2" name="productid">
+						@if(count($products)>0)
+							@foreach($products as $key => $p_val)
+							<option value="{{$p_val->id}}">{{$p_val->pname}}</option>
+							@endforeach
+						@endif
+						</select>
+
+					</div>
 				</div>
 
 				<div class="col-md-6">
