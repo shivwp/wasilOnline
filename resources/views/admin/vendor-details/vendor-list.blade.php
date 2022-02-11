@@ -33,7 +33,7 @@
                             <div class="col-md-12 col-lg-12">
                                 <div class="card">
                                          <div class="addnew-ele">
-                                <a href="{{ route('dashboard.vendorsettings.create') }}" class="btn btn-info-light ">
+                                <a href="{{ url('dashboard/vendor-add') }}" class="btn btn-info-light ">
                                     {{$buton_name}}
                                 </a>
                             </div>

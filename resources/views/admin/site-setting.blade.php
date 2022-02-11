@@ -125,12 +125,44 @@
              <input type="text" class="form-control" id="exampleInputuname_1" name="hour" value="{{($setting['hour'])??''}}">
         </div>
     
-        <div class="col-sm-6">
-          <label>Currency</label>
-           <select class="form-control" multiple="multiple">
-            <option selected="selected">English</option>
-          </select>
+          <div class="col-md-2">
+          <div class="form-group">
+            <label class="control-label ">Value OF the day Banner</label>
+            <input type="hidden" name="value_banner" value="banner">
+           <input type="file" class="form-control" id="exampleInputuname_1" name="value_banner" value="{{($setting['value_banner'])??''}}">
+          </div>
         </div>
+          <div class="col-md-4">
+          <div class="form-group">
+            <img src="{{ url('images/').'/'.$setting['value_banner'] ?? "" }}"  alt="banner">
+            </div>
+        </div>
+          <div class="col-md-2">
+          <div class="form-group">
+            <label class="control-label ">Top 100 Banner</label>
+            <input type="hidden" name="top_banner" value="banner">
+           <input type="file" class="form-control" id="exampleInputuname_1" name="top_banner" value="{{($setting['top_banner'])??''}}">
+          </div>
+        </div>
+          <div class="col-md-4">
+          <div class="form-group">
+            <img src="{{ url('images/').'/'.$setting['top_banner'] ?? "" }}"  alt="banner">
+            </div>
+        </div>
+          <div class="col-md-2">
+          <div class="form-group">
+            <label class="control-label ">New Arrival Banner</label>
+            <input type="hidden" name="arrival_banner" value="banner">
+           <input type="file" class="form-control" id="exampleInputuname_1" name="arrival_banner" value="{{($setting['arrival_banner'])??''}}">
+          </div>
+        </div>
+          <div class="col-md-4">
+          <div class="form-group">
+            <img src="{{ url('images/').'/'.$setting['arrival_banner'] ?? "" }}"  alt="banner">
+            </div>
+        </div>
+
+
      
        
       </div>

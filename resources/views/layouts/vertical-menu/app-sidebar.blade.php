@@ -182,26 +182,8 @@
 
                         @can('order_access')
 
-                      <!--   <li>
-
-                            <a class="side-menu__item" href="{{ route('dashboard.order.index') }}"><i class="side-menu__icon fe fe-shopping-cart"></i><span class="side-menu__label">Order</span></a>
-
-                        </li> -->
-
-                         <li class="slide">
-
-                            <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon fe fe-shopping-cart"></i><span class="side-menu__label">Order</span><i class="angle fa fa-angle-right"></i></a>
-
-                            <ul class="slide-menu">
-
-                                <li><a href="{{ route('dashboard.order.index') }}" class="slide-item">Ordered Items</a></li>
-
-                                <li><a href="{{ route('dashboard.delivered-orders') }}" class="slide-item">Delivery Items</a></li>
-
-                                
-
-                            </ul>
-
+                      <li class="slide">
+                            <a class="side-menu__item" data-toggle="slide" href="{{ route('dashboard.order.index') }}"><i class="side-menu__icon fe fe-shopping-cart"></i><span class="side-menu__label">Order</span></a>
                         </li>
 
                          @endcan
@@ -240,7 +222,7 @@
 
                         <li>
 
-                            <a class="side-menu__item" href="{{ route('dashboard.testimonials.index') }}"><i class="side-menu__icon icon icon-trophy"></i><span class="side-menu__label">Testimonal</span></a>
+                            <a class="side-menu__item" href="{{ route('dashboard.testimonials.index') }}"><i class="side-menu__icon fe fe-message-circle"></i><span class="side-menu__label">Testimonal</span></a>
 
                         </li>
                         @endcan
@@ -348,10 +330,17 @@
 
                         </li>
                          @endcan
+                           @can('withdrawl_settings')
+                        <li>
+
+                            <a class="side-menu__item" href="{{ route('dashboard.withdrow.index') }}"><i class="side-menu__icon icon icon-wallet"></i><span class="side-menu__label">Withdrawl requests</span></a>
+
+                        </li>
+                         @endcan
                         @can('vendor_settings')
                         <li>
 
-                            <a class="side-menu__item" href="{{ route('dashboard.vendor-setting') }}"><i class="side-menu__icon icon icon-settings"></i><span class="side-menu__label">Settings</span></a>
+                            <a class="side-menu__item" href="{{ route('dashboard.vendor-setting') }}"><i class="side-menu__icon icon icon-settings"></i><span class="side-menu__label"> Store Settings</span></a>
 
                         </li>
                          @endcan

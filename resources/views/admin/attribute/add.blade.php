@@ -71,8 +71,8 @@
 				<div class="col-12">	
 
 					<div class="form-group">
-					<input type="hidden" name="id" value="{{ isset($attribute) ? $attribute->id : ''}}">
-
+						<input type="hidden" name="id" value="{{ isset($attribute) ? $attribute->id : ''}}">
+						
 						<label class="form-label">Name</label>
 
 						<input type="text" class="form-control" name="name" placeholder="Name" value="{{isset($attribute) ? $attribute->name : '' }}">

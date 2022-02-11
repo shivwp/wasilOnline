@@ -107,6 +107,8 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
     Route::get('country', [VendorSettingController::class, 'countrylist'])->name('country'); 
     Route::post('fetch-states', [VendorSettingController::class, 'fetchState']);
     Route::post('fetch-cities', [VendorSettingController::class, 'fetchCity']);
+    Route::get('vendor-add', [VendorSettingController::class, 'vendoradd']);
+    Route::post('vendor-added', [VendorSettingController::class, 'vendoradded']);
 
     //Product
 
@@ -161,7 +163,7 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
     Route::resource('attribute-value', AttributeValueController::class);
 
     Route::get('attr-value/{id}',[App\Http\Controllers\admin\AttributeValueController::class, 'attrValdata'])->name('attr-value');
-
+    
     //Gift Card
 
     Route::resource('gift-card', GiftCardController::class);

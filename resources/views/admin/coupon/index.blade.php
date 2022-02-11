@@ -47,9 +47,9 @@
                                                         <th>id</th>
                                                         <th class="wd-15p">code</th>
                                                         <th class="wd-15p">description</th>
-                                                        <th class="wd-15p">coupon_amount</th>
-                                                        <th class="wd-15p">start_date</th>
-                                                        <th class="wd-15p">expiry_date</th>
+                                                        <th class="wd-15p">coupon amount</th>
+                                                        <th class="wd-15p">start date</th>
+                                                        <th class="wd-15p">expiry date</th>
                                                         <th class="wd-15p">Action</th>
                                                     </tr>
                                                 </thead>
