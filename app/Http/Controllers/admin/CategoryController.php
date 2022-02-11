@@ -34,7 +34,7 @@ class CategoryController extends Controller
 
      */
 
-    public function index()
+    public function index (Request $request)
 
     {
 
@@ -44,7 +44,13 @@ class CategoryController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $category =Category::paginate($pagination)->withQueryString();
+        $q=Category::select('*');
+        if($request->search){
+              $q->where('title', 'like', "%$request->search%");  
+            }
+
+        $category =$q->paginate($pagination)->withQueryString();
+         
         foreach($category as $key => $val){
             $categoryParent = Category::where('parent_id','!=',0)->where('id',$val->id)->first();
             if(!empty($categoryParent)){

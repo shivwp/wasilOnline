@@ -39,7 +39,14 @@
                                                    @if(isset($_GET['page']))<input type="hidden" name="page" value="{{$_GET['page']}}">@endif
                                                    <input type="submit" name="" style="display:none;">
                                                </form>
-                                                <div id="pagination">{{{ $category->links() }}}</div>
+                                               <form>
+                                                  <div class="search_bar">  
+                                                   <input type="" class="form-controller" id="search" name="search" value="{{ (request()->get('search') != null) ? request()->get('search') : ''}}" placeholder="Message for"></input>
+                                                  <button type="submit" class="serch_btn">Search</button>
+                                                   <button type="reset" class="serch_btn"><a href="{{ route('dashboard.category.index') }}" >reset</a></button>
+                                              </div>
+                                          </form>
+                                                <!-- <div id="pagination">{{{ $category->links() }}}</div> -->
                                                </div>
                                             <table id="" class="table table-striped table-bordered text-nowrap w-100">
                                                 

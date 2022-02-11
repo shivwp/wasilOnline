@@ -354,7 +354,7 @@ class UserApiController extends Controller
 
         $validator = Validator::make($request->all(), [
 
-                'name' => 'required',
+                'first_name' => 'required',
 
                 'email' => 'required',
 
@@ -412,8 +412,8 @@ class UserApiController extends Controller
 
             $user = new User;
 
-            $user->name = $request->name;
-            $user->first_name = $request->name;
+            $user->first_name = $request->first_name;
+            $user->first_name = $request->first_name;
 
             if($request->password){
 
@@ -437,7 +437,7 @@ class UserApiController extends Controller
 
         }
         $mail_data = Mails::where('msg_category', 'signup')->first();
-        $config = ['fromemail' => $mail_data->from_email,
+        $config = ['from_email' => $mail_data->from_email,
             "reply_email" => $mail_data->reply_email,
             'subject' => $mail_data->subject, 
             'name' => $mail_data->name,
@@ -1332,12 +1332,22 @@ class UserApiController extends Controller
             $name = $userData->first_name;
             $userData->remember_token =  $token; 
             $userData->save();
-            $url = ('http://wasilonline.com/#/userresetpassword').'/'. $token;
+            $mail_data = Mails::where('msg_category', 'Password reset')->first();
+
+           // $url = ('http://wasilonline.com/#/userresetpassword').'/'. $token;
                 if(!empty($email)){
-                    $details = ['email' => $email,'url' =>$url,'name' =>$name];
-                    Mail::send('emailTemplate.forgot', $details, function($message) use ($details){
-                        $message->to($details['email'])->subject('Reset Password')->from(env('MAIL_FROM_ADDRESS'));
-                    });
+                    //$details = ['email' => $email,'url' =>$url,'first_name' =>$first_name];
+                        
+            $config = ['from_email' => $mail_data->from_email,
+            "reply_email" => $mail_data->reply_email,
+            'subject' => $mail_data->subject, 
+            'name' => $mail_data->name,
+            'message'=>$mail_data->message,
+
+        ];
+        Mail::to($request->email)->send(new Mailtemp($config));
+
+       
                 }
                 return response()->json(['token'=>$token,'status'=>true,'message'=>'Reset Password Link Send Your Email','url'=>$url]); 
         }else{
