@@ -84,3 +84,14 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+.src-btn{
+  width: 40px;
+  margin: 0px 2px;
+}
+.page-num{
+  font-size: .875rem;
+    margin: 10px;
+}
+.page-number{
+  display: flex;
+}

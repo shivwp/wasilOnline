@@ -164,6 +164,26 @@ class UserApiController extends Controller
 
         return response()->json(['status' => true,'message' => "success" ,"data"=>$feedback], 200);
     }
+    public function reviewlist(Request $request)
+    {   
+          $reviews=Reviews::orderBY('id','DESC')->where('product_id','=',$request->product_id)->get(); 
+         $validator = Validator::make($request->all(), [
+            'product_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+        }
+         if(count($reviews)>0){
+
+       $reviews=Reviews::orderBY('id','DESC')->where('product_id','=',$request->product_id)->get(); 
+
+        return response()->json(['status' => true,'message' => "success" ,"data"=>$reviews], 200);
+    }else{
+         return response()->json(['status' => false,'message' => "no reviews" ], 200);
+    }
+
+    }
     public function userdetails()
     {
         if (Auth::guard('api')->check()) {
@@ -1332,43 +1352,51 @@ class UserApiController extends Controller
             $userData->save();
             $mail_data = Mails::where('msg_category', 'Password reset')->first();
 
-           // $url = ('http://wasilonline.com/#/userresetpassword').'/'. $token;
+           $url = url('/userresetpassword').'/'. $token;
                 if(!empty($email)){
-                    //$details = ['email' => $email,'url' =>$url,'first_name' =>$first_name];
-                        
+                    $details = ['email' => $email,'url' =>$url,'first_name' =>$name];
+
+
+            $message = str_replace('{{reset_password}}', $url, $mail_data->message) ;
+
             $config = ['from_email' => $mail_data->from_email,
             "reply_email" => $mail_data->reply_email,
             'subject' => $mail_data->subject, 
             'name' => $mail_data->name,
-            'message'=>$mail_data->message,
+            'message'=>$message,
 
         ];
-        Mail::to($request->email)->send(new Mailtemp($config));
+         // Mail::to('emailTemplate.forgot', $details, function($message) use ($details){
+         //                $message->to($details['email'])->subject('Reset Password')->from(env('MAIL_FROM_ADDRESS'));
+         //            });
+        Mail::to($request->email)->send(new Mailtemp($config,$details, function($message) use ($details){
+            $message->to($details['email'])->subject('Reset Password')->from(env('MAIL_FROM_ADDRESS'));
+        }));
 
        
                 }
                 return response()->json(['token'=>$token,'status'=>true,'message'=>'Reset Password Link Send Your Email','url'=>$url]); 
         }else{
-        return response()->json(['data'=>'','status'=>false, 'message'=>'Invalid Email'], $this->success); 
+        return response()->json(['data'=>'','status'=>false, 'message'=>'Invalid Email']); 
         }
        }
     }
-    public function userresetpassword(Request $request ,$id){
+    public function userresetpassword(Request $request){
         $validator = Validator::make($request->all(), [
             'password' => 'required|min:6|max:20',
             'confirm_password'=>'required|same:password',
         ]);
         if ($validator->fails()) { 
-            return response()->json(['data'=>'','status'=>false, 'message'=>$validator->errors()], $this->success);            
+            return response()->json(['data'=>'','status'=>false, 'message'=>$validator->errors()] );            
         }else{
-            $data = User::where('remember_token',$id)->first();
+            $data = User::where('remember_token',$request->remember_token)->first();
             if(!empty($data)){
                 $data->remember_token = '';
                 $data->password = Hash::make($request->password);
                 $data->save();   
-                return response()->json(['status'=>true,'message'=>'Your Password has been changed successfully'], $this->success);
+                return response()->json(['status'=>true,'message'=>'Your Password has been changed successfully'] );
             }else{
-                return response()->json(['status'=>false,'message'=>'Invalid Token'], $this->success);
+                return response()->json(['status'=>false,'message'=>'Invalid Token']);
             }      
         }
     }
