@@ -30,7 +30,7 @@ Route::post('vendor-register', [App\Http\Controllers\Api\UserApiController::clas
 Route::post('vendor-login', [App\Http\Controllers\Api\UserApiController::class, 'vendorlogin']);
 
 Route::post('/userforgot', [App\Http\Controllers\Api\UserApiController::class, 'userforgot']);
-Route::post('/userresetpassword/{id}', [App\Http\Controllers\Api\UserApiController::class, 'userresetpassword']);
+Route::post('/userresetpassword', [App\Http\Controllers\Api\UserApiController::class, 'userresetpassword']);
 
 //social
 Route::post('social', [App\Http\Controllers\Api\UserApiController::class, 'social']);
@@ -39,6 +39,7 @@ Route::post('social', [App\Http\Controllers\Api\UserApiController::class, 'socia
 Route::post('products', [App\Http\Controllers\Api\ProductApiController::class, 'index'] );
 Route::post('product',  [App\Http\Controllers\Api\ProductApiController::class, 'singleproduct'] );
 Route::post('new-product',  [App\Http\Controllers\Api\ProductApiController::class, 'newproduct'] );
+Route::post('related-product',  [App\Http\Controllers\Api\ProductApiController::class, 'relatedproduct'] );
 Route::post('best-seller-product',  [App\Http\Controllers\Api\ProductApiController::class, 'bestseller'] );
 Route::post('search-product', [App\Http\Controllers\Api\ProductApiController::class, 'searchProduct'] );
 Route::post('value-of-the-day', [App\Http\Controllers\Api\ProductApiController::class, 'valueOfTheDay'] );
@@ -57,6 +58,7 @@ Route::post('single-store', [App\Http\Controllers\Api\StoreApiController::class,
 Route::post('single-store', [App\Http\Controllers\Api\StoreApiController::class, 'singlestore'] );
 Route::post('single-store-category', [App\Http\Controllers\Api\StoreApiController::class, 'singlestorecategory'] );
 Route::post('get-in-touch', [App\Http\Controllers\Api\GetInTouchApiController::class, 'store'] );
+Route::post('review-list', [App\Http\Controllers\Api\UserApiController::class, 'reviewlist'] );
 //user location
 Route::post('location', [App\Http\Controllers\Api\UserLocationApiController::class, 'index'] );
 
@@ -102,6 +104,7 @@ Route::post('edit-account', [App\Http\Controllers\Api\UserApiController::class, 
 Route::post('feedback', [App\Http\Controllers\Api\ProductApiController::class, 'feedbacksave'] );
 //review
 Route::post('review', [App\Http\Controllers\Api\UserApiController::class, 'review'] );
+
 
 Route::post('address', [App\Http\Controllers\Api\UserApiController::class, 'myaddress'] );
 Route::post('edit-address', [App\Http\Controllers\Api\UserApiController::class, 'editaddresses'] );
