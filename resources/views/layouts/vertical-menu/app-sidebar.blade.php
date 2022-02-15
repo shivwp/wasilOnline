@@ -394,7 +394,7 @@
 
                                 <li><a href="{{ route('dashboard.tax.index') }}" class="slide-item">Tax Settings</a></li>
 
-                                <li><a href="{{ route('dashboard.settings.index') }}" class="slide-item">Commision</a></li>
+                              <!--   <li><a href="{{ route('dashboard.settings.index') }}" class="slide-item">Commision</a></li> -->
 
                                 <li><a href="{{ route('dashboard.settings.index') }}" class="slide-item">Settings</a></li>
 

@@ -32,12 +32,12 @@
 
 	<ol class="breadcrumb">
 
-		<li class="breadcrumb-item"><a href="{{ route('dashboard.product.index') }}">Product</a></li>
-		@if(isset($category->id))
+		<li class="breadcrumb-item"><a href="{{ route('dashboard.product.index') }}">testimonial</a></li>
+		@if(isset($Testimonials->id))
 		<li class="breadcrumb-item active" aria-current="page">Edit</li>
-	@else
-		<li class="breadcrumb-item active" aria-current="page">Add</li>
-	@endif
+		@else
+			<li class="breadcrumb-item active" aria-current="page">Add</li>
+		@endif
 
 
 	</ol>

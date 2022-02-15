@@ -43,7 +43,8 @@
                                                   <div class="search_bar d-flex">  
                                                    <input type="" class="form-control" id="search" name="search" value="{{ (request()->get('search') != null) ? request()->get('search') : ''}}" placeholder="Search"></input>
                                                   <button type="submit" class="form-control src-btn" ><i class="angle fe fe-search"></i></button>
-                                                   <button type="reset" class="form-control src-btn"><a href="{{ route('dashboard.category.index') }}"><i class="angle fe fe-rotate-ccw"></i></a></button>
+                                                
+                                                   <a class="form-control src-btn" href="{{ route('dashboard.category.index') }}"><i class="angle fe fe-rotate-ccw"></i></a>
                                               </div>
                                           </form> 
                                                 <!-- <div id="pagination">{{{ $category->links() }}}</div> -->

@@ -14,7 +14,7 @@ class AttributeValueController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $d['title'] = "Attribute Value";
         $d['buton_name'] = "ADD NEW";
@@ -30,7 +30,12 @@ class AttributeValueController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['attributeVal'] =AttributeValue::paginate($pagination)->withQueryString();
+       
+            if($request->search){
+                $attributeVal->where('attr_value_name', 'like', "%$request->search%");  
+            }
+             $d['attributeVal']=$attributeVal->paginate($pagination)->withQueryString();
+        //$d['attributeVal'] =AttributeValue::paginate($pagination)->withQueryString();
         return view('admin/attribute-value/index',$d);
     }
 

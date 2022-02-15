@@ -16,7 +16,7 @@
                             <div>
                                 <h1 class="page-title">{{$title}}</h1>
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="#">Product</a></li>
+                                    <li class="breadcrumb-item"><a href="#">roles</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">List</li>
                                 </ol>
                             </div>
@@ -37,9 +37,9 @@
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             <div class="paging-section">
-                                            <form method="get"  >
-                                                    <h6>show</h6>
-                                                    <select id="pagination" name="paginate">
+                                           <form method="get" class="page-number"  >
+                                                    <h6 class="page-num">show</h6>
+                                                      <select id="pagination" name="paginate"class="form-control select2">
                                                         <option value="10" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 10) ? 'selected':''}}>10</option>
                                                         <option value="20" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 20) ? 'selected':''}}>20</option>
                                                         <option value="30" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 30) ? 'selected':''}}>30</option>

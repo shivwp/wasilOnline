@@ -16,7 +16,7 @@ use DB;
 
 class UsersController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('user_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
@@ -29,7 +29,12 @@ class UsersController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $users =User::paginate($pagination)->withQueryString();
+         $q=User::select('*');
+            if($request->search){
+                $q->where('first_name', 'like', "%$request->search%");  
+            }
+            $users=$q->paginate($pagination)->withQueryString();
+       
         return view('admin.users.index', compact('users','title','buton_name'));
     }
     public function index2()

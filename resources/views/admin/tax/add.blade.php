@@ -24,9 +24,13 @@
 
                                 <ol class="breadcrumb">
 
-                                    <li class="breadcrumb-item"><a href="{{ route('dashboard.coupon.index') }}">Coupon</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('dashboard.coupon.index') }}">tax</a></li>
 
+                                    @if(isset($tax->id))
                                     <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                                    @else
+                                    <li class="breadcrumb-item active" aria-current="page">Add</li>
+                                    @endif
 
                                 </ol>
 

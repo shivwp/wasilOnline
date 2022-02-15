@@ -27,7 +27,7 @@ class TestimonialsController extends Controller
 
      */
 
-    public function index()
+    public function index(Request $request)
 
     {
 
@@ -37,7 +37,12 @@ class TestimonialsController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['testimonials'] =Testimonials::paginate($pagination)->withQueryString();
+         $q=Testimonials::select('*');
+            if($request->search){
+                $q->where('title', 'like', "%$request->search%");  
+            }
+             $d['testimonials']=$q->paginate($pagination)->withQueryString();
+        
         return view('admin/testimonials/index',$d);
     }
     

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class OrderNote extends Model
 {
     use HasFactory;
-
+    
     protected $fillable = [
         'order_id',
         'order_status',

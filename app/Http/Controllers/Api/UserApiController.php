@@ -428,17 +428,17 @@ class UserApiController extends Controller
 
         else{
 
-             // create stripe customer 
+              // create stripe customer 
 
-             $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
-             $customer = $stripe->customers->create([
-                 'description' => 'My First Test Customer (created for API docs)',
-                 'email' => $request->email,
-                 'name' => $request->first_name.' '.$request->last_name
-             ]);
- 
-             $customer_id = $customer->id;
-             
+              $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+              $customer = $stripe->customers->create([
+                  'description' => 'My First Test Customer (created for API docs)',
+                  'email' => $request->email,
+                  'name' => $request->first_name.' '.$request->last_name
+              ]);
+  
+              $customer_id = $customer->id;
+
 
             $user = new User;
 
@@ -477,7 +477,7 @@ class UserApiController extends Controller
         ];
       
 
-       // Mail::to($request->email)->send(new Mailtemp($config));
+        // Mail::to($request->email)->send(new Mailtemp($config));
 
         return response()->json(['status' => true, 'message' => "Your account registerd successfully.",'token'=>$success, 'user' => $user], 200);
 
