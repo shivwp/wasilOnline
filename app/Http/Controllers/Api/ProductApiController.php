@@ -1247,10 +1247,10 @@ class ProductApiController extends Controller
                          $value1 = url('products/gallery/' . $value);
                          $data[] = $value1;
                      }
-                 $product[$key]['gallery_image'] = $data;
+                 $products[$key]['gallery_image'] = $data;
                  }
                  if(!empty($val->featured_image)){
-                 $product[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
+                 $products[$key]['featured_image'] = url('products/feature/'. $val->featured_image);
                  }
                   //cart & wishlist
                  if (Auth::guard('api')->check()) {

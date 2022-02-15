@@ -14,6 +14,9 @@ use App\Models\User;
 use App\Models\Coupon;
 use App\Models\Cart;
 use App\Models\OrderMeta;
+use App\Models\OrderNote;
+use App\Models\OrderPayment;
+use App\Models\VendorEarnings;
 use Validator;
 use Auth;
 class OrderApiController extends Controller
@@ -64,18 +67,14 @@ class OrderApiController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+  
     public function store(Request $request)
     {
             if (Auth::guard('api')->check()) {
                 $user = Auth::guard('api')->user();
             } 
             $user_id = $user->id;
+            $user = User::where('id',$user_id)->first();
             if(empty($request->shipping_address)){
                 return response()->json(['shipping address required'],200); 
             }
@@ -196,6 +195,16 @@ class OrderApiController extends Controller
                             'total_price' => $cartdata->price,
                             'tax' => 0,
                         ]);
+
+                    $vendorEarning =    VendorEarnings::create([
+
+                        'order_id'              =>$order->id,
+                        'vendor_id'             =>$product->vendor_id,
+                        'product_id'            =>$product->id,
+                        'amount'                =>$product->s_price,
+                        'payment_status'        =>"pending"
+
+                      ]);
                 }
           
 
@@ -254,9 +263,88 @@ class OrderApiController extends Controller
                     ['meta_value' => json_encode($shipping)]
                 );
 
+                //order Stripe payment
+                if($request->shipping_method == "stripe"){
+                     try{
+                        $stripeAccount = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+                        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+                        $paymentIntent = \Stripe\PaymentIntent::create([
+                            'amount' => $total_price * 100,
+                            'currency' => 'gbp',
+                            'payment_method_types' => ['card'],
+                            'payment_method' => $request->stripe_token,
+                            'transfer_group' => $order->id,
+                            'confirm'=>'true',
+                            'shipping' => [
+                                'name' => 'shipping name',
+                                'phone' => '9090909090',
+                                'address' => [
+                                    'city' => 'city',
+                                    'country' => 'country',
+                                    'line1' => 'line1',
+                                    'line2' => 'line2',
+                                    'postal_code' => 'postal_code',
+                                    'state' => 'state',
+                                ]
+                            ]
+                        ]);
+
+                        if($paymentIntent->status == 'succeeded'){
+
+                            $status = $paymentIntent->status;
+                            $msg = "Order Success";
+
+                          $order->update([
+                              'payment_status' => 'success'
+                          ]);
+
+                          Order::where('parent_id',$order->id)->update([
+                                'payment_status' => 'success'
+                            ]);
+
+                        }
+                        else{
+
+                            $status = $paymentIntent->status;
+                            $msg = "Order Pending";
+
+                            $order->update([
+                                'payment_status' => 'failed'
+                            ]);
+
+                        }
+
+                        OrderPayment::create([
+
+                            'order_id'  =>$order->id,
+                            'status'    =>$status,
+                            'trans_id' =>$paymentIntent->id,
+                            'charges_id' =>$paymentIntent->charges->data[0]->id,
+                            'balance_transaction' =>$paymentIntent->charges->data[0]->balance_transaction,
+                            'message' => $paymentIntent->status
+
+                          ]);
+
+                        $vendorEarning->update([
+                                'payment_status' => 'success'
+                        ]);
+                        $vendorEarning->save();
+
+                    }catch(\Stripe\Exception\InvalidRequestException $e){
+
+                        return response()->json(['status' => false, 'message' => $e->getError()->message], 200);
+                    }
+
+                    $this->ordernote($order->id,$status,$msg);
+                  
+                    
+                }
+              
+
         return response()->json(['status' => true, 'message' => "Success"], 200);
        
     }
+
 
     public function orderTracking(Request $request){
         $validator = Validator::make($request->all(), [
@@ -284,6 +372,16 @@ class OrderApiController extends Controller
     {
         //
     }
+
+    public function ordernote($orderid,$status,$msg){
+
+        OrderNote::create([
+            'order_id' => $orderid,
+            'order_status' => $status,
+            'order_note' => $msg,
+        ]);
+
+    } 
 
     /**
      * Show the form for editing the specified resource.
@@ -348,6 +446,54 @@ class OrderApiController extends Controller
         }
 
        
+    }
+
+    public function stripeDemo(Request $request){
+
+        
+
+        $stripeAccount = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        $method = \Stripe\PaymentMethod::create([
+            'type' => 'card',
+            'card' => [
+                'number' => '4242424242424242',
+                'exp_month' => 12,
+                'exp_year' => 2022,
+                'cvc' => '314',
+            ],
+        ]);
+        return $method;
+        $paymentIntent = \Stripe\PaymentIntent::create([
+            'amount' => 20 * 100,
+            'currency' => 'gbp',
+            'payment_method_types' => ['card'],
+            'payment_method' => $method->id,
+            'transfer_group' => $request->pro_id,
+            'confirm'=>'true',
+            'shipping' => [
+                'name' => 'shipping name',
+                'phone' => '9090909090',
+                'address' => [
+                    'city' => 'city',
+                    'country' => 'country',
+                    'line1' => 'line1',
+                    'line2' => 'line2',
+                    'postal_code' => 'postal_code',
+                    'state' => 'state',
+                ]
+            ]
+        ]);
+
+        return $paymentIntent;
+
+
+
+
+
+
     }
     
 }

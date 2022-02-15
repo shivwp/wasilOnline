@@ -374,7 +374,7 @@ class UserApiController extends Controller
 
         $validator = Validator::make($request->all(), [
 
-                'first_name' => 'required',
+                'name' => 'required',
 
                 'email' => 'required',
 
@@ -428,12 +428,22 @@ class UserApiController extends Controller
 
         else{
 
+             // create stripe customer 
 
+             $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+             $customer = $stripe->customers->create([
+                 'description' => 'My First Test Customer (created for API docs)',
+                 'email' => $request->email,
+                 'name' => $request->first_name.' '.$request->last_name
+             ]);
+ 
+             $customer_id = $customer->id;
+             
 
             $user = new User;
 
-            $user->first_name = $request->first_name;
-            $user->first_name = $request->first_name;
+            $user->first_name = $request->name;
+            $user->name = $request->name;
 
             if($request->password){
 
@@ -448,6 +458,8 @@ class UserApiController extends Controller
             $user->phone = $request->phone;
 
             $user->dob = $request->dob;
+
+            $user->customer_id = $customer_id;
 
             $user->save();
 
@@ -465,7 +477,7 @@ class UserApiController extends Controller
         ];
       
 
-        Mail::to($request->email)->send(new Mailtemp($config));
+       // Mail::to($request->email)->send(new Mailtemp($config));
 
         return response()->json(['status' => true, 'message' => "Your account registerd successfully.",'token'=>$success, 'user' => $user], 200);
 

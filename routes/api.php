@@ -91,6 +91,9 @@ Route::apiResource('users', 'UsersApiController');
 Route::post('filter-product', [App\Http\Controllers\Api\ProductApiController::class, 'filterProduct']);
 Route::post('product-filter', [App\Http\Controllers\Api\ProductApiController::class, 'filter'] );
 Route::post('category', [App\Http\Controllers\Api\CategoryApiController::class, 'index'] );
+Route::post('stripe-test', [App\Http\Controllers\Api\OrderApiController::class, 'stripeDemo'] );
+Route::post('all-cards', [App\Http\Controllers\Api\StripeCardsController::class, 'allCardsList'] );
+Route::post('add-card', [App\Http\Controllers\Api\StripeCardsController::class, 'addCard'] );
 
 Route::post('order-history', [App\Http\Controllers\Api\OrderApiController::class, 'orderHistoryDetail'] );
 Route::post('gift-cards', [App\Http\Controllers\Api\GiftCardApiController::class, 'index'] );
