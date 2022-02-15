@@ -52,7 +52,11 @@
 
 		<li class="breadcrumb-item"><a href="{{ route('dashboard.product.index') }}">Coupon</a></li>
 
-		<li class="breadcrumb-item active" aria-current="page">Edit</li>
+		 @if(isset($coupon->id))
+            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+        @else
+            <li class="breadcrumb-item active" aria-current="page">Add</li>
+        @endif
 
 	</ol>
 

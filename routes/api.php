@@ -34,6 +34,7 @@ Route::post('/userresetpassword', [App\Http\Controllers\Api\UserApiController::c
 
 //social
 Route::post('social', [App\Http\Controllers\Api\UserApiController::class, 'social']);
+Route::post('order-return', [App\Http\Controllers\Api\OrderApiController::class, 'return'] );
 
 
 Route::post('products', [App\Http\Controllers\Api\ProductApiController::class, 'index'] );
@@ -53,6 +54,8 @@ Route::post('menus',  [App\Http\Controllers\Api\MenuController::class, 'index'] 
 Route::post('news-latter',  [App\Http\Controllers\Api\NewslatterApiController::class, 'store'] );
 Route::post('category-list', [App\Http\Controllers\Api\CategoryApiController::class, 'categorylist'] );
 Route::post('orders', [App\Http\Controllers\Api\OrderApiController::class, 'index'] );
+Route::post('page-data', [App\Http\Controllers\Api\PageApiController::class, 'index'] );
+Route::post('site-setting', [App\Http\Controllers\Api\SettingApiController::class, 'index'] );
 Route::post('stores', [App\Http\Controllers\Api\StoreApiController::class, 'index'] );
 Route::post('single-store', [App\Http\Controllers\Api\StoreApiController::class, 'singlestore'] );
 Route::post('single-store', [App\Http\Controllers\Api\StoreApiController::class, 'singlestore'] );
@@ -78,6 +81,7 @@ Route::post('product-attributes',[App\Http\Controllers\Api\ProductApiController:
 
 Route::middleware('auth:api')->group(function () {
 Route::post('orders', [App\Http\Controllers\Api\OrderApiController::class, 'index'] );
+
 Route::post('order-track', [App\Http\Controllers\Api\OrderApiController::class, 'orderTracking'] );
 Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
 Route::post('address', [App\Http\Controllers\Api\UserApiController::class, 'myaddress'] );

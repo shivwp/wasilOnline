@@ -14,7 +14,7 @@ class PagesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $d['title'] = "PAGE";
         $d['buton_name'] = "ADD NEW";
@@ -23,7 +23,12 @@ class PagesController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['page'] =Page::paginate($pagination)->withQueryString();
+        $q=Page::select('*');
+            if($request->search){
+                $q->where('title', 'like', "%$request->search%");  
+            }
+             $d['page']=$q->paginate($pagination)->withQueryString();
+       
         return view('admin/page/index',$d);
     }
 

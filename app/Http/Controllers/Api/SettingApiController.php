@@ -1,34 +1,35 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Reviews;
-use Auth;
+use App\Models\Setting;
 
-class ReviewController extends Controller
+class SettingApiController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $d['title'] = "Reviews";
-        $d['review']=Reviews::all();
-        $pagination=10;
-        if(isset($_GET['paginate'])){
-            $pagination=$_GET['paginate'];
+         $setting=Setting::pluck('value','name');
+
+        if(count($setting) > 0 ){
+
+          
+
+            return response()->json(['status' => true, 'message' => "Success",  'setting' => $setting], 200);
+
         }
-         $q=Reviews::select('*');
-            if($request->search){
-                $q->where('name', 'like', "%$request->search%");  
-            }
-             $d['review']=$q->paginate($pagination)->withQueryString();
-        
-        return view('admin.reviews.index',$d);
+        else{
+
+            return response()->json(['status' => false, 'message' => "data not found",  'settings' => []], 200);
+
+        }
+
     }
 
     /**
@@ -94,12 +95,6 @@ class ReviewController extends Controller
      */
     public function destroy($id)
     {
-        $review = Review::findOrFail($id);
-        $review->delete();
-        if(Auth::user()->roles->first()->title == 'Vendor'){
-        $type='Review';
-       \Helper::addToLog('Review Deleted', $type);
-       }
-        return back();
+        //
     }
 }

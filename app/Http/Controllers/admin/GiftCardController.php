@@ -17,7 +17,7 @@ class GiftCardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $d['title'] = "Gift Card";
         $d['buton_name'] = "ADD NEW";
@@ -28,23 +28,32 @@ class GiftCardController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['giftcard'] =GiftCard::paginate($pagination)->withQueryString();
+         $q=GiftCard::select('*');
+            if($request->search){
+                $q->where('title', 'like', "%$request->search%");  
+            }
+             $d['giftcard']=$q->paginate($pagination)->withQueryString();
+       
 
         return view('admin/gift-card/index',$d);
     }
 
 
-     public function index2()
+     public function index2(Request $request)
     {
-          $d['buton_name'] = "ADD NEW";
-          $d['title'] = "Gift Card";
-         $d['giftcards']=GiftCard::join('user_giftcard_log', 'user_giftcard_log.card_id', '=', 'gift_card.id' )->join('users','users.id','=','user_giftcard_log.user_id')->select('user_giftcard_log.*','users.*','gift_card.*')->get();
-         //dd( $d['giftcards']);
-          $pagination=10;
+        $d['buton_name'] = "ADD NEW";
+        $d['title'] = "Gift Card";
+        $d['giftcards']=GiftCard::join('user_giftcard_log', 'user_giftcard_log.card_id', '=', 'gift_card.id' )->join('users','users.id','=','user_giftcard_log.user_id')->select('user_giftcard_log.*','users.*','gift_card.*')->get();
+         
+        $pagination=10;
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['giftcard'] =GiftCard::paginate($pagination)->withQueryString();
+        $q=GiftCard::select('*');
+        if($request->search){
+           $q->where('title', 'like', "%$request->search%");  
+        }
+        $d['giftcard']=$q->paginate($pagination)->withQueryString();
 
          return view('admin/gift-card/index2',$d);
     }

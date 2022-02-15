@@ -13,16 +13,21 @@ class TaxController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $d['title'] = "PAGE";
+        $d['title'] = "TAX";
         $d['buton_name'] = "ADD NEW";
         $d['tax']=Tax::all();
          $pagination=10;
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['tax'] =Tax::paginate($pagination)->withQueryString();
+         $q=Tax::select('*');
+            if($request->search){
+                $q->where('title', 'like', "%$request->search%");  
+            }
+             $d['tax']=$q->paginate($pagination)->withQueryString();
+        
         return view('admin/tax/index',$d);
     }
 

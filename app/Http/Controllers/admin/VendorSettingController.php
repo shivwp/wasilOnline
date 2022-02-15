@@ -43,7 +43,12 @@ class VendorSettingController extends Controller
 
         }
 
-        $data['setting'] =  $setting->paginate($pagination)->withQueryString();
+            if($request->search){
+                $setting->where('first_name', 'like', "%$request->search%");  
+            }
+              $data['setting']=$setting->paginate($pagination)->withQueryString();
+
+        // $data['setting'] =  $setting->paginate($pagination)->withQueryString();
 
         // $data['setting']=Role::where('title', 'Vendor')->first()->users()->paginate($pagination)->withQueryString();
        

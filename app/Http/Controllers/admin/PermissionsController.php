@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PermissionsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
        
         abort_if(Gate::denies('permission_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -26,7 +26,12 @@ class PermissionsController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $permissions =Permission::paginate($pagination)->withQueryString();
+         $q=Permission::select('*');
+            if($request->search){
+                $q->where('title', 'like', "%$request->search%");  
+            }
+            $permissions=$q->paginate($pagination)->withQueryString();
+       
 
         return view('admin.permissions.index', compact('permissions','title','buton_name'));
     }

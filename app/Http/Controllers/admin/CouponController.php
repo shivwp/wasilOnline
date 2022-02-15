@@ -31,7 +31,7 @@ class CouponController extends Controller
 
      */
 
-    public function index()
+    public function index( Request $request)
 
     {
 
@@ -45,7 +45,12 @@ class CouponController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['coupon'] =Coupon::paginate($pagination)->withQueryString();
+        
+         $q=Coupon::select('*');
+            if($request->search){
+                $q->where('code', 'like', "%$request->search%");  
+            }
+             $d['coupon']=$q->paginate($pagination)->withQueryString();
 
         return view('admin/coupon/index',$d);
         

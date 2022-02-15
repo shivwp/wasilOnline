@@ -14,7 +14,7 @@ class MenuController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $d['title'] = "MENU";
         $d['menu']=Menu::all();
@@ -23,7 +23,12 @@ class MenuController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['menu'] =Menu::paginate($pagination)->withQueryString();
+         $q=Menu::select('*');
+            if($request->search){
+                $q->where('title', 'like', "%$request->search%");  
+            }
+             $d['menu']=$q->paginate($pagination)->withQueryString();
+        
         return view('admin.menu.index',$d);
     }
 

@@ -13,7 +13,7 @@ class MailController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $d['title'] = "Mails";
         $d['buton_name'] = "ADD NEW";
@@ -22,7 +22,12 @@ class MailController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['all_msg'] =Mails::paginate($pagination)->withQueryString();
+         $q=Mails::select('*');
+            if($request->search){
+                $q->where('subject', 'like', "%$request->search%");  
+            }
+             $d['all_msg']=$q->paginate($pagination)->withQueryString();
+        
         return view('admin/mail/index',$d);
     }
 

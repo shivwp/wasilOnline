@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Reviews;
-use Auth;
+use App\Models\Page;
 
-class ReviewController extends Controller
+class PageApiController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,19 +15,8 @@ class ReviewController extends Controller
      */
     public function index(Request $request)
     {
-        $d['title'] = "Reviews";
-        $d['review']=Reviews::all();
-        $pagination=10;
-        if(isset($_GET['paginate'])){
-            $pagination=$_GET['paginate'];
-        }
-         $q=Reviews::select('*');
-            if($request->search){
-                $q->where('name', 'like', "%$request->search%");  
-            }
-             $d['review']=$q->paginate($pagination)->withQueryString();
-        
-        return view('admin.reviews.index',$d);
+        $page = Page::where('id','=',$request->id)->get();
+            return response()->json(['status' => true, 'message' => "page", 'data' => $page], 200);
     }
 
     /**
@@ -94,12 +82,6 @@ class ReviewController extends Controller
      */
     public function destroy($id)
     {
-        $review = Review::findOrFail($id);
-        $review->delete();
-        if(Auth::user()->roles->first()->title == 'Vendor'){
-        $type='Review';
-       \Helper::addToLog('Review Deleted', $type);
-       }
-        return back();
+        //
     }
 }

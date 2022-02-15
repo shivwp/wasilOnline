@@ -13,7 +13,7 @@ class CurrencyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $d['title'] = "Currency";
         $d['buton_name'] = "ADD NEW";
@@ -24,8 +24,12 @@ class CurrencyController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['currency'] =Currency::paginate($pagination)->withQueryString();
-
+         $q=Currency::select('*');
+            if($request->search){
+                $q->where('code', 'like', "%$request->search%");  
+            }
+             $d['currency']=$q->paginate($pagination)->withQueryString();
+        
         return view('admin/currency/index',$d);
     }
 

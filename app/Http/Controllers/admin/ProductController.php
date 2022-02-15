@@ -17,12 +17,14 @@ use Auth;
 use DB;
 class ProductController extends Controller
 {
-      public function index()
+      public function index(Request $request)
       { 
           $d['title'] = "PRODUCT";
           $d['buton_name'] = "ADD NEW";
+           
           if(Auth::user()->roles->first()->title == 'Admin'){
             $d['product'] = Product::leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0);
+
           }
           elseif(Auth::user()->roles->first()->title == 'Vendor'){
             $d['product']=Product::orderBy('id')->where('products.parent_id','=',0)->where('vendor_id','=',Auth::user()->id);
@@ -34,8 +36,14 @@ class ProductController extends Controller
           if(isset($_GET['paginate'])){
               $pagination=$_GET['paginate'];
           }
+            $q=Product::select('*');
+            if($request->search){
+                $q->where('pname', 'like', "%$request->search%");  
+            }
+             $d['product']=$q->paginate($pagination)->withQueryString();
 
-          $d['product'] =$d['product']->paginate($pagination)->withQueryString();
+
+           //=$d['product']->paginate($pagination)->withQueryString();
           return view('admin/product/index',$d);
 
       }

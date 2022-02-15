@@ -28,7 +28,7 @@ class AttributeController extends Controller
 
      */
 
-    public function index()
+    public function index(Request $request)
 
     {
 
@@ -41,7 +41,12 @@ class AttributeController extends Controller
         if(isset($_GET['paginate'])){
             $pagination=$_GET['paginate'];
         }
-        $d['attribute'] =Attribute::paginate($pagination)->withQueryString();
+           $q=Attribute::select('*');
+            if($request->search){
+                $q->where('name', 'like', "%$request->search%");  
+            }
+             $d['attribute']=$q->paginate($pagination)->withQueryString();
+       
 
         return view('admin/attribute/index',$d);
 

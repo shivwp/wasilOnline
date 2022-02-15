@@ -3,9 +3,28 @@
 @section('css')
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+.input-container {
+  padding-bottom: 1em;
+}
+.left-inner-addon {
+    position: relative;
+}
+.left-inner-addon input {
+    padding-left: 35px !important; 
+}
+.left-inner-addon i {
+    position: absolute;
+    padding: 12px 12px;
+    pointer-events: none;
+}
 
+
+</style>
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
 @endsection
+
 @section('page-header')
                         <!-- PAGE-HEADER -->
                             <div>
@@ -113,7 +132,7 @@
             <input type="text" class="form-control" id="exampleInputuname_1" name="url" value="{{($setting['url'])??''}}">
           </div>
         </div>
-          <div class="col-md-6">
+        <div class="col-md-6">
           <div class="form-group">
             <input type="hidden" name="name_4" value="Address">
             <label class="control-label ">Address </label>
@@ -161,11 +180,52 @@
             <img src="{{ url('images/').'/'.$setting['arrival_banner'] ?? "" }}"  alt="banner">
             </div>
         </div>
+           <div class="col-md-12">
+        <h4 class="mt-5">Social links</h4><hr>
+        <div class="row">
+        <div class="col-md-4">     
+          <div class="form-group">
+          <div class="left-inner-addon input-container">
+            <i class="fa fa-instagram"></i>
+             <input  type="text"
+                   class="form-control" 
+                   placeholder="instagram" name="instagram" value="{{($setting['instagram'])??''}}" />
+           </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="form-group">
+              <div class="left-inner-addon input-container">
+            <i class="fa fa-twitter"></i>
+             <input  type="text"
+                   class="form-control" 
+                   placeholder="twitter" name="twitter" value="{{($setting['twitter'])??''}}" />
+           </div>
+        
+          </div>
+        </div>
+ 
+        <div class="col-md-4">
+          <div class="form-group">
+            <div class="left-inner-addon input-container">
+            <i class="fa fa-facebook"></i>
+             <input  type="text"
+                   class="form-control" 
+                   placeholder="Facebook" name="facebook" value="{{($setting['facebook'])??''}}" />
+           </div>
+            
+          </div>
+        </div>
+
+      </div>
 
 
      
        
       </div>
+    </div>
+    
     
 
 <div class="form-actions" id="add_space">

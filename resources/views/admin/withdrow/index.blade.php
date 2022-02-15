@@ -1,10 +1,10 @@
 @extends('layouts.vertical-menu.master')
 @section('css')
 <style>
-.paging-section {
+.paging-section{
     display: flex!important;
-    justify-content: flex-start !important;
-    margin: 13px 5px;
+     margin: 13px 5px;
+     justify-content: space-between;
 }
 .get-filter{
     margin:0px 20px
@@ -18,7 +18,7 @@
                             <div>
                                 <h1 class="page-title">{{$title}}</h1>
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="#">Coupon</a></li>
+                                    <li class="breadcrumb-item"><a href="#">Withdrowl</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">List</li>
                                 </ol>
                             </div>
@@ -123,8 +123,8 @@
                                                    @if(isset($_GET['page']))<input type="hidden" name="page" value="{{$_GET['page']}}">@endif
                                                    <input type="submit" name="" style="display:none;">
                                                </form>
-                                            <form method="get" class="get-filter" id="filter-submit">
-                                                    <h6>Status Filter</h6>
+                                            <form method="get" class="get-filter page-number" id="filter-submit">
+                                                    <h6 class="page-num"> Filter</h6>
                                                     <select id="filter-status" name="status" class="form-control select2">
                                                     <option value="">all</option>
                                                         <option value="1" {{ (request()->get('status') == '1') ? 'selected' : '' }}>Approved</option>
@@ -132,7 +132,7 @@
                                                         <option value="0" {{ (request()->get('status') == '0') ? 'selected' : '' }}>Pending</option>
                                                     </select>
                                             </form>
-                                                <div id="pagination">{{{ $withdrow->links() }}}</div>
+                                                
                                                </div>
                                             <table id="" class="table table-striped table-bordered text-nowrap w-100">
                                                 <thead>

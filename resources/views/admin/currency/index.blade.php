@@ -29,9 +29,9 @@
                                     <div class="card-body">
                                         <div class="table-responsive">
                                               <div class="paging-section">
-                                            <form method="get"  >
-                                                    <h6>show</h6>
-                                                    <select id="pagination" name="paginate">
+                                               <form method="get" class="page-number"  >
+                                                    <h6 class="page-num">show</h6>
+                                                      <select id="pagination" name="paginate"class="form-control select2">
                                                         <option value="10" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 10) ? 'selected':''}}>10</option>
                                                         <option value="20" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 20) ? 'selected':''}}>20</option>
                                                         <option value="30" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 30) ? 'selected':''}}>30</option>
@@ -39,9 +39,15 @@
                                                    @if(isset($_GET['page']))<input type="hidden" name="page" value="{{$_GET['page']}}">@endif
                                                    <input type="submit" name="" style="display:none;">
                                                </form>
-                                                <div id="pagination">{{{ $currency->links() }}}</div>
+                                                <form>
+                                                  <div class="search_bar d-flex">  
+                                                   <input type="" class="form-control" id="search" name="search" value="{{ (request()->get('search') != null) ? request()->get('search') : ''}}" placeholder="Search"></input>
+                                                  <button type="submit" class="form-control src-btn" ><i class="angle fe fe-search"></i></button>
+                                                   <a class="form-control src-btn" href="{{ route('dashboard.currency.index') }}"><i class="angle fe fe-rotate-ccw"></i></a>
+                                              </div>
+                                          </form> 
                                                </div>
-                                            <table id="example" class="table table-striped table-bordered text-nowrap w-100">
+                                            <table id="" class="table table-striped table-bordered text-nowrap w-100">
                                                 <thead>
                                                     <tr>
                                                         <th>id</th>

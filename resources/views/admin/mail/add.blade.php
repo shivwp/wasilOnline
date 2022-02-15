@@ -64,11 +64,15 @@
 
 
 
-		<li class="breadcrumb-item"><a href="{{ route('dashboard.mail.index') }}">Mail</a></li>
+		<li class="breadcrumb-item"><a href="{{ route('dashboard.mail.index') }}">Mail-templte</a></li>
 
 
 
-		<li class="breadcrumb-item active" aria-current="page">Edit</li>
+		 @if(isset($mail->id))
+            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+        @else
+            <li class="breadcrumb-item active" aria-current="page">Add</li>
+        @endif
 
 
 

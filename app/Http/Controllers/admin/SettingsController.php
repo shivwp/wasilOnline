@@ -107,6 +107,9 @@ class SettingsController extends Controller
         $setting['url'] = $request->url;
         $setting['address'] = $request->address;
         $setting['hour'] = $request->hour;
+        $setting['instagram'] = $request->instagram;
+        $setting['twitter'] = $request->twitter;
+        $setting['facebook'] = $request->facebook;
 
         foreach ($setting as $key => $value) {
            
