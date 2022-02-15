@@ -15,6 +15,7 @@ class Feedback extends Model
         'rating',
         'discription',
         'follow_up',
-        'order_id'
+        'order_id',
+        'product_id'
     ];
 }

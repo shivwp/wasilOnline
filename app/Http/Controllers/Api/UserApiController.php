@@ -42,6 +42,7 @@ use App\Models\GiftCardLog;
 use App\Models\SocialAccount;
 use App\Models\Address;
 use App\Models\Reviews;
+use App\Models\Feedback;
 use App\Mail\Signup;
 
 use App\Newsletter as Chimp;
@@ -184,6 +185,7 @@ class UserApiController extends Controller
     }
 
     }
+
     public function userdetails()
     {
         if (Auth::guard('api')->check()) {

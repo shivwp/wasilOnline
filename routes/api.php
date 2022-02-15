@@ -62,8 +62,10 @@ Route::post('single-store', [App\Http\Controllers\Api\StoreApiController::class,
 Route::post('single-store-category', [App\Http\Controllers\Api\StoreApiController::class, 'singlestorecategory'] );
 Route::post('get-in-touch', [App\Http\Controllers\Api\GetInTouchApiController::class, 'store'] );
 Route::post('review-list', [App\Http\Controllers\Api\UserApiController::class, 'reviewlist'] );
+Route::post('feedback-list', [App\Http\Controllers\Api\ProductApiController::class, 'feedbacklist'] );
 //user location
 Route::post('location', [App\Http\Controllers\Api\UserLocationApiController::class, 'index'] );
+
 
 
 
@@ -99,6 +101,9 @@ Route::post('stripe-test', [App\Http\Controllers\Api\OrderApiController::class, 
 Route::post('all-cards', [App\Http\Controllers\Api\StripeCardsController::class, 'allCardsList'] );
 Route::post('add-card', [App\Http\Controllers\Api\StripeCardsController::class, 'addCard'] );
 
+//feedback
+Route::post('feedback', [App\Http\Controllers\Api\ProductApiController::class, 'feedbacksave'] );
+
 Route::post('order-history', [App\Http\Controllers\Api\OrderApiController::class, 'orderHistoryDetail'] );
 Route::post('gift-cards', [App\Http\Controllers\Api\GiftCardApiController::class, 'index'] );
 Route::post('wallet-transaction-gift', [App\Http\Controllers\Api\GiftCardApiController::class, 'index2'] );
@@ -107,8 +112,7 @@ Route::post('wallet-transaction', [App\Http\Controllers\Api\GiftCardApiControlle
 Route::post('add-order', [App\Http\Controllers\Api\OrderApiController::class, 'store'] );
 Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
 Route::post('edit-account', [App\Http\Controllers\Api\UserApiController::class, 'edituserdetails'] );
-//feedback
-Route::post('feedback', [App\Http\Controllers\Api\ProductApiController::class, 'feedbacksave'] );
+
 //review
 Route::post('review', [App\Http\Controllers\Api\UserApiController::class, 'review'] );
 

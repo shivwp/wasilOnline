@@ -1352,7 +1352,8 @@ class ProductApiController extends Controller
             'rating' => 'required',
             'discription' => 'required',
             'follow_up' => 'required',
-            'order_id' => 'required'
+            'order_id' => 'required',
+            'product_id'     => 'required',
 
         ]);
 
@@ -1364,13 +1365,34 @@ class ProductApiController extends Controller
             'rating'      => $request->rating,
             'discription'     => $request->discription,
             'follow_up'     => $request->follow_up,
+            'product_id'     => $request->product_id,
             'order_id'     => $request->order_id,
-          
         ]);
 
         return response()->json(['status' => true,'message' => "success" ,"data"=>$feedback], 200);
 
     }
+        public function feedbacklist(Request $request)
+    {   
+          $Feedback=Feedback::orderBY('id','DESC')->where('product_id','=',$request->product_id)->get(); 
+         $validator = Validator::make($request->all(), [
+            'product_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+        }
+         if(count($Feedback)>0){
+
+       $Feedback=Feedback::orderBY('id','DESC')->where('product_id','=',$request->product_id)->get(); 
+
+        return response()->json(['status' => true,'message' => "success" ,"data"=>$Feedback], 200);
+    }else{
+         return response()->json(['status' => false,'message' => "no Feedback" ], 200);
+    }
+
+    }
+       
 
 
 

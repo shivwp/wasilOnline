@@ -399,13 +399,17 @@
 
 						<label class="form-label">Shipping type</label>
 
-						<select class="form-control select2" name="shipping_type" >
+						<select class="form-control select2" name="shipping_type" id="fix_apply" >
 
 							<option value="">Select</option>
 
-							<option value="paid" {{isset($product) && ($product->shipping_type == 'ekart') ? 'selected' : '' }}>Ekart</option>
+							<option value="Ekart" {{isset($product) && ($product->shipping_type == 'ekart') ? 'selected' : '' }}>Ekart</option>
 
-							<option value="unpaid" {{isset($product) && ($product->shipping_type == 'wasil') ? 'selected' : '' }}>Wasil</option>
+							<option value="Wasil" {{isset($product) && ($product->shipping_type == 'wasil') ? 'selected' : '' }}>Wasil</option>
+
+							<option value="freeshipping" {{isset($product) && ($product->shipping_type == 'freeshipping') ? 'selected' : '' }}>Free Shipping</option>
+
+							<option value="fixedshipping" {{isset($product) && ($product->shipping_type == 'fixedshipping') ? 'selected' : '' }}>Fixed Shipping</option>
 
 						</select>
 
@@ -413,17 +417,18 @@
 
 				</div>
 
-				<!-- <div class="col-md-6">
+
+				<div class="col-md-6 ship-type">
 
 					<div class="form-group">
 
-						<label class="form-label">Shipping Price</label>
+						<label class="form-label">Fixed Shipping Price</label>
 
 						<input type="text" name="shipping_price" value="{{isset($product) ? $product->shipping_charge : '' }}" class="form-control" >
 
 					</div>
 
-				</div> -->
+				</div>
 
 				<div class="col-md-6">
 
@@ -875,6 +880,20 @@
 			$(".pro-single").hide();
 			
 		}
+		$('.ship-type').hide();
+		$(document).on('change', '#fix_apply', function(e) {
+
+		if($(this).find(":selected").val() == 'fixedshipping') {
+
+			$('.ship-type').show();
+
+		} else {
+
+			$('.ship-type').hide();
+
+		}
+
+		});
 
 		$('.tax-type').hide();
 
