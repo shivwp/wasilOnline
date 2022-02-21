@@ -10,6 +10,9 @@ use App\Models\AttributeValue;
 use App\Models\ProductAttribute;
 use App\Models\ProductVariants;
 use App\Models\User;
+use App\Models\ShippingMethod;
+use App\Models\ShippingProduct;
+use App\Models\VendorShipping;
 use App\Models\Tax;
 use App\Helper\Helper;
 use App\Models\Product;
@@ -27,7 +30,7 @@ class ProductController extends Controller
 
           }
           elseif(Auth::user()->roles->first()->title == 'Vendor'){
-            $d['product']=Product::orderBy('id')->where('products.parent_id','=',0)->where('vendor_id','=',Auth::user()->id);
+            $d['product']=Product::orderBy('id')->leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0)->where('vendor_id','=',Auth::user()->id);
           }
           else{
             $d['product'] = [];
@@ -76,12 +79,27 @@ class ProductController extends Controller
             }
         }
         $d['attributes']=$attributes;
+        $d['shipping_method'] =  ShippingMethod::all();
+
+        //shipping avalibality admin
+
+        $d['ship_meth_1'] = ShippingMethod::where('id',1)->first();
+        $d['ship_meth_2'] = ShippingMethod::where('id',2)->first();
+        $d['ship_meth_3'] = ShippingMethod::where('id',3)->first();
+
+
+          //shipping vendor
+          $vender_id = Auth::user()->id;
+          $d['checkvendorshiipingmethod1'] = VendorShipping::where('shipping_method_id',1)->where('vendor_id',$vender_id)->first();
+          $d['checkvendorshiipingmethod2'] = VendorShipping::where('shipping_method_id',2)->where('vendor_id',$vender_id)->first();
+          $d['checkvendorshiipingmethod3'] = VendorShipping::where('shipping_method_id',3)->where('vendor_id',$vender_id)->first();
+
+     
         return view('admin/product/add',$d);
     }
 
     public function store(Request $request)
     {
-
         $product = Product::updateOrCreate(['id' => $request->id],
           [
             'vendor_id'         => !empty($request->vendorid) ? $request->vendorid :  Auth::user()->id,
@@ -182,10 +200,48 @@ class ProductController extends Controller
         elseif($request->pro_type == 'variants'){
           $this->saveVarient($request, $product->id);
         }
+        // logs
         if(Auth::user()->roles->first()->title == 'Vendor'){
           $type='Product';
           \Helper::addToLog('Product Created or Updated', $type);
         }  
+          //Product side shipping method availability
+          if(isset($request->free) && $request->free="on"){
+            ShippingProduct::updateOrCreate(['product_id' => $product->id,'shipping_method_id'=>1],[
+                'shipping_method_id' => 1,
+                'product_id' => $product->id,
+                'min_order_free' => !empty($request->order_limit) ? $request->order_limit : 0,
+                'ship_price'=> 0,
+                'is_available' => 1
+            ]);
+        }
+        else{
+            VendorShipping::where('product_id',$product->id)->where('shipping_method_id',1)->delete();  
+        }
+        if(isset($request->fixed) && $request->fixed="on"){
+          ShippingProduct::updateOrCreate(['product_id' => $product->id,'shipping_method_id'=>2],[
+                'shipping_method_id' => 2,
+                'product_id' => $product->id,
+                'min_order_free' => 0,
+                'ship_price'=> !empty($request->shipping_price) ? $request->shipping_price : 0,
+                'is_available' => 1
+            ]);
+        }
+        else{
+            VendorShipping::where('product_id',$product->id)->where('shipping_method_id',2)->delete();   
+        }
+        if(isset($request->wasil) && $request->wasil="on"){
+          ShippingProduct::updateOrCreate(['product_id' => $product->id,'shipping_method_id'=>3],[
+                'shipping_method_id' => 3,
+                'product_id' => $product->id,
+                'min_order_free' => 0,
+                'ship_price'=> 0,
+                'is_available' => 1
+            ]);
+        }
+        else{
+            VendorShipping::where('product_id',$product->id)->where('shipping_method_id',3)->delete();  
+        }
       return redirect('/dashboard/product')->with('status', 'your data is updated');
 
     }
@@ -673,6 +729,18 @@ class ProductController extends Controller
           $pval['variants'] = $arra;
         }
         $d['prodductVariants'] = $prodductVariants;
+        $d['shipping_method'] =  ShippingMethod::all();
+        
+        //shipping avalibality admin
+        $d['ship_meth_1'] = ShippingMethod::where('id',1)->first();
+        $d['ship_meth_2'] = ShippingMethod::where('id',2)->first();
+        $d['ship_meth_3'] = ShippingMethod::where('id',3)->first();
+
+        //shipping vendor
+        $data['checkvendorshiipingmethod1'] = VendorShipping::where('shipping_method_id',1)->where('vendor_id',$product->vender_id)->first();
+        $data['checkvendorshiipingmethod2'] = VendorShipping::where('shipping_method_id',2)->where('vendor_id',$product->vender_id)->first();
+        $data['checkvendorshiipingmethod3'] = VendorShipping::where('shipping_method_id',3)->where('vendor_id',$product->vender_id)->first();
+
         return view('admin/product/add',$d);
     }
 

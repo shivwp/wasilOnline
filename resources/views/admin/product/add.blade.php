@@ -135,7 +135,7 @@
 
 						<label class="form-label">Select Category</label>
 
-						<select name="catid" class="form-control select2" id="pc" required>
+						<select name="catid" class="form-control select2" id="pc" >
   						
 							<option value="">Select</option>
 
@@ -220,6 +220,7 @@
 						<select name="pro_type" class="form-control select2 pro_type" id="product_type" required>
 								<option value="single" {{isset($product) && ($product->product_type == "single") ? 'selected' : ''}}>Single</option>
 								<option value="variants" {{isset($product) && ($product->product_type == "variants") ? 'selected' : ''}}>Variants</option>
+								<option value="giftcard" {{isset($product) && ($product->product_type == "variants") ? 'selected' : ''}}>Giftcard</option>
 						</select>
 					</div>
 				</div>
@@ -392,22 +393,128 @@
 					</div>
 
 				</div>
+				@if(Auth::user()->roles->first()->title == "Admin")	
+					<div class="col-md-12">
+						<div class="row mt-5">
+							<div class="col-md-12">
+							  <h4>Shipping Methods<h4>
+								<hr>
+							</div>
+							<div class="col-md-12">
+							@if($ship_meth_1->is_available == 1)
+							  <div class="row">
+								<div class="col-md-4">     
+								  <div class="form-group">
+									<label class="switch">
+										<input type="checkbox" id="free" name="free" {{ isset($checkvendorshiipingmethod1) && ($checkvendorshiipingmethod1->is_available == 1) ?  'checked' : '' }} onchange="freeship()">
+										<span class="slider round"></span>
+									</label>
+									<label for="scales">Free Shipping</label>
+								  </div>
+								</div>
+								<div class="col-md-4 order-limit">   
+								  <input type="number" class="form-control" name="order_limit" value="{{ isset($checkvendorshiipingmethod1) ? $checkvendorshiipingmethod1->min_order_free : '' }}" placeholder="order limit" > 
+								</div>
+								<div class="col-md-4">   
+								</div>
+							  </div>
+							@endif
+							@if($ship_meth_2->is_available == 1)
+							  <div class="row">
+								<div class="col-md-4">
+								  <div class="form-group">
+									<label class="switch">
+									  <input type="checkbox" id="fixed" name="fixed" {{ isset($checkvendorshiipingmethod2) && ($checkvendorshiipingmethod2->is_available == 1) ?  'checked' : '' }} onchange="fixedship()">
+									  <span class="slider round"></span>
+									</label>
+								  <label for="scales">Fixed Shipping</label>
+								  </div>
+								</div>
+								<div class="col-md-4 shipping-price">   
+								  <input type="number" class="form-control" name="shipping_price" value="{{ isset($checkvendorshiipingmethod2) ? $checkvendorshiipingmethod2->ship_price : '' }}" placeholder="shipping price"> 
+								</div>
+								<div class="col-md-4">   
+								</div>
+							  </div>
+							@endif
+							@if($ship_meth_3->is_available == 1)
+							  <div class="row">
+								<div class="col-md-4">
+								  <div class="form-group">
+									<label class="switch">
+									  <input type="checkbox" id="wasil" name="wasil" {{ isset($checkvendorshiipingmethod3) && ($checkvendorshiipingmethod->is_available == 1) ?  'checked' : '' }}>
+									  <span class="slider round"></span>
+									</label>
+									<label for="scales">Wasil Shipping</label>
+								  </div>
+								</div>
+							  </div>
+							@endif
+							</div>
+						  </div>
+					</div>
+				@endif
+				@if(Auth::user()->roles->first()->title == "Vendor")
+				<div class="col-md-12">
+					@if($checkvendorshiipingmethod1 != null && $checkvendorshiipingmethod1->is_available == 1)
+					  <div class="row">
+						<div class="col-md-4">     
+						  <div class="form-group">
+							<label class="switch">
+								<input type="checkbox" id="free" name="free"  onchange="freeship()">
+								<span class="slider round"></span>
+							</label>
+							<label for="scales">Free Shipping</label>
+						  </div>
+						</div>
+						<div class="col-md-4 order-limit">   
+						  <input type="number" class="form-control" name="order_limit" value="" placeholder="order limit" > 
+						</div>
+						<div class="col-md-4">   
+						</div>
+					  </div>
+					@endif
+					@if($checkvendorshiipingmethod2 != null && $checkvendorshiipingmethod2->is_available == 1)
+					  <div class="row">
+						<div class="col-md-4">
+						  <div class="form-group">
+							<label class="switch">
+							  <input type="checkbox" id="fixed" name="fixed" onchange="fixedship()">
+							  <span class="slider round"></span>
+							</label>
+						  <label for="scales">Fixed Shipping</label>
+						  </div>
+						</div>
+						<div class="col-md-4 shipping-price">   
+						  <input type="number" class="form-control" name="shipping_price" value="{{ isset($checkvendorshiipingmethod2) ? $checkvendorshiipingmethod2->ship_price : '' }}" placeholder="shipping price"> 
+						</div>
+						<div class="col-md-4">   
+						</div>
+					  </div>
+					@endif
+					@if($checkvendorshiipingmethod3 != null && $checkvendorshiipingmethod3->is_available == 1)
+					  <div class="row">
+						<div class="col-md-4">
+						  <div class="form-group">
+							<label class="switch">
+							  <input type="checkbox" id="wasil" name="wasil" >
+							  <span class="slider round"></span>
+							</label>
+							<label for="scales">Wasil Shipping</label>
+						  </div>
+						</div>
+					  </div>
+					@endif
+				  </div>
+				@endif
 
-				<div class="col-md-6">
+				<div class="col-md-6 ship-type">
 
 					<div class="form-group">
 
-						<label class="form-label">Shipping type</label>
+						<label class="form-label">Fixed Shipping Price</label>
 
-						<select class="form-control select2" name="shipping_type" >
-
-							<option value="">Select</option>
-
-							<option value="paid" {{isset($product) && ($product->shipping_type == 'ekart') ? 'selected' : '' }}>Ekart</option>
-
-							<option value="unpaid" {{isset($product) && ($product->shipping_type == 'wasil') ? 'selected' : '' }}>Wasil</option>
-
-						</select>
+						<input type="text" name="shipping_price" value="{{isset($product) ? $product->shipping_charge : '' }}" class="form-control" >
 
 					</div>
 
@@ -499,7 +606,7 @@
 
 						<label class="form-label">Number of products</label>
 
-						<input type="number" class="form-control" name="stock" placeholder="Stock" value="{{isset($product) ? $product->in_stock : '' }}" required>
+						<input type="number" class="form-control" name="stock" placeholder="Stock" value="{{isset($product) ? $product->in_stock : '' }}" >
 
 					</div>
 
@@ -511,7 +618,7 @@
 
 						<label class="form-label">Return Policy</label>
 
-						<select class="form-control select2" required>
+						<select class="form-control select2" >
 
 						<option value="none">None</option>
 
@@ -585,19 +692,19 @@
 				<div class="col-md-6">
 					<div class="form-group">
 						<label class="form-label">Offer Start Date</label>
-						<input type="date" class="form-control" name="discount_start" placeholder="discount" value="{{isset($product) ? $product->offer_start_date : '' }}" required>
+						<input type="datetime-local" class="form-control" name="discount_start" placeholder="discount" value="{{isset($product) ? $product->offer_start_date : '' }}" >
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
 						<label class="form-label">Offer End Date</label>
-						<input type="date" class="form-control" name="discount_end" placeholder="discount" value="{{isset($product) ? $product->offer_end_date : '' }}" required>
+						<input type="datetime-local" class="form-control" name="discount_end" placeholder="discount" value="{{isset($product) ? $product->offer_end_date : '' }}" >
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
 						<label class="form-label">Discount</label>
-						<input type="number" class="form-control" name="offer_discount" placeholder="discount" value="{{isset($product) ? $product->offer_discount : '' }}" required>
+						<input type="number" class="form-control" name="offer_discount" placeholder="discount" value="{{isset($product) ? $product->offer_discount : '' }}" >
 					</div>
 				</div>
 
@@ -607,7 +714,7 @@
 
 						<label class="form-label">Meta Title</label>
 
-						<input type="text" class="form-control" name="meta_title" placeholder="Meta Title" value="{{isset($product) ? $product->meta_title : '' }}" required>
+						<input type="text" class="form-control" name="meta_title" placeholder="Meta Title" value="{{isset($product) ? $product->meta_title : '' }}" >
 
 					</div>
 
@@ -619,7 +726,7 @@
 
 						<label class="form-label">Meta Keyword</label>
 
-						<textarea name="meta_keyword" class="form-control" placeholder="Meta Keyword" value="" rows="6" required>{{isset($product) ? $product->meta_keyword : '' }}</textarea>
+						<textarea name="meta_keyword" class="form-control" placeholder="Meta Keyword" value="" rows="6" >{{isset($product) ? $product->meta_keyword : '' }}</textarea>
 
 					</div>
 
@@ -631,7 +738,7 @@
 
 						<label class="form-label">Meta Discription</label>
 
-						<textarea name="meta_description" class="form-control" placeholder="Meta Description" value="{{isset($product) ? $product->meta_description : '' }}" rows="6" required>{{isset($product) ? $product->meta_description : '' }}</textarea>
+						<textarea name="meta_description" class="form-control" placeholder="Meta Description" value="{{isset($product) ? $product->meta_description : '' }}" rows="6" >{{isset($product) ? $product->meta_description : '' }}</textarea>
 
 					</div>
 
@@ -713,6 +820,7 @@
 						$value = json_decode($product->gallery_image);
 						
 					@endphp
+					@if(!empty($value))
 					@foreach($value as $multidata)
 	                    <div class="parc">
 	                    	<span class="pip" data-title="{{$multidata}}">
@@ -720,6 +828,7 @@
 	                      	<a class="btn"><i class="pe-7s-trash remove" onclick="removeImage('{{$multidata}}')"></i></a> 
 	                    </div>
 	               @endforeach
+				   @endif
 	                  <input type ="hidden" name="gallery_image1" id="gallery_img" value="{{$product->gallery_image}}">
 	               @endif
                 
@@ -875,6 +984,21 @@
 			$(".pro-single").hide();
 			
 		}
+
+		$('.ship-type').hide();
+		$(document).on('change', '#fix_apply', function(e) {
+
+		if($(this).find(":selected").val() == '2') {
+
+			$('.ship-type').show();
+
+		} else {
+
+			$('.ship-type').hide();
+
+		}
+
+		});
 
 		$('.tax-type').hide();
 
@@ -1051,6 +1175,23 @@
 	    var asd = JSON.stringify(ary);
 	   $('.pip[data-title="'+data+'"]').remove();
 	   $('#gallery_img').val(asd);
+	}
+</script>
+<script type="text/javascript">
+
+	function freeship()
+	{
+		if($('#free').is(":checked"))   
+			$(".order-limit").show();
+		else
+			$(".order-limit").hide();
+	}
+	function fixedship()
+	{
+		if($('#fixed').is(":checked"))   
+			$(".shipping-price").show();
+		else
+			$(".shipping-price").hide();
 	}
 </script>
 

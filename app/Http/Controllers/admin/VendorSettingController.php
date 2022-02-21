@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Models\State;
 use App\Models\Country;
 use App\Models\City;
+use App\Models\VendorShipping;
+use App\Models\ShippingMethod;
 use Auth;
 use Hash;
 use Redirect;
@@ -47,6 +49,7 @@ class VendorSettingController extends Controller
                 $setting->where('first_name', 'like', "%$request->search%");  
             }
               $data['setting']=$setting->paginate($pagination)->withQueryString();
+              
 
         // $data['setting'] =  $setting->paginate($pagination)->withQueryString();
 
@@ -83,6 +86,14 @@ class VendorSettingController extends Controller
             else{
                 $data['cities'] = City::where("state_id",$request->state_id)->get(["city_name", "city_id"]);
             }
+            $data['ship_1'] = ShippingMethod::where('id',1)->first();
+            $data['ship_2'] = ShippingMethod::where('id',2)->first();
+            $data['ship_3'] = ShippingMethod::where('id',3)->first();
+
+            //check method
+            $data['checkvendorshiipingmethod1'] = VendorShipping::where('shipping_method_id',1)->where('vendor_id',$vender_id)->first();
+            $data['checkvendorshiipingmethod2'] = VendorShipping::where('shipping_method_id',2)->where('vendor_id',$vender_id)->first();
+            $data['checkvendorshiipingmethod3'] = VendorShipping::where('shipping_method_id',3)->where('vendor_id',$vender_id)->first();
            //dd($data['setting']);
         return view('admin.vendor-setting',$data);
     }
@@ -154,6 +165,8 @@ class VendorSettingController extends Controller
         $data['states'] = State::get(["state_name", "state_id"]);
         $data['cities'] = City::get(["city_name", "city_id"]);
 
+
+
          return view('admin.vendor-setting',$data);
     }
 
@@ -165,8 +178,6 @@ class VendorSettingController extends Controller
      */
     public function store(Request $request)
     {
-    // dd($request); 
-
         if(Auth::user()->roles->first()->title == 'Admin'){
             // isset($request->vender_id)
             $password = Hash::make($request->password);
@@ -181,11 +192,51 @@ class VendorSettingController extends Controller
             $user->roles()->sync(3);
             $vendor_id=$user->id;
             $role = 'Admin';
+
+           
         }
         elseif(Auth::user()->roles->first()->title == 'Vendor'){
             // 
             $vendor_id= Auth::user()->id;
             $role = 'Vendor';
+
+            //vendor side shipping method availability
+            if(isset($request->free) && $request->free="on"){
+                VendorShipping::updateOrCreate(['vendor_id' => $vendor_id,'shipping_method_id'=>1],[
+                    'shipping_method_id' => 1,
+                    'vendor_id' => $vendor_id,
+                    'min_order_free' => !empty($request->order_limit) ? $request->order_limit : 0,
+                    'ship_price'=> 0,
+                    'is_available' => 1
+                ]);
+            }
+            else{
+                VendorShipping::where('vendor_id',$vendor_id)->where('shipping_method_id',1)->delete();  
+            }
+            if(isset($request->fixed) && $request->fixed="on"){
+                VendorShipping::updateOrCreate(['vendor_id' => $vendor_id,'shipping_method_id'=>2],[
+                    'shipping_method_id' => 2,
+                    'vendor_id' => $vendor_id,
+                    'min_order_free' => 0,
+                    'ship_price'=> !empty($request->shipping_price) ? $request->shipping_price : 0,
+                    'is_available' => 1
+                ]);
+            }
+            else{
+                VendorShipping::where('vendor_id',$vendor_id)->where('shipping_method_id',2)->delete();   
+            }
+            if(isset($request->wasil) && $request->wasil="on"){
+                VendorShipping::updateOrCreate(['vendor_id' => $vendor_id,'shipping_method_id'=>3],[
+                    'shipping_method_id' => 3,
+                    'vendor_id' => $vendor_id,
+                    'min_order_free' => 0,
+                    'ship_price'=> 0,
+                    'is_available' => 1
+                ]);
+            }
+            else{
+                VendorShipping::where('vendor_id',$vendor_id)->where('shipping_method_id',3)->delete();  
+            }
         }
 
         $data = $request->except('_token');
@@ -306,8 +357,6 @@ class VendorSettingController extends Controller
 
     }
 
-    
-
      /**
      * Display the specified resource.
      *
@@ -335,6 +384,8 @@ class VendorSettingController extends Controller
         $data['setting']=VendorSetting::where('vendor_id', '=' , $id)->get();
         
         $data['data'] = $this->getVendorMeta($id);
+   
+
         //dd($data['data']);
         return view('admin.vendor-details.vendor-setting',$data);
     }

@@ -75,14 +75,6 @@ class StripeCardsController extends Controller
                } else {
                     $customer_id = $customer_id;
                }
-
-               $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
-               $ac =  $stripe->paymentMethods->attach(
-                    $src_token,
-                    ['customer' => $customer_id]
-                );
-                //return $ac;
-
                
                $cardinfo = $stripeAccount->customers->createSource(
                  $customer_id,
@@ -100,6 +92,36 @@ class StripeCardsController extends Controller
           }
           
 
+     }
+
+     public function deleteCard(Request $request)
+     {
+          $userID = Auth::guard('api')->user();
+          $user_id = $userID->id;
+          $usercustomerid = User::where('id',$user_id)->first();
+          $customer_id = $usercustomerid->customer_id;
+         
+          try{
+               $parameters = $request->all();
+               extract($parameters);
+
+               $stripeAccount = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+
+               $sts = $stripeAccount->customers->deleteSource(
+                    $customer_id,
+                    $card_id,
+                    []
+               );
+
+               if($sts->deleted){
+                    return response()->json(['status' => true, 'message' => "Card Deleted Successfully", 'response' => $sts], 200);
+               } else {
+                    return response()->json(['status' => false, 'message' => "Failed to delete card!", 'response' => $sts], 200);
+               }
+          } catch (\Stripe\Exception\InvalidRequestException $e){
+               return response()->json(['status' => false, 'message' => "Error: ".$e, 'response' => $e], 200);
+          }
+          
      }
 
    

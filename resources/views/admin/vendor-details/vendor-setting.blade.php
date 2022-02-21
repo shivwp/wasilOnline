@@ -187,10 +187,11 @@
       </div>
     
        </div>
+       
        <h4>Payment Options</h4>
        <hr>
       <div class="row">
-            <div class="col-md-6">
+        <div class="col-md-6">
           <div class="form-group">
             <label class="control-label ">Account Name </label>
             <input type="text" class="form-control" name="account_name" value="{{($data['account_name'])??''}}">
@@ -198,7 +199,7 @@
         </div>
         <div class="col-md-6">
           <div class="form-group">
-            <label class="control-label ">Account Number </label>
+          <label class="control-label ">Account Number </label>
             <input type="number" class="form-control" name="account_number" value="{{($data['account_number'])??''}}">
           </div>
         </div>
@@ -214,7 +215,7 @@
             <input type="text" class="form-control" name="bank_number" value="{{($data['bank_number'])??''}}">
           </div>
         </div>
-          <div class="col-md-6">
+        <div class="col-md-6">
           <div class="form-group">
             <label class="control-label ">Swift Code </label>
             <input type="text" class="form-control" name="swift_code" value="{{($data['swift_code'])??''}}">
@@ -226,40 +227,35 @@
             <input type="text" class="form-control" name="routing_number" value="{{($data['routing_number'])??''}}">
           </div>
         </div>
-         <div class="col-md-12">
-            <label class="switch">
-              <input type="checkbox" id="selling" name="selling"isset({{($data['selling'] == 1)?'checked':''}}) >
-              <span class="slider round"></span>
-            </label>
-        
-        <label for="scales">Enable Selling</label>
-      </div>
         <div class="col-md-12">
-            <label class="switch">
-              <input type="checkbox" id="product_publish" name="product_publish" {{($data['product_publish'] == 1)?'checked':''}}>
-              <span class="slider round"></span>
-            </label>
-        
-        <label for="scales">Publish Product direct</label>
-      </div>
+          <label class="switch">
+            <input type="checkbox" id="selling" name="selling" {{isset($data['selling']) && ($data['selling']== 1) ? 'checked':''}}>
+            <span class="slider round"></span>
+          </label>
+          <label for="scales">Enable Selling</label>
+        </div>
         <div class="col-md-12">
-           <label class="switch">
-              <input type="checkbox" id="feature_vendor" name="feature_vendor" {{($data['feature_vendor'] == 1)?'checked':''}}>
-              <span class="slider round"></span>
-            </label>
-       
-        <label for="scales">Make feature vendor</label>
+          <label class="switch">
+            <input type="checkbox" id="product_publish" name="product_publish" {{isset($data['product_publish']) && ($data['product_publish'] == 1) ?'checked':''}}>
+            <span class="slider round"></span>
+          </label>
+          <label for="scales">Publish Product direct</label>
+        </div>
+        <div class="col-md-12">
+          <label class="switch">
+            <input type="checkbox" id="feature_vendor" name="feature_vendor" {{isset($data['feature_vendor']) && ($data['feature_vendor'] == 1)?'checked':''}}>
+            <span class="slider round"></span>
+          </label>
+          <label for="scales">Make feature vendor</label>
+        </div>
+        <div class="col-md-12">
+          <label class="switch">
+            <input type="checkbox" id="notify" name="notify" {{isset($data['notify']) && ($data['notify'] == 1)?'checked':''}}>
+            <span class="slider round"></span>
+          </label>
+          <label for="scales">Send the vendor an email About their account</label>
+        </div>
       </div>
-       <div class="col-md-12">
-        <label class="switch">
-             <input type="checkbox" id="notify" name="notify" {{($data['notify'] == 1)?'checked':''}}>
-              <span class="slider round"></span>
-            </label>
-        
-        <label for="scales">Send the vendor an email About their account</label>
-      </div>
-      </div>
-    
 
     <div class="form-actions" id="add_space">
       <button class="btn btn-success-light mt-3">Save & update</button>

@@ -31,7 +31,7 @@ class TestimonialsController extends Controller
 
     {
 
-        $d['title'] = " Testimonials";
+        $d['title'] = "Testimonials";
         $d['buton_name'] = "ADD NEW";
         $pagination=10;
         if(isset($_GET['paginate'])){

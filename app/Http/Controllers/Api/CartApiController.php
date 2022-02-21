@@ -31,7 +31,7 @@ class CartApiController extends Controller
             return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
         }
 
-        $cart=Cart::select('id','user_id','product_id','quantity')->where('user_id','=',$userid)->get();
+        $cart=Cart::select('id','user_id','product_id','quantity','price')->where('user_id','=',$userid)->get();
         $sum=Cart::where('user_id','=',$userid)->sum('price');
 
         if(count($cart) > 0 ){
@@ -78,6 +78,7 @@ class CartApiController extends Controller
                         if(!empty($CustomAttributes)){
                             $CustomAttributes->custom_attributes = json_decode($CustomAttributes->custom_attributes);
                             $product['attributes'] = $CustomAttributes->custom_attributes;
+                            $product['s_price'] = $c_value->price;
                         }
                         else{
                             $product['attributes'] = [];       

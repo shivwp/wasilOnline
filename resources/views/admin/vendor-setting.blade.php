@@ -359,6 +359,64 @@
       </div>
       @endcan
       </div>
+
+      <div class="row mt-5">
+        <div class="col-md-12">
+          <h4>Shipping Methods<h4>
+            <hr>
+        </div>
+        <div class="col-md-12">
+          @if($ship_1->is_available == 1)
+            <div class="row">
+              <div class="col-md-4">     
+                <div class="form-group">
+                  <label class="switch">
+                      <input type="checkbox" id="free" name="free" {{ isset($checkvendorshiipingmethod1) && ($checkvendorshiipingmethod1->is_available == 1) ?  'checked' : '' }} onchange="freeship()">
+                      <span class="slider round"></span>
+                  </label>
+                  <label for="scales">Free Shipping</label>
+                </div>
+              </div>
+              <div class="col-md-4 order-limit">   
+                <input type="number" class="form-control" name="order_limit" value="{{ isset($checkvendorshiipingmethod1) ? $checkvendorshiipingmethod1->min_order_free : '' }}" placeholder="order limit" > 
+              </div>
+              <div class="col-md-4">   
+              </div>
+            </div>
+          @endif
+          @if($ship_2->is_available == 1)
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label class="switch">
+                    <input type="checkbox" id="fixed" name="fixed" {{ isset($checkvendorshiipingmethod2) && ($checkvendorshiipingmethod2->is_available == 1) ?  'checked' : '' }} onchange="fixedship()">
+                    <span class="slider round"></span>
+                  </label>
+                <label for="scales">Fixed Shipping</label>
+                </div>
+              </div>
+              <div class="col-md-4 shipping-price">   
+                <input type="number" class="form-control" name="shipping_price" value="{{ isset($checkvendorshiipingmethod2) ? $checkvendorshiipingmethod2->ship_price : '' }}" placeholder="shipping price"> 
+              </div>
+              <div class="col-md-4">   
+              </div>
+            </div>
+          @endif
+          @if($ship_3->is_available == 1)
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label class="switch">
+                    <input type="checkbox" id="wasil" name="wasil" {{ isset($checkvendorshiipingmethod3) && ($checkvendorshiipingmethod->is_available == 1) ?  'checked' : '' }}>
+                    <span class="slider round"></span>
+                  </label>
+                  <label for="scales">Wasil Shipping</label>
+                </div>
+              </div>
+            </div>
+          @endif
+        </div>
+      </div>
     
 
     <div class="form-actions" id="add_space">
@@ -420,7 +478,24 @@
             });
         });
     </script>
+    <script type="text/javascript">
+       function freeship()
+       {
+           if($('#free').is(":checked"))   
+               $(".order-limit").show();
+           else
+               $(".order-limit").hide();
+       }
+       function fixedship()
+       {
+           if($('#fixed').is(":checked"))   
+               $(".shipping-price").show();
+           else
+               $(".shipping-price").hide();
+       }
+     </script>
 
 
 @endsection
+
 

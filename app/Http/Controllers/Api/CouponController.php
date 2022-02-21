@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Coupon;
 
-class CouponController extends Controller
+class CouponApiController extends Controller
 {
     /**
      * Display a listing of the resource.

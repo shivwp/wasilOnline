@@ -148,7 +148,7 @@ class GiftCardApiController extends Controller
                  'user_id'             => $userid,
                  'product_id'          => $request->product_id,
                  'quantity'            => $request->quantity,
-                 "price"                => $price
+                 "price"                =>  $price 
              ]);
              // gift card custom attributes
              $custom_attr = [
@@ -160,7 +160,9 @@ class GiftCardApiController extends Controller
              ];
              CustomAttributes::create([
                 'product_id'        =>$request->product_id,
-                'custom_attributes' => json_encode($custom_attr)
+                'custom_attributes' => json_encode($custom_attr),
+                'user_id' =>$userid,
+                'cart_id' => $cart_added->id
              ]);
              
              return response()->json(['status' => true, 'message' => "success"], 200);

@@ -16,5 +16,6 @@ class GiftCardUser extends Model
         'gift_card_code',
         'gift_card_amount',
         'gift_expiry_date'
+       
     ];
 }

@@ -28,6 +28,8 @@ Route::post('register', [App\Http\Controllers\Api\UserApiController::class, 'reg
 //vendor register  
 Route::post('vendor-register', [App\Http\Controllers\Api\UserApiController::class, 'vendorregister']);
 Route::post('vendor-login', [App\Http\Controllers\Api\UserApiController::class, 'vendorlogin']);
+Route::post('shipping-methods', [App\Http\Controllers\Api\ShippingApiController::class, 'index'] ); 
+Route::post('payment-methods', [App\Http\Controllers\Api\ShippingApiController::class, 'paymentMethod'] ); 
 
 Route::post('/userforgot', [App\Http\Controllers\Api\UserApiController::class, 'userforgot']);
 Route::post('/userresetpassword', [App\Http\Controllers\Api\UserApiController::class, 'userresetpassword']);
@@ -76,11 +78,12 @@ Route::post('testimonials', [App\Http\Controllers\Api\TestimonialsApiController:
 
 Route::post('product-attributes',[App\Http\Controllers\Api\ProductApiController::class, 'productAttributes'])->name('product-attributes');
 
-
+Route::post('gift-cards', [App\Http\Controllers\Api\GiftCardApiController::class, 'index'] );
 
 
 Route::middleware('auth:api')->group(function () {
 Route::post('orders', [App\Http\Controllers\Api\OrderApiController::class, 'index'] );
+Route::post('coupons', [App\Http\Controllers\Api\CouponApiController::class, 'index'] );
 
 Route::post('order-track', [App\Http\Controllers\Api\OrderApiController::class, 'orderTracking'] );
 Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
@@ -98,9 +101,10 @@ Route::post('category', [App\Http\Controllers\Api\CategoryApiController::class, 
 Route::post('stripe-test', [App\Http\Controllers\Api\OrderApiController::class, 'stripeDemo'] );
 Route::post('all-cards', [App\Http\Controllers\Api\StripeCardsController::class, 'allCardsList'] );
 Route::post('add-card', [App\Http\Controllers\Api\StripeCardsController::class, 'addCard'] );
+Route::post('delete-card', [App\Http\Controllers\Api\StripeCardsController::class, 'deleteCard'] );
 
 Route::post('order-history', [App\Http\Controllers\Api\OrderApiController::class, 'orderHistoryDetail'] );
-Route::post('gift-cards', [App\Http\Controllers\Api\GiftCardApiController::class, 'index'] );
+
 Route::post('wallet-transaction-gift', [App\Http\Controllers\Api\GiftCardApiController::class, 'index2'] );
 Route::post('gift-card-user', [App\Http\Controllers\Api\GiftCardApiController::class, 'store'] );
 Route::post('wallet-transaction', [App\Http\Controllers\Api\GiftCardApiController::class, 'index2'] );
@@ -126,6 +130,8 @@ Route::post('add-wallet-amount', [App\Http\Controllers\Api\UserApiController::cl
 Route::post('add-to-wishlist', [App\Http\Controllers\Api\WishlistApiController::class, 'store'] );
 Route::post('remove-from-wishlist', [App\Http\Controllers\Api\WishlistApiController::class, 'destroy'] );
 Route::post('wishlist', [App\Http\Controllers\Api\WishlistApiController::class, 'index'] );
+
+
 
 });
 Route::get('/clear-cache', function() {

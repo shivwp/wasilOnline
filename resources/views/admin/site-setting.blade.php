@@ -22,6 +22,7 @@
 
 </style>
 <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" integrity="sha512-xmGTNt20S0t62wHLmQec2DauG9T+owP9e6VU8GigI0anN7OXLip9i7IwEhelasml2osdxX71XcYm6BQunTQeQg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 @endsection
 
@@ -169,62 +170,86 @@
             </div>
         </div>
           <div class="col-md-2">
-          <div class="form-group">
-            <label class="control-label ">New Arrival Banner</label>
-            <input type="hidden" name="arrival_banner" value="banner">
-           <input type="file" class="form-control" id="exampleInputuname_1" name="arrival_banner" value="{{($setting['arrival_banner'])??''}}">
+            <div class="form-group">
+              <label class="control-label ">New Arrival Banner</label>
+              <input type="hidden" name="arrival_banner" value="banner">
+            <input type="file" class="form-control" id="exampleInputuname_1" name="arrival_banner" value="{{($setting['arrival_banner'])??''}}">
+            </div>
           </div>
-        </div>
           <div class="col-md-4">
           <div class="form-group">
             <img src="{{ url('images/').'/'.$setting['arrival_banner'] ?? "" }}"  alt="banner">
             </div>
         </div>
-           <div class="col-md-12">
-        <h4 class="mt-5">Social links</h4><hr>
-        <div class="row">
-        <div class="col-md-4">     
-          <div class="form-group">
-          <div class="left-inner-addon input-container">
-            <i class="fa fa-instagram"></i>
-             <input  type="text"
-                   class="form-control" 
-                   placeholder="instagram" name="instagram" value="{{($setting['instagram'])??''}}" />
-           </div>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="form-group">
-              <div class="left-inner-addon input-container">
-            <i class="fa fa-twitter"></i>
-             <input  type="text"
-                   class="form-control" 
-                   placeholder="twitter" name="twitter" value="{{($setting['twitter'])??''}}" />
-           </div>
         
+          <div class="col-md-12">
+              <h4 class="mt-5">Social links</h4><hr>
+              <div class="row">
+                <div class="col-md-4">     
+                  <div class="form-group">
+                    <div class="left-inner-addon input-container">
+                      <i class="fa fa-instagram"></i>
+                      <input  type="text"
+                      class="form-control" 
+                      placeholder="instagram" name="instagram" value="{{($setting['instagram'])??''}}" />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <div class="left-inner-addon input-container">
+                      <i class="fa fa-twitter"></i>
+                      <input  type="text"
+                      class="form-control" 
+                      placeholder="twitter" name="twitter" value="{{($setting['twitter'])??''}}" />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <div class="left-inner-addon input-container">
+                      <i class="fa fa-facebook"></i>
+                      <input  type="text"
+                      class="form-control" 
+                      placeholder="Facebook" name="facebook" value="{{($setting['facebook'])??''}}" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="col-md-12">
+            <h4 class="mt-5">Shipping Options</h4><hr>
+            <div class="row">
+              <div class="col-md-4">     
+                <div class="form-group">
+                  <label class="switch">
+                      <input type="checkbox" id="free" name="free" {{ isset($ship_meth_1) && ($ship_meth_1->is_available == 1) ?  'checked' : '' }}>
+                      <span class="slider round"></span>
+                  </label>
+                  <label for="scales">Free Shipping</label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label class="switch">
+                    <input type="checkbox" id="fixed" name="fixed" {{ isset($ship_meth_2) && ($ship_meth_2->is_available == 1) ?  'checked' : '' }}>
+                    <span class="slider round"></span>
+                  </label>
+                <label for="scales">Fixed Shipping</label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label class="switch">
+                    <input type="checkbox" id="wasil" name="wasil" {{ isset($ship_meth_3) && ($ship_meth_3->is_available == 1) ?  'checked' : '' }}>
+                    <span class="slider round"></span>
+                  </label>
+                  <label for="scales">Wasil Shipping</label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
- 
-        <div class="col-md-4">
-          <div class="form-group">
-            <div class="left-inner-addon input-container">
-            <i class="fa fa-facebook"></i>
-             <input  type="text"
-                   class="form-control" 
-                   placeholder="Facebook" name="facebook" value="{{($setting['facebook'])??''}}" />
-           </div>
-            
-          </div>
-        </div>
-
-      </div>
-
-
-     
-       
-      </div>
-    </div>
     
     
 
@@ -250,6 +275,7 @@
 @endsection
 
 @section('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js" integrity="sha512-VvWznBcyBJK71YKEKDMpZ0pCVxjNuKwApp4zLF3ul+CiflQi6aIJR+aZCP/qWsoFBA28avL5T5HA+RE+zrGQYg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
 $('select').select2({
   createTag: function (params) {
@@ -265,6 +291,19 @@ $('select').select2({
     }
   }
 });
+</script>
+<script>
+  $(document).ready(function() {
+		$("#tags").change(function(){
+			
+			var tagval = $('input[name="ship_method"]').val();
+			$('#ship_method').val(tagval);
+
+		
+		});
+    
+	});
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 @endsection

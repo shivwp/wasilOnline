@@ -351,6 +351,7 @@ class OrderApiController extends Controller
                                'payment_status' => 'success'
                        ]);
                        $vendorEarning->save();
+                       Cart::whereIn('id',$request->cart_id)->delete();
 
                    }catch(\Stripe\Exception\InvalidRequestException $e){
 
@@ -471,21 +472,27 @@ class OrderApiController extends Controller
     }
     public function stripeDemo(Request $request){
 
-        
-
         $stripeAccount = new \Stripe\StripeClient(env('STRIPE_SECRET'));
 
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        $method = \Stripe\PaymentMethod::create([
-            'type' => 'card',
+        // $method = \Stripe\PaymentMethod::create([
+        //     'type' => 'card',
+        //     'card' => [
+        //         'number' => '4242424242424242',
+        //         'exp_month' => 12,
+        //         'exp_year' => 2022,
+        //         'cvc' => '314',
+        //     ],
+        // ]);
+        $method = $stripeAccount->tokens->create([
             'card' => [
-                'number' => '4242424242424242',
-                'exp_month' => 12,
-                'exp_year' => 2022,
-                'cvc' => '314',
+              'number' => '4242424242424242',
+              'exp_month' => 2,
+              'exp_year' => 2023,
+              'cvc' => '314',
             ],
-        ]);
+          ]);
         return $method;
         $paymentIntent = \Stripe\PaymentIntent::create([
             'amount' => 20 * 100,
@@ -509,11 +516,6 @@ class OrderApiController extends Controller
         ]);
 
         return $paymentIntent;
-
-
-
-
-
 
     }
     

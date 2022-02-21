@@ -23,7 +23,7 @@ class TestimonialsApiController extends Controller
 
             foreach($Testimonials as $key => $val){
 
-                $val->image =   url('testimonials' . $val->image);
+                $val->image =   url('testimonials/' . $val->image);
 
             }
 

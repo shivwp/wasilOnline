@@ -205,7 +205,7 @@ class CategoryController extends Controller
           
             $input['imagename'] = time().'.'.$file->getClientOriginalExtension();
          
-            $destinationPath = public_path('category');
+            $destinationPath = 'category';
             $img = Image::make($file->getRealPath());
             $img->resize(400, 340, function ($constraint) {
                 $constraint->aspectRatio();

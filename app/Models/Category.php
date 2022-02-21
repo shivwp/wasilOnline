@@ -42,7 +42,9 @@ class Category extends Model
 
         'level',
 
-        'slug'
+        'slug',
+        'category_image',
+        'category_image_banner'
 
     ];
 

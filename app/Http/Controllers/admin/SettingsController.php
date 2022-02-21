@@ -5,7 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Setting;
-
+use App\Models\ShippingMethod;
 class SettingsController extends Controller
 {
     /**
@@ -18,6 +18,19 @@ class SettingsController extends Controller
         $d['title'] = "Web-settings";
 
          $d['setting']=Setting::pluck('value', 'name');
+
+         $ship_method = ShippingMethod::all();
+            $title = [];
+         foreach($ship_method as $val){
+
+            $title[] = $val->title;
+
+         }
+
+         $d['arr'] = implode(",",$title);
+         $d['ship_meth_1'] = ShippingMethod::where('id',1)->first();
+         $d['ship_meth_2'] = ShippingMethod::where('id',2)->first();
+         $d['ship_meth_3'] = ShippingMethod::where('id',3)->first();
 
          // dd($d['setting']);
 
@@ -42,7 +55,8 @@ class SettingsController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
+        
+         $ship = explode(",",$request->ship_method);
         //  $mailData=['host' => $request->host,
 
         //   'port' => $request->port,
@@ -172,6 +186,39 @@ class SettingsController extends Controller
                     ], [
                         'value'=>$value
                     ]);
+        }
+
+        //Shipping Method
+
+        if(isset($request->free) && $request->free == "on"){
+            ShippingMethod::where('id',1)->update([
+                'is_available' => 1
+            ]);
+        }
+        else{
+            ShippingMethod::where('id',1)->update([
+                'is_available' => 0
+            ]);
+        }
+        if(isset($request->fixed) && $request->fixed == "on"){
+            ShippingMethod::where('id',2)->update([
+                'is_available' => 1
+            ]);
+        }
+        else{
+            ShippingMethod::where('id',2)->update([
+                'is_available' => 0
+            ]);
+        }
+        if(isset($request->wasil) && $request->wasil == "on"){
+            ShippingMethod::where('id',3)->update([
+                'is_available' => 1
+            ]);
+        }
+        else{
+            ShippingMethod::where('id',3)->update([
+                'is_available' => 0
+            ]);
         }
               
         // $lastid =$setting->id;   

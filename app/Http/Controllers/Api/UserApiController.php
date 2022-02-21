@@ -201,39 +201,90 @@ class UserApiController extends Controller
     }
     
     public function edituserdetails(Request $request){
+
         $userid = Auth::user()->token()->user_id;
+
         if(empty($userid)){
+
             return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
+
         }
+
         $validator = Validator::make($request->all(), [
+
             'first_name' => 'required',
+
             'last_name' => 'required',
+
             'display_name' => 'required',
+
             'email' => 'required',
-            'phone' => 'required',
-            'password' => 'required'
+
+            'phone' => 'required'
+
         ]);
 
+
+
         if ($validator->fails()) {
+
             return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+
         }
+
+
 
         if($request->password){
 
+
+
             $pass = Hash::make($request->password);
+
+
 
        }
 
-        User::where('id',$userid)->update([
+       $update = [
 
-            'first_name' =>$request->first_name,
-            'last_name' =>$request->last_name,
-            'email' =>$request->email,
-            'phone' =>$request->phone,
-            'password' =>$pass,
-        ]);
+
+
+        'first_name' =>$request->first_name,
+
+        'last_name' =>$request->last_name,
+
+        'email' =>$request->email,
+
+        'phone' =>$request->phone,
+
+        //'password' =>$pass,
+
+       ];
+
+       if(isset($request->password)){
+        $update['password'] = $pass;
+
+       }
+       if($request->hasFile('profile')){
+
+        $file               = $request->file('profile');
+        $name               = time().'.'.$file->getClientOriginalExtension();
+        $destinationPath    = 'img';
+        $file->move($destinationPath, $name);
+
+        $update['profile_image'] = $name;
+
+       }
+       
+
+
+
+        User::where('id',$userid)->update($update);
+
+
 
         return response()->json([ 'status'=> true , 'message' => "success"], 200);
+
+
 
     }
 
@@ -351,7 +402,7 @@ class UserApiController extends Controller
        }
 
        else{
-          return response()->json(['status' => false,'message' => 'User not registered', 'user' => Null], 200);
+          return response()->json(['status' => false,'message' => 'User not registered or Invalid credentials', 'user' => Null], 200);
        }
 
     }
