@@ -21,6 +21,7 @@ class CategoryApiController extends Controller
          
          foreach($category as $key => $val){
             $val['count']= Product::where('cat_id','=',$val->id)->count();
+            $val->category_image_banner = url('category/' . $val->category_image_banner);
             $val['category_image'] = url('category/' . $val->category_image);
             $category_child= Category::all('id','title','slug','category_image','slug','parent_id')->where('parent_id','=',$val->id);
             

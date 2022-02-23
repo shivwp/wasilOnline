@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Address;
 use App\Models\Product;
 use App\Models\OrderedProducts;
+use App\Models\GiftCard;
 use App\Models\GiftCardUser;
 use App\Models\GiftCardLog;
 use App\Models\User;
@@ -17,6 +18,9 @@ use App\Models\OrderMeta;
 use App\Models\OrderNote;
 use App\Models\OrderPayment;
 use App\Models\VendorEarnings;
+use App\Models\UserWalletTransection;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Validator;
 use Auth;
 class OrderApiController extends Controller
@@ -107,15 +111,17 @@ class OrderApiController extends Controller
             $vendorid = [];
             foreach($getVendor as $val){
                 $cart = Cart::where('id',$val)->first();
+                if(empty($cart)){
+                    return response()->json(['status' => false, 'message' => "no data found"], 200);
+                }
                 $product = Product::where('id',$cart->product_id)->first();
+                if(empty($product)){
+                    return response()->json(['status' => false, 'message' => "no products found"], 200);
+                }
                 $vendorid[] = $product->vendor_id;
             }
             //Coupon 
             $coupon = Coupon::where('code',$request->coupon_code)->first();
-            // if(){
-
-            // }
-
 
             //Gift Card
             $giftcard = GiftCardUser::where('gift_card_code',$request->giftcard_code)->where('gift_card_amount','!=',0)->first();
@@ -291,6 +297,7 @@ class OrderApiController extends Controller
                        $stripeAccount = new \Stripe\StripeClient(env('STRIPE_SECRET'));
                        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
                        $paymentIntent = \Stripe\PaymentIntent::create([
+                            'customer' => $user->customer_id,
                            'amount' => $total_price * 100,
                            'currency' => 'gbp',
                            'payment_method_types' => ['card'],
@@ -351,6 +358,78 @@ class OrderApiController extends Controller
                                'payment_status' => 'success'
                        ]);
                        $vendorEarning->save();
+
+                        //if product is card or gift card
+                        $getCartData = Cart::whereIn('id',$getVendor)->get();
+                        foreach($getCartData as $gc_key => $gc_val){
+                         $producttype = Product::where('id',$gc_val->product_id)->first();
+                         $giftcard = GiftCard::where('id',$gc_val->card_id)->first();
+                             if($producttype->product_type == "giftcard"){
+                                 if($gc_val->quantity >  1){
+                                     for($i=1;$i<=$gc_val->quantity;$i++){
+     
+                                         $code=Str::random(16);
+                                         $code=substr_replace($code, '-', 4, 0);
+                                         $code=substr_replace($code, '-', 9, 0); 
+                                         $code=substr_replace($code, '-', 14, 0);
+                                         $gift_expiry_date=Carbon::now()->addDays($giftcard->valid_days);
+                         
+                                         $userGiftCard = GiftCardUser::create([
+                                             'user_id' => $user_id,
+                                             'card_id' => $gc_val->card_id,
+                                             'gift_card_code' => $code,
+                                             'gift_card_amount' => $gc_val->card_amount,
+                                             'gift_expiry_date' => $gift_expiry_date
+                                 
+                                         ]);
+                                         //$this->sendGift($userGiftCard);
+                         
+                                     }
+ 
+                                 }
+                                 else{
+                                     
+                                     $code=Str::random(16);
+                                     $code=substr_replace($code, '-', 4, 0);
+                                     $code=substr_replace($code, '-', 9, 0); 
+                                     $code=substr_replace($code, '-', 14, 0);
+                                     $gift_expiry_date=Carbon::now()->addDays($giftcard->valid_days);
+                         
+                                     $userGiftCard = GiftCardUser::create([
+                         
+                                         'user_id' => $user_id,
+                                         'card_id' => $gc_val->card_id,
+                                         'gift_card_code' => $code,
+                                         'gift_card_amount' => $gc_val->card_amount,
+                                         'gift_expiry_date' => $gift_expiry_date
+                             
+                                     ]);
+                                     //$this->sendGift($userGiftCard);
+                                 }
+                             }
+                             elseif($producttype->product_type == "card"){
+
+                                $getuserwalletamount = User::where('id',$user_id)->first();
+                                $userwalletamount = $getuserwalletamount->user_wallet;
+                                $updateamount = $userwalletamount+$gc_val->card_amount;
+                                //update wallet
+                                $getuserwalletamount->user_wallet = $updateamount;
+                                $getuserwalletamount->save();
+                                 
+                                UserWalletTransection::create([
+
+                                    'user_id' => $user_id,
+                                    'amount' => $gc_val->card_amount,
+                                    'amount_type' => 'CARD',
+                                    'description' => 'transection from cart to wallet',
+
+                                ]);
+
+                                 
+                             }
+ 
+                        }
+
                        Cart::whereIn('id',$request->cart_id)->delete();
 
                    }catch(\Stripe\Exception\InvalidRequestException $e){
@@ -367,6 +446,8 @@ class OrderApiController extends Controller
         return response()->json(['status' => true, 'message' => "Success"], 200);
        
     }
+
+    
 
 
     public function orderTracking(Request $request){
@@ -447,18 +528,18 @@ class OrderApiController extends Controller
         // $order=order::join('ordered_products', 'ordered_products.order_id', '=', 'orders.id' )->join('products','products.id','=','ordered_products.product_id')->join('users', 'users.id', '=', 'products.vendor_id' )->join('categories', 'categories.id', '=', 'products.cat_id' )->where('user_id','=',$userid)->get();
         $orders = Order::with('orderItem')->where('user_id','=',$userid)->where('parent_id','=',0)->get();
 
-        if(!empty($orders)){
+        if(count($orders) >0 ){
             foreach($orders as $key => $val){
                 $meta1 = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','billing_address')->first();
                 $meta2 = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','shipping_address')->first();
                 $total_price = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','total_price')->first();
                 $currency_sign = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','currency_sign')->first();
                 $shipping_price = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','shipping_price')->first();
-               $orders[$key]['billing'] = json_decode($meta1->meta_value);
-               $orders[$key]['shipping'] = json_decode($meta2->meta_value);
-               $orders[$key]['total_price'] = $total_price->meta_value;
-               $orders[$key]['currency_sign'] = $currency_sign->meta_value;
-               $orders[$key]['shipping_price'] = $shipping_price->meta_value;
+               $orders[$key]['billing'] = (!empty($meta1->meta_value) ? json_decode($meta1->meta_value) : '');
+               $orders[$key]['shipping'] = (!empty($meta2->meta_value) ? json_decode($meta2->meta_value) : '' );
+               $orders[$key]['total_price'] = !empty($total_price->meta_value) ? $total_price->meta_value :'';
+               $orders[$key]['currency_sign'] = !empty($currency_sign->meta_value) ? $currency_sign->meta_value :'';
+               $orders[$key]['shipping_price'] = !empty($shipping_price->meta_value) ? $shipping_price->meta_value : '';
             //    $orders[$key]['meta'] = $data;
             //    $orders[$key]['meta'] = $data;
 

@@ -26,7 +26,7 @@ class ProductController extends Controller
           $d['buton_name'] = "ADD NEW";
            
           if(Auth::user()->roles->first()->title == 'Admin'){
-            $d['product'] = Product::leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0);
+            $d['product'] = Product::orderBy('id')->leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0);
 
           }
           elseif(Auth::user()->roles->first()->title == 'Vendor'){
@@ -100,6 +100,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+      //dd($request);
         $product = Product::updateOrCreate(['id' => $request->id],
           [
             'vendor_id'         => !empty($request->vendorid) ? $request->vendorid :  Auth::user()->id,
@@ -216,7 +217,7 @@ class ProductController extends Controller
             ]);
         }
         else{
-            VendorShipping::where('product_id',$product->id)->where('shipping_method_id',1)->delete();  
+          ShippingProduct::where('product_id',$product->id)->where('shipping_method_id',1)->delete();  
         }
         if(isset($request->fixed) && $request->fixed="on"){
           ShippingProduct::updateOrCreate(['product_id' => $product->id,'shipping_method_id'=>2],[
@@ -228,7 +229,7 @@ class ProductController extends Controller
             ]);
         }
         else{
-            VendorShipping::where('product_id',$product->id)->where('shipping_method_id',2)->delete();   
+          ShippingProduct::where('product_id',$product->id)->where('shipping_method_id',2)->delete();   
         }
         if(isset($request->wasil) && $request->wasil="on"){
           ShippingProduct::updateOrCreate(['product_id' => $product->id,'shipping_method_id'=>3],[
@@ -240,7 +241,7 @@ class ProductController extends Controller
             ]);
         }
         else{
-            VendorShipping::where('product_id',$product->id)->where('shipping_method_id',3)->delete();  
+          ShippingProduct::where('product_id',$product->id)->where('shipping_method_id',3)->delete();  
         }
       return redirect('/dashboard/product')->with('status', 'your data is updated');
 

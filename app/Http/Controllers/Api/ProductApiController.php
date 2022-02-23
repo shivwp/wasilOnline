@@ -30,7 +30,7 @@ class ProductApiController extends Controller
      */
     public function index(Request $request)
     {
-        $prod=Product::orderBy('id', 'DESC')->where('parent_id','=',0);
+        $prod=Product::orderBy('id', 'DESC')->where('product_type','!=','giftcard')->where('product_type','!=','card')->where('parent_id','=',0);
         if($request->category_id){
             $prod->where('cat_id',$request->category_id); 
         }
@@ -175,7 +175,7 @@ class ProductApiController extends Controller
     }
      public function relatedproduct(Request $request)
     {
-        $product=Product::orderBY('id','DESC')->where('parent_id','=',0)->where('cat_id','=',$request->cat_id)->limit('5')->get(); 
+        $product=Product::orderBY('id','DESC')->where('parent_id','=',0)->where('cat_id','=',$request->cat_id)->limit('5')->where('product_type','!=','giftcard')->where('product_type','!=','card')->get(); 
         $banner = Setting::where('name','=','arrival_banner')->first('value');
         $products = [];
         $url = PageMeta::where('key','new_product_url')->first();
@@ -341,7 +341,7 @@ class ProductApiController extends Controller
     
     public function newproduct(Request $request)
     {
-        $product=Product::orderBY('id','DESC')->where('parent_id','=',0)->limit('8')->get(); 
+        $product=Product::orderBY('id','DESC')->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('8')->get(); 
         $banner = Setting::where('name','=','arrival_banner')->first('value');
         $products = [];
         $url = PageMeta::where('key','new_product_url')->first();
@@ -444,7 +444,7 @@ class ProductApiController extends Controller
         
     }
     public function bestseller(Request $request){
-        $product=Product::where('best_saller',1)->where('parent_id','=',0)->limit('5')->get(); 
+        $product=Product::where('best_saller',1)->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('5')->get(); 
         $products = [];
         if(count($product)>0){
          $products['url'] = 'sfcsd';
@@ -548,7 +548,7 @@ class ProductApiController extends Controller
 
     public function trendingProduct(Request $request){
 
-        $product=Product::orderBY('avg_rating','DESC')->where('parent_id','=',0)->limit('7')->get(); 
+        $product=Product::orderBY('avg_rating','DESC')->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('7')->get(); 
         $products = [];
         if(count($product)>0){
          $products['url'] = 'sfcsd';
@@ -655,7 +655,7 @@ class ProductApiController extends Controller
 
     
      public function Featureproduct(Request $request){
-        $product=Product::where('featured',1)->where('parent_id','=',0)->limit('8')->get(); 
+        $product=Product::where('featured',1)->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('8')->get(); 
         $products = [];
         if(count($product)>0){
          $products['url'] = 'sfcsd';
@@ -975,7 +975,7 @@ class ProductApiController extends Controller
 
     public function searchProduct(Request $request){
         
-        $category = Category::where('title', 'like', "%{$request->search}%")->get();
+        $category = Category::where('title', 'like', "%{$request->search}%")->where('product_type','!=','giftcard')->where('product_type','=','card')->get();
 
         if(count($category) > 0){
 
@@ -1123,7 +1123,7 @@ class ProductApiController extends Controller
 
         $currentDate  = Carbon\Carbon::now()->toDateString();
 
-       $products = Product::where('parent_id',0)->whereDate('offer_end_date','>=',$currentDate)->get(); 
+       $products = Product::where('parent_id',0)->where('product_type','!=','giftcard')->where('product_type','=','card')->whereDate('offer_end_date','>=',$currentDate)->get(); 
        $banner = Setting::where('name','=','value_banner')->first('value');
 
        if(count($products)>0){
@@ -1234,7 +1234,7 @@ class ProductApiController extends Controller
 
     public function topHunderd(Request $request){
 
-        $products = Product::where('parent_id',0)->where('top_hunderd',1)->get(); 
+        $products = Product::where('parent_id',0)->where('product_type','!=','giftcard')->where('product_type','=','card')->where('top_hunderd',1)->get(); 
         $banner = Setting::where('name','=','top_banner')->first('value'); 
 
         if(count($products)>0){

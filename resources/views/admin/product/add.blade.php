@@ -80,7 +80,7 @@
 					<div class="form-group">
 						<label class="form-label">Select Vendor</label>
 						<select name="vendorid" class="form-control select2" required >
-							<option value="">Select</option>
+							<option value="0">Select</option>
 							@if(count($all_vendors) > 0)
 								@foreach($all_vendors as $val)
 									<option value="{{$val->id}}" {{isset($product) && ($product->vendor_id == $val->id) ? 'selected' : ''}}>{{$val->first_name}}</option>
@@ -221,6 +221,7 @@
 								<option value="single" {{isset($product) && ($product->product_type == "single") ? 'selected' : ''}}>Single</option>
 								<option value="variants" {{isset($product) && ($product->product_type == "variants") ? 'selected' : ''}}>Variants</option>
 								<option value="giftcard" {{isset($product) && ($product->product_type == "variants") ? 'selected' : ''}}>Giftcard</option>
+								<option value="card" {{isset($product) && ($product->product_type == "card") ? 'selected' : ''}}>Card</option>
 						</select>
 					</div>
 				</div>

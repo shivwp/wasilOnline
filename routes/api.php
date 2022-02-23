@@ -62,8 +62,10 @@ Route::post('stores', [App\Http\Controllers\Api\StoreApiController::class, 'inde
 Route::post('single-store', [App\Http\Controllers\Api\StoreApiController::class, 'singlestore'] );
 Route::post('single-store', [App\Http\Controllers\Api\StoreApiController::class, 'singlestore'] );
 Route::post('single-store-category', [App\Http\Controllers\Api\StoreApiController::class, 'singlestorecategory'] );
+Route::post('single-store-category-product', [App\Http\Controllers\Api\StoreApiController::class, 'singlestorecategoryproduct'] );
 Route::post('get-in-touch', [App\Http\Controllers\Api\GetInTouchApiController::class, 'store'] );
 Route::post('review-list', [App\Http\Controllers\Api\UserApiController::class, 'reviewlist'] );
+Route::post('dabit-add-to-cart', [App\Http\Controllers\Api\CartApiController::class, 'dabitaddtocart'] );
 //user location
 Route::post('location', [App\Http\Controllers\Api\UserLocationApiController::class, 'index'] );
 

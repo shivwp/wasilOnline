@@ -15,6 +15,8 @@ class Cart extends Model
         'product_id',
         'quantity',
         'variation',
-        'price'
+        'price',
+        'card_id',
+        'card_amount'
     ];
 }

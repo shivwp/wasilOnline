@@ -148,7 +148,9 @@ class GiftCardApiController extends Controller
                  'user_id'             => $userid,
                  'product_id'          => $request->product_id,
                  'quantity'            => $request->quantity,
-                 "price"                =>  $price 
+                 "price"                =>  $price,
+                 "card_id"                => $request->card_id,
+                 "card_amount" => $request->card_amount
              ]);
              // gift card custom attributes
              $custom_attr = [
