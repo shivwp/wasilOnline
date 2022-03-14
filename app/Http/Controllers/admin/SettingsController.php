@@ -124,6 +124,7 @@ class SettingsController extends Controller
         $setting['instagram'] = $request->instagram;
         $setting['twitter'] = $request->twitter;
         $setting['facebook'] = $request->facebook;
+        $setting['pinterest'] = $request->pinterest;
 
         foreach ($setting as $key => $value) {
            
@@ -220,6 +221,7 @@ class SettingsController extends Controller
                 'is_available' => 0
             ]);
         }
+           
               
         // $lastid =$setting->id;   
         // $setting->save();

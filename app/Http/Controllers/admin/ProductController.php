@@ -20,38 +20,34 @@ use Auth;
 use DB;
 class ProductController extends Controller
 {
-      public function index(Request $request)
-      { 
-          $d['title'] = "PRODUCT";
-          $d['buton_name'] = "ADD NEW";
-           
-          if(Auth::user()->roles->first()->title == 'Admin'){
-            $d['product'] = Product::orderBy('id')->leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0);
+  
+  public function index(Request $request)
+  { 
 
-          }
-          elseif(Auth::user()->roles->first()->title == 'Vendor'){
-            $d['product']=Product::orderBy('id')->leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0)->where('vendor_id','=',Auth::user()->id);
-          }
-          else{
-            $d['product'] = [];
-          }
-          $pagination=10;
-          if(isset($_GET['paginate'])){
-              $pagination=$_GET['paginate'];
-          }
-            $q=Product::select('*');
-            if($request->search){
-                $q->where('pname', 'like', "%$request->search%");  
-            }
-             $d['product']=$q->paginate($pagination)->withQueryString();
-
-
-           //=$d['product']->paginate($pagination)->withQueryString();
-          return view('admin/product/index',$d);
-
+      $d['title'] = "PRODUCT";
+      $d['buton_name'] = "ADD NEW";
+      if(Auth::user()->roles->first()->title == 'Admin'){
+        $product = Product::orderBy('id')->leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0);
       }
+      elseif(Auth::user()->roles->first()->title == 'Vendor'){
+        $product=Product::orderBy('id')->leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0)->where('vendor_id','=',Auth::user()->id);
+      }
+      else{
+        $product = [];
+      }
+      $pagination=10;
+      if(isset($_GET['paginate'])){
+          $pagination=$_GET['paginate'];
+      }
+        //$q=Product::select('*');
+        if($request->search){
+            $product->where('pname', 'like', "%$request->search%");  
+        }
+         $d['product']=$product->paginate($pagination)->withQueryString();
 
+      return view('admin/product/index',$d);
 
+  }
 
     public function create()
     { 
@@ -100,150 +96,296 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-      //dd($request);
+
         $product = Product::updateOrCreate(['id' => $request->id],
+
           [
+
             'vendor_id'         => !empty($request->vendorid) ? $request->vendorid :  Auth::user()->id,
+
             'pname'             => $request->input('productname'),
+
             'product_type'      => $request->pro_type,
+
             'cat_id'            => $request->input('catid'),
+
             'cat_id_2'          => $request->input('catid_2'),
+
             'cat_id_3'          => $request->input('catid_3'),
+
             'sku_id'            => $request->input('sku'),
+
             'p_price'           => $request->input("purchase"),
+
             's_price'           => $request->input("selling"),
+
             'commission'        => $request->input("commission"),
+
             'tax_apply'         => $request->input('tax_apply'),
+
             'tax_type'         => $request->input('tax'),
+
+            'return_days'         => $request->input('return_days'),
+
             'short_description' => $request->input('example-textarea-input'),
+
             'long_description'  => $request->input('content'),
+
             'offer_start_date'    => $request->discount_start,
+
             'offer_end_date'          => $request->discount_end,
+
             'offer_discount'          => $request->offer_discount,
+
             'in_stock'          => $request->input('stock'),
+
             'best_saller'               => !empty($request->input('check2')) && ($request->input('check1') == 'on') ? '1' : '0',
+
             'new'               => !empty($request->input('check2')) && ($request->input('check2') == 'on') ? '1' : '0',
+
             'featured'               => !empty($request->input('check2')) && ($request->input('check3') == 'on') ? '1' : '0',
+
             'top_hunderd'               => !empty($request->input('top_hundred')) && ($request->input('top_hundred') == 'on') ? '1' : '0',
+
             'shipping_type'     => $request->input("shipping_type"),
+
             'shipping_charge'   => $request->input("shipping_price"),
+
             'meta_title'        => $request->input('meta_title'),
+
             'meta_keyword'      => $request->input('meta_keyword'),
+
             'meta_description'  => $request->input('meta_description'),
+
              'best_saller'       => !empty($request->input('best_saller')) && ($request->input('best_saller') == 'on') ? '1' : '0',
+
+
 
             'new'               => !empty($request->input('new')) && ($request->input('new') == 'on') ? '1' : '0',
 
+
+
             'featured'          => !empty($request->input('featured')) && ($request->input('featured') == 'on') ? '1' : '0',
+
           ]);
+
          if($request->hasfile('featured_image'))
+
           {
+
             $file = $request->file('featured_image');
+
             $file = $request->file('featured_image');
+
             $input['imagename'] = time().'.'.$file->getClientOriginalExtension();
+
             $destinationPath = 'products/feature';
+
             $img = Image::make($file->getRealPath());
+
             $img->resize(600, 540, function ($constraint) {
+
                 $constraint->aspectRatio();
+
             })->save($destinationPath.'/'.$input['imagename']);
+
             Product::where('id',$product->id)->update([
+
                 'featured_image' => $input['imagename']
+
             ]);
 
+
+
           }
+
           if($request->hasfile('gallery_image'))
+
           {
+
             $file1 = $request->file('gallery_image');
+
             foreach($file1 as $image)
+
             {
+
               $name =$image->getClientOriginalName();
+
               $destinationPath = 'products/gallery';
+
               $image->move($destinationPath, $name);
+
               $gallery_image_name[] =  $name;
+
             }
+
           }
+
+
 
             $result = [];
+
             $varimg = json_decode($request->gallery_image1);
+
             if(!empty($gallery_image_name) && !empty($varimg)){
+
               $result = array_merge($gallery_image_name, $varimg);
+
             }
+
             else if(!empty($gallery_image_name)) {
+
               $result = $gallery_image_name;
 
+
+
             } else {
+
               $result = $varimg;
+
             }
+
               Product::where('id','=',$product->id)->update([
+
                 'gallery_image' => json_encode($result)
+
               ]);
 
+
+
         if($request->pro_type == 'single') {
+
           if($request->input('attrvalid')) { 
+
             $attributes = $request->input('attrvalid');
+
            if(isset($request->id)){
+
               $already = ProductAttribute::where('product_id',$request->id)->get();
+
               if(count($already) > 0){
+
                 ProductAttribute::where('product_id',$request->id)->delete();
+
               }
+
            }
+
             foreach ($attributes as $key => $value) {
+
                 foreach($value as $key1 =>  $val_1){
+
                   $pa = ProductAttribute::create([
+
                     'product_id'=>$product->id,
+
                     'attr_id' => $key,
+
                     'attr_value_id'=>$val_1,
+
                   ]);
+
                 }
+
             }
+
           }
+
         } 
+
         elseif($request->pro_type == 'variants'){
+
           $this->saveVarient($request, $product->id);
+
         }
+
         // logs
+
         if(Auth::user()->roles->first()->title == 'Vendor'){
+
           $type='Product';
+
           \Helper::addToLog('Product Created or Updated', $type);
+
         }  
+
           //Product side shipping method availability
+
           if(isset($request->free) && $request->free="on"){
+
             ShippingProduct::updateOrCreate(['product_id' => $product->id,'shipping_method_id'=>1],[
+
                 'shipping_method_id' => 1,
+
                 'product_id' => $product->id,
+
                 'min_order_free' => !empty($request->order_limit) ? $request->order_limit : 0,
+
                 'ship_price'=> 0,
+
                 'is_available' => 1
+
             ]);
+
         }
+
         else{
+
           ShippingProduct::where('product_id',$product->id)->where('shipping_method_id',1)->delete();  
+
         }
+
         if(isset($request->fixed) && $request->fixed="on"){
+
           ShippingProduct::updateOrCreate(['product_id' => $product->id,'shipping_method_id'=>2],[
+
                 'shipping_method_id' => 2,
+
                 'product_id' => $product->id,
+
                 'min_order_free' => 0,
+
                 'ship_price'=> !empty($request->shipping_price) ? $request->shipping_price : 0,
+
                 'is_available' => 1
+
             ]);
+
         }
+
         else{
+
           ShippingProduct::where('product_id',$product->id)->where('shipping_method_id',2)->delete();   
+
         }
+
         if(isset($request->wasil) && $request->wasil="on"){
+
           ShippingProduct::updateOrCreate(['product_id' => $product->id,'shipping_method_id'=>3],[
+
                 'shipping_method_id' => 3,
+
                 'product_id' => $product->id,
+
                 'min_order_free' => 0,
+
                 'ship_price'=> 0,
+
                 'is_available' => 1
+
             ]);
+
         }
+
         else{
+
           ShippingProduct::where('product_id',$product->id)->where('shipping_method_id',3)->delete();  
+
         }
+
       return redirect('/dashboard/product')->with('status', 'your data is updated');
+
+
 
     }
 

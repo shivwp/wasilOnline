@@ -15,7 +15,9 @@ use App\Models\Coupon;
 use App\Models\Cart;
 use App\Models\Setting;
 use App\Models\Wishlist;
+use App\Models\VendorSetting;
 use App\Models\Feedback;
+use App\Http\Traits\CurrencyTrait;
 use Auth;
 use Carbon;
 use Validator;
@@ -23,40 +25,44 @@ use DB;
 
 class ProductApiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   use CurrencyTrait;
+   
     public function index(Request $request)
     {
+        DB::enableQueryLog();
+
         $prod=Product::orderBy('id', 'DESC')->where('product_type','!=','giftcard')->where('product_type','!=','card')->where('parent_id','=',0);
+
+        if(!empty($request->location)){
+            $prod->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+            $prod->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+        }
+        
         if($request->category_id){
-            $prod->where('cat_id',$request->category_id); 
+            $prod->where('products.cat_id',$request->category_id); 
         }
         if($request->price_range){
             $exp = explode("-",$request->price_range); 
                 $min_price = $exp[0];
                 $max_price = $exp[1];
-                $prod->whereBetween('s_price', [$min_price, $max_price]);
+                $prod->whereBetween('products.s_price', [$min_price, $max_price]);
 
             }
         if($request->in_stock){
          if($request->in_stock == true){
-            $prod->where('in_stock','>',0);     
+            $prod->where('products.in_stock','>',0);     
          }
         }
         if($request->attr_value_id){
 
             $ProductAttribute = ProductAttribute::select('product_id')->whereIn('attr_value_id',$request->attr_value_id)->groupBy('product_id')->get();
-            $proidmatch = [];
             if(count($ProductAttribute)>0){
                 foreach($ProductAttribute as $pro_attr => $pro_value){
                     $proidmatch[] = $pro_value->product_id;        
                 }
             }
             if(!empty($proidmatch)){
-                $prod->whereIn('id', $proidmatch);      
+                $prod->whereIn('products.id', $proidmatch);      
 
             }
         }
@@ -69,6 +75,7 @@ class ProductApiController extends Controller
         else{
         $product = $prod->get();
         }
+       // dd(DB::getQueryLog());
         if(count($product) > 0){
             foreach($product as $key => $val){
                 $data = [];
@@ -110,6 +117,12 @@ class ProductApiController extends Controller
                         $product[$key]['in_wishlist'] = false;
 
                     }
+                // currency 
+                if(!empty($request->currency_code)){
+                    $currency = $this->currencyFetch($request->currency_code);
+                    $product[$key]['currency_sign'] = $currency['sign'];
+                    $product[$key]['currency_code'] = $currency['code'];
+                }
                 if($val->product_type == "single"){
                     $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
                     if(count($productAttributes)>0){
@@ -175,7 +188,12 @@ class ProductApiController extends Controller
     }
      public function relatedproduct(Request $request)
     {
-        $product=Product::orderBY('id','DESC')->where('parent_id','=',0)->where('cat_id','=',$request->cat_id)->limit('5')->where('product_type','!=','giftcard')->where('product_type','!=','card')->get(); 
+        $pro=Product::orderBY('id','DESC')->where('parent_id','=',0)->where('cat_id','=',$request->cat_id)->limit('5')->where('product_type','!=','giftcard')->where('product_type','!=','card');
+        if(!empty($request->location)){
+            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+        }
+        $product = $pro->get();
         $banner = Setting::where('name','=','arrival_banner')->first('value');
         $products = [];
         $url = PageMeta::where('key','new_product_url')->first();
@@ -220,6 +238,13 @@ class ProductApiController extends Controller
                 $product[$key]['in_wishlist'] = false;
 
             }
+             // currency 
+             if(!empty($request->currency_code)){
+                $currency = $this->currencyFetch($request->currency_code);
+                $product[$key]['currency_sign'] = $currency['sign'];
+                $product[$key]['currency_code'] = $currency['code'];
+            }
+
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
                 if(count($productAttributes)>0){
@@ -341,7 +366,13 @@ class ProductApiController extends Controller
     
     public function newproduct(Request $request)
     {
-        $product=Product::orderBY('id','DESC')->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('8')->get(); 
+        // $product=Product::orderBY('id','DESC')->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('8'); 
+        $pro = Product::orderBY('products.id','DESC')->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('8');
+        if(!empty($request->location)){
+            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+        }
+        $product = $pro->get();
         $banner = Setting::where('name','=','arrival_banner')->first('value');
         $products = [];
         $url = PageMeta::where('key','new_product_url')->first();
@@ -385,6 +416,12 @@ class ProductApiController extends Controller
                 $product[$key]['in_cart'] = false;
                 $product[$key]['in_wishlist'] = false;
 
+            }
+             // currency 
+             if(!empty($request->currency_code)){
+                $currency = $this->currencyFetch($request->currency_code);
+                $product[$key]['currency_sign'] = $currency['sign'];
+                $product[$key]['currency_code'] = $currency['code'];
             }
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -444,7 +481,12 @@ class ProductApiController extends Controller
         
     }
     public function bestseller(Request $request){
-        $product=Product::where('best_saller',1)->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('5')->get(); 
+        $prod=Product::where('best_saller',1)->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('5'); 
+        if(!empty($request->location)){
+            $prod->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+            $prod->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+        }
+        $product = $prod->get();
         $products = [];
         if(count($product)>0){
          $products['url'] = 'sfcsd';
@@ -487,6 +529,12 @@ class ProductApiController extends Controller
                 $product[$key]['in_cart'] = false;
                 $product[$key]['in_wishlist'] = false;
 
+            }
+            // currency 
+            if(!empty($request->currency_code)){
+                $currency = $this->currencyFetch($request->currency_code);
+                $product[$key]['currency_sign'] = $currency['sign'];
+                $product[$key]['currency_code'] = $currency['code'];
             }
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -548,7 +596,12 @@ class ProductApiController extends Controller
 
     public function trendingProduct(Request $request){
 
-        $product=Product::orderBY('avg_rating','DESC')->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('7')->get(); 
+        $pro=Product::orderBY('avg_rating','DESC')->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('7'); 
+        if(!empty($request->location)){
+            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+        }
+        $product = $pro->get();
         $products = [];
         if(count($product)>0){
          $products['url'] = 'sfcsd';
@@ -591,6 +644,12 @@ class ProductApiController extends Controller
                 $product[$key]['in_cart'] = false;
                 $product[$key]['in_wishlist'] = false;
 
+            }
+            // currency 
+            if(!empty($request->currency_code)){
+                $currency = $this->currencyFetch($request->currency_code);
+                $product[$key]['currency_sign'] = $currency['sign'];
+                $product[$key]['currency_code'] = $currency['code'];
             }
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -654,8 +713,13 @@ class ProductApiController extends Controller
 
 
     
-     public function Featureproduct(Request $request){
-        $product=Product::where('featured',1)->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('8')->get(); 
+    public function Featureproduct(Request $request){
+        $pro=Product::where('featured',1)->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('8'); 
+        if(!empty($request->location)){
+            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+        }
+        $product = $pro->get();
         $products = [];
         if(count($product)>0){
          $products['url'] = 'sfcsd';
@@ -699,6 +763,13 @@ class ProductApiController extends Controller
                 $product[$key]['in_wishlist'] = false;
 
             }
+            // currency 
+            if(!empty($request->currency_code)){
+                $currency = $this->currencyFetch($request->currency_code);
+                $product[$key]['currency_sign'] = $currency['sign'];
+                $product[$key]['currency_code'] = $currency['code'];
+            }
+
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
                 if(count($productAttributes)>0){
@@ -797,6 +868,12 @@ class ProductApiController extends Controller
                     $product['in_wishlist'] = false;
 
                 }
+                // currency 
+                if(!empty($request->currency_code)){
+                    $currency = $this->currencyFetch($request->currency_code);
+                    $product['currency_sign'] = $currency['sign'];
+                    $product['currency_code'] = $currency['code'];
+                }
                 if($product->product_type == "single"){
                     $productAttributes = ProductAttribute::where('product_id',$product->id)->groupBy('attr_id')->get();
                     if(count($productAttributes)>0){
@@ -821,30 +898,30 @@ class ProductApiController extends Controller
                     }
                 }
                 else{
-                    $productVariants = ProductVariants::select('parent_id','p_id','variant_value','variant_sku','variant_price','variant_stock','variant_images')->where('parent_id',$product->id)->get();
-                    if(count($productVariants) > 0){
-                        $arr_attr = [];
-                        $variants_img = [];
-                        foreach($productVariants as $v_k => $v_val){
-                            foreach(json_decode($v_val->variant_value) as $key_var =>   $val_var) {
-                                $attrdataa = Attribute::where('slug', $key_var)->first();
-                                $attrval = AttributeValue::where('id', $val_var)->first();
-                                $arr_attr[$key_var]['attr_id'] = $attrdataa->id;
-                                $arr_attr[$key_var]['attr_value'] = $attrval->attr_value_name;
-                                $arr_attr[$key_var]['attr_value_id'] = $val_var; 
-                                $productVariants[$v_k]['variant_value'] = $arr_attr;
-                            }
-                            if(!empty($v_val->variant_images)){
-                                foreach(json_decode($v_val->variant_images) as $key_var_img =>   $val_var_img) {
-                                    $variants_img[] = url('products/gallery/' . $val_var_img);
-                                    $productVariants[$v_k]['variant_images'] = $variants_img;
-                                }
-                            }
-                        $product['variants'] = $productVariants;
-                            
+                  $variants = DB::table('variations')->where('parent_id',$request->id)->groupBy('attribute_id')->get();
+                  $arr_attr = [];
+                  if(count($variants) > 0){
+                      foreach($variants as $v_k => $v_value){
+                        $attrdataa = Attribute::where('id', $v_value->attribute_id)->first();
+                        $arr_attr[$v_k]['name'] = $attrdataa->slug;
+                        $vari = DB::table('variations')->where('parent_id',$request->id)->where('attribute_id',$v_value->attribute_id)->groupBy('attribute_term_id')->get();
+                        $attr_term = [];
+                        foreach($vari as $t_key => $t_val){
+                            $attrval = AttributeValue::where('id',  $t_val->attribute_term_id)->first();
+                            $stocks = ProductVariants::where('id',$t_val->variant_id)->first();
+
+                            $attr_term[$t_key]['name'] = $attrval->slug;
+                            $attr_term[$t_key]['sku'] = $stocks->variant_sku;
+                            $attr_term[$t_key]['price'] = $stocks->variant_price;
+                            $attr_term[$t_key]['stock'] = $stocks->variant_stock;
+                            $varimg = json_decode($stocks->variant_images);
+                            $attr_term[$t_key]['image'] = url('products/gallery/' .$varimg[0]);
+                            $arr_attr[$v_k]['values'] = $attr_term;
                         }
-                    
-                    }
+
+                      }
+                  }
+                  $product['variants'] = $arr_attr;
                 }
           
             return response()->json(['status' => true, 'message' => "singleproduct", 'product' => $product], 200);
@@ -975,7 +1052,7 @@ class ProductApiController extends Controller
 
     public function searchProduct(Request $request){
         
-        $category = Category::where('title', 'like', "%{$request->search}%")->where('product_type','!=','giftcard')->where('product_type','=','card')->get();
+        $category = Category::where('title', 'like', "%{$request->search}%")->get();
 
         if(count($category) > 0){
 
@@ -993,31 +1070,49 @@ class ProductApiController extends Controller
             if(!empty($request->page) && !empty($request->limit)){
                 $page = $request->page;
                 $limit = $request->limit;
-                $product=Product::where('parent_id',0)->whereIn('cat_id',$catId)
+                $pro=Product::where('parent_id',0)->whereIn('cat_id',$catId)
                 ->orWhereIn('cat_id_2', $catId)
                 ->orWhereIn('cat_id_3', $catId)
                 ->limit($limit)
-                ->offset(($page - 1) * $limit)
-                ->get(); 
+                ->offset(($page - 1) * $limit);
+                if(!empty($request->location)){
+                    $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+                    $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+                }
+                $product = $pro->get();
 
             }
             else{
 
-                $product=Product::where('parent_id',0)->whereIn('cat_id',$catId)
+                $pro=Product::where('parent_id',0)->whereIn('cat_id',$catId)
                 ->orWhereIn('cat_id_2', $catId)
-                ->orWhereIn('cat_id_3', $catId)
-                ->get(); 
+                ->orWhereIn('cat_id_3', $catId);
+                if(!empty($request->location)){
+                    $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+                    $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+                }
+                $product = $pro->get();
             }
         }
         else{
             if(!empty($request->page) && !empty($request->limit)){
             
-                $product=Product::where('parent_id',0)->where('pname', 'like', "%{$request->search}%")->limit($limit)
-                ->offset(($page - 1) * $limit)->get();  
+                $pro=Product::where('parent_id',0)->where('pname', 'like', "%{$request->search}%")->limit($limit)
+                ->offset(($page - 1) * $limit);  
+                if(!empty($request->location)){
+                    $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+                    $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+                }
+                $product = $pro->get();
 
             }
             else{
-                $product=Product::where('parent_id',0)->where('pname', 'like', "%{$request->search}%")->get();  
+                $pro=Product::where('parent_id',0)->where('pname', 'like', "%{$request->search}%"); 
+                if(!empty($request->location)){
+                    $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+                    $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+                }
+                $product = $pro->get(); 
             }
         }
         if(count($product)>0){
@@ -1060,6 +1155,12 @@ class ProductApiController extends Controller
                     $product[$key]['in_cart'] = false;
                     $product[$key]['in_wishlist'] = false;
 
+                }
+                 // currency 
+                 if(!empty($request->currency_code)){
+                    $currency = $this->currencyFetch($request->currency_code);
+                    $product[$key]['currency_sign'] = $currency['sign'];
+                    $product[$key]['currency_code'] = $currency['code'];
                 }
                 if($val->product_type == "single"){
                     $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -1123,7 +1224,13 @@ class ProductApiController extends Controller
 
         $currentDate  = Carbon\Carbon::now()->toDateString();
 
-       $products = Product::where('parent_id',0)->where('product_type','!=','giftcard')->where('product_type','=','card')->whereDate('offer_end_date','>=',$currentDate)->get(); 
+       $pro = Product::where('parent_id',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->whereDate('offer_end_date','>=',$currentDate); 
+       if(!empty($request->location)){
+            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+        }
+        $products = $pro->get();
+
        $banner = Setting::where('name','=','value_banner')->first('value');
 
        if(count($products)>0){
@@ -1167,6 +1274,12 @@ class ProductApiController extends Controller
                     $products[$key]['in_cart'] = false;
                     $products[$key]['in_wishlist'] = false;
 
+                }
+                // currency 
+                if(!empty($request->currency_code)){
+                    $currency = $this->currencyFetch($request->currency_code);
+                    $products[$key]['currency_sign'] = $currency['sign'];
+                    $products[$key]['currency_code'] = $currency['code'];
                 }
                 
                 if($val->product_type == "single"){
@@ -1234,7 +1347,12 @@ class ProductApiController extends Controller
 
     public function topHunderd(Request $request){
 
-        $products = Product::where('parent_id',0)->where('product_type','!=','giftcard')->where('product_type','=','card')->where('top_hunderd',1)->get(); 
+        $pro = Product::where('parent_id',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->where('top_hunderd',1);
+        if(!empty($request->location)){
+            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+        }
+        $products = $pro->get(); 
         $banner = Setting::where('name','=','top_banner')->first('value'); 
 
         if(count($products)>0){
@@ -1275,9 +1393,15 @@ class ProductApiController extends Controller
                     }
                 }
                 else{
-                    $product[$key]['in_cart'] = false;
-                    $product[$key]['in_wishlist'] = false;
+                    $products[$key]['in_cart'] = false;
+                    $products[$key]['in_wishlist'] = false;
 
+                }
+                // currency 
+                if(!empty($request->currency_code)){
+                    $currency = $this->currencyFetch($request->currency_code);
+                    $products[$key]['currency_sign'] = $currency['sign'];
+                    $products[$key]['currency_code'] = $currency['code'];
                 }
                  if($val->product_type == "single"){
                      $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -1299,7 +1423,7 @@ class ProductApiController extends Controller
                                  $attrdata[$d]['attribute_value'] = $attr_value;
                              }
                          }
-                         $product[$key]['attributes'] = $attrdata;
+                         $products[$key]['attributes'] = $attrdata;
                      }
                  }
                  else{
@@ -1322,7 +1446,7 @@ class ProductApiController extends Controller
                              }
                              
                          }
-                         $product[$key]['variants'] = $productVariants;
+                         $products[$key]['variants'] = $productVariants;
                      }
                  }
  
@@ -1348,11 +1472,20 @@ class ProductApiController extends Controller
     }
     public function feedbacksave( Request $request)
     {
+        if (Auth::guard('api')->check()) {
+
+            $user = Auth::guard('api')->user();
+
+        } 
+
+        $user_id = $user->id;
+
         $validator = Validator::make($request->all(), [
             'rating' => 'required',
             'discription' => 'required',
             'follow_up' => 'required',
-            'order_id' => 'required'
+            'product_id' => 'required',
+            'user_id' => 'required'
 
         ]);
 
@@ -1364,7 +1497,8 @@ class ProductApiController extends Controller
             'rating'      => $request->rating,
             'discription'     => $request->discription,
             'follow_up'     => $request->follow_up,
-            'order_id'     => $request->order_id,
+            'product_id'     => $request->product_id,
+            'user_id'     => $user_id,
           
         ]);
 
@@ -1372,7 +1506,25 @@ class ProductApiController extends Controller
 
     }
 
+    public function feedbacklist(Request $request)
+    {   
+            $Feedback=Feedback::orderBY('id','DESC')->where('product_id','=',$request->product_id)->get(); 
+            $validator = Validator::make($request->all(), [
+                'product_id' => 'required'
+            ]);
 
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+            }
+            if(count($Feedback)>0){
+
+        $Feedback=Feedback::orderBY('id','DESC')->where('product_id','=',$request->product_id)->get(); 
+
+            return response()->json(['status' => true,'message' => "success" ,"data"=>$Feedback], 200);
+        }else{
+            return response()->json(['status' => false,'message' => "no Feedback" ], 200);
+        }
+    }
 
 
     public function show($id)

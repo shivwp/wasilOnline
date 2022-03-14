@@ -171,9 +171,11 @@
                                                             <button  type="button" class="btn btn-sm btn-secondary accept" data-toggle="modal" data-target="#exampleModal" value="{{$item->id}}" >
                                                             <i class="fa fa-check"></i>
                                                             </button>
+                                                            @if($item->status == 0)
                                                             <button  type="button" class="btn btn-sm btn-secondary reject" data-toggle="modal" data-target="#exampleModal1" value="{{$item->id}}" >
                                                             <i class="fa fa-ban"></i>
                                                             </button>
+                                                            @endif
                                                                 
                                                                  @can('coupon_delete')
                                                                     <form action="{{ route('dashboard.tax.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">
@@ -221,7 +223,7 @@
 <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-    <form action ="{{ route('dashboard.reject-request') }}"> 
+    <form action ="{{ route('dashboard.close-ticket') }}"> 
         <input type="hidden" class="form-control withdrowrejectid"  name="id" value="">
       <div class="modal-body">
         <label>Add Comment</label>

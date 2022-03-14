@@ -56,6 +56,9 @@ class CouponApiController extends Controller
             return response()->json(['status' => false, 'message' => 'no coupons','coupon' => $coupon], 200);
         }
        }
+       else{
+        return response()->json(['status' => false, 'message' => 'cart not found','coupon' => []], 200);  
+       }
     }
 
     /**

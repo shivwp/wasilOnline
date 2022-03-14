@@ -15,6 +15,7 @@ class CustomAttributes extends Model
         'product_id',
         'custom_attributes',
         'user_id',
-        'price'
+        'price',
+        'cart_id'
     ];
 }

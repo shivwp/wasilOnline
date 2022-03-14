@@ -37,4 +37,8 @@ class Order extends Model
     {
     return $this->hasMany(OrderedProducts::class,'order_id');
     }
+    public function ticket()
+    {
+        return $this->hasMany(SupportTickets::class);
+    }
 }

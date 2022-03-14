@@ -32,11 +32,29 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '3b1dc7de1c826f551fb60a206630d5ac0fe056f3',
+    'reference' => '2207c903307e1cc6590be0887831eb7276c7445b',
     'name' => 'laravel/laravel',
   ),
   'versions' => 
   array (
+    'amrshawky/currency' => 
+    array (
+      'pretty_version' => '1.0.0',
+      'version' => '1.0.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '39f13b6783ef611fd13916d48abd31bca2ab1e54',
+    ),
+    'amrshawky/laravel-currency' => 
+    array (
+      'pretty_version' => '5.0.0',
+      'version' => '5.0.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '34df93d1bc19758fe8bc2be63a0fc1580cb2b3bd',
+    ),
     'asm89/stack-cors' => 
     array (
       'pretty_version' => 'v2.0.3',
@@ -525,16 +543,16 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '3b1dc7de1c826f551fb60a206630d5ac0fe056f3',
+      'reference' => '2207c903307e1cc6590be0887831eb7276c7445b',
     ),
     'laravel/passport' => 
     array (
-      'pretty_version' => 'v10.2.2',
-      'version' => '10.2.2.0',
+      'pretty_version' => 'v10.3.2',
+      'version' => '10.3.2.0',
       'aliases' => 
       array (
       ),
-      'reference' => '7981abed1a0979afd4a5a8bec81624b8127a287f',
+      'reference' => 'c56207e9a37c849da0164842a609a9f38747e95b',
     ),
     'laravel/sail' => 
     array (

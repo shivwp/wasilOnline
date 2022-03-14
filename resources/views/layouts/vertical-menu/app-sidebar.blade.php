@@ -380,30 +380,27 @@
 
                        @can('web_settings')
 
-                          <li class="slide">
-
+                        <li class="slide">
                             <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon fe fe-settings"></i><span class="side-menu__label"> Web Settings</span><i class="angle fa fa-angle-right"></i></a>
-
                             <ul class="slide-menu">
-
-                          
-
-                               <li><a href="{{ route('dashboard.currency.index') }}" class="slide-item">Currency</a></li>
-                               
+                                <li><a href="{{ route('dashboard.currency.index') }}" class="slide-item">Currency</a></li>
                                 <li><a href="{{ route('dashboard.mail.index') }}" class="slide-item">Mail Template</a></li>
-
                                 <li><a href="{{ route('dashboard.tax.index') }}" class="slide-item">Tax Settings</a></li>
-
-                              <!--   <li><a href="{{ route('dashboard.settings.index') }}" class="slide-item">Commision</a></li> -->
-
+                                <!--   <li><a href="{{ route('dashboard.settings.index') }}" class="slide-item">Commision</a></li> -->
                                 <li><a href="{{ route('dashboard.settings.index') }}" class="slide-item">Settings</a></li>
-
                             </ul>
-
                         </li>
-
                         @endcan 
-
+                        @can('support_access')
+                        <li class="slide">
+                            <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon fe fe-slack"></i><span class="side-menu__label">Suppert</span><i class="angle fa fa-angle-right"></i></a>
+                            <ul class="slide-menu">
+                                <li><a href="{{ route('dashboard.support-tickets.index') }}" class="slide-item">All tickets</a></li>
+                                <li><a href="{{ route('dashboard.support-category.index') }}" class="slide-item">Support Category</a></li>
+                             
+                            </ul>
+                        </li>
+                        @endcan 
                       
 
                         </li>

@@ -43,6 +43,10 @@
                                                         <label class="form-label">Position</label>
                                                         <input type="text" class="form-control" name="position" placeholder="Title" value="{{ old('position', isset($menu) ? $menu->position : '') }}" required>
                                                     </div>
+                                                    <div class="form-group">
+                                                        <label class="form-label">Icon</label>
+                                                        <input type="text" class="form-control" name="icon" placeholder="icon" value="{{ old('icon', isset($menu) ? $menu->icon : '') }}" required>
+                                                    </div>
                                                     
                                                   
                                                 </div>

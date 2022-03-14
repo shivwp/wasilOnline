@@ -112,4 +112,6 @@ return array(
     'Brick\\Math\\' => array($vendorDir . '/brick/math/src'),
     'Asm89\\Stack\\' => array($vendorDir . '/asm89/stack-cors/src'),
     'App\\' => array($baseDir . '/app'),
+    'AmrShawky\\LaravelCurrency\\' => array($vendorDir . '/amrshawky/laravel-currency/src'),
+    'AmrShawky\\' => array($vendorDir . '/amrshawky/currency/src'),
 );

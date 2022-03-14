@@ -1,4 +1,15 @@
 <?php return array (
+  'amrshawky/laravel-currency' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'AmrShawky\\LaravelCurrency\\CurrencyServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Currency' => 'AmrShawky\\LaravelCurrency\\Facade\\Currency',
+    ),
+  ),
   'cviebrock/eloquent-sluggable' => 
   array (
     'providers' => 

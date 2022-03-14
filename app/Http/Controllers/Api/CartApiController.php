@@ -14,6 +14,8 @@ use App\Models\Cart;
 
 use App\Models\Product;
 
+use App\Models\Coupon;
+
 use App\Models\Category;
 
 use App\Models\Attribute;
@@ -26,56 +28,38 @@ use App\Models\ProductVariants;
 
 use App\Models\User;
 
+use App\Http\Traits\CurrencyTrait;
+
 use App\Models\CustomAttributes;
+use App\Models\CouponUser;
 
 use Validator;
 
 use Auth;
 
+use DB;
+use Carbon;
+
 class CartApiController extends Controller
 
 {
 
-    /**
+    use CurrencyTrait;
 
-     * Display a listing of the resource.
-
-     *
-
-     * @return \Illuminate\Http\Response
-
-     */
-
-    public function index()
+    public function index(Request $request)
 
     {
-
-
-
         $userid = Auth::user()->token()->user_id;
-        
-
-
-
         if(empty($userid)){
-
-         
-
             return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
-
         }
-
-
-
-        $cart=Cart::select('id','user_id','product_id','quantity','price')->where('user_id','=',$userid)->get();
+        $cart=Cart::select('id','user_id','product_id','quantity','price','card_amount')->where('user_id','=',$userid)->get();
 
         $sum=Cart::where('user_id','=',$userid)->sum('price');
-
-
-
         if(count($cart) > 0 ){
-
+            $productids = [];
             foreach($cart as $c_key => $c_value){
+                $productids[] = $c_value->product_id;
 
                 $product = Product::where('id',$c_value->product_id)->first();
 
@@ -104,6 +88,17 @@ class CartApiController extends Controller
                     $product['featured_image'] = url('products/feature/'. $product->featured_image);
 
                     }
+                    // currency 
+                    if(!empty($request->currency_code)){
+                        $currency = $this->currencyFetch($request->currency_code);
+                        $product['currency_sign'] = $currency['sign'];
+                        $product['currency_code'] = $currency['code'];
+                    }
+                    //discount
+                    // if($product->offer_discount > 0){
+                    //     $product['s_price'] = $product->offer_discount;
+
+                    // }
 
                     if($product->product_type == "single"){
 
@@ -153,7 +148,7 @@ class CartApiController extends Controller
 
                     elseif($product->product_type == "giftcard"){
 
-                        $CustomAttributes = CustomAttributes::select('custom_attributes')->where('product_id',$product->id)->where('user_id',$userid)->first();
+                        $CustomAttributes = CustomAttributes::select('price','custom_attributes')->where('product_id',$product->id)->where('user_id',$userid)->first();
 
                         if(!empty($CustomAttributes)){
 
@@ -161,7 +156,7 @@ class CartApiController extends Controller
 
                             $product['attributes'] = $CustomAttributes->custom_attributes;
                             
-                            $product['s_price'] = $c_value->price;
+                            $product['s_price'] = $CustomAttributes->price;
                         }
 
                         else{
@@ -169,6 +164,11 @@ class CartApiController extends Controller
                             $product['attributes'] = [];      
 
                         }
+
+                    }
+                    elseif($product->product_type == "card"){
+
+                        $product['s_price'] = $c_value->card_amount;  
 
                     }
 
@@ -229,28 +229,76 @@ class CartApiController extends Controller
                
 
             }
+            //appaly coupon
+            if($request->coupon_code){
+                $currentDate =  Carbon\Carbon::now()->toDateString();
+                $coupoon = Coupon::where('code',$request->coupon_code)->first();
+                if(empty($coupoon)){
 
+                    return response()->json(['status' => false, 'message' => "invalid coupon code",'subtotal'=>$sum, 'total'=>$sum, 'discount' => 0,'cart' => $cart], 200);
+                }
+                $couponproduct = DB::table('coupon_product')->where('coupon_id',$coupoon->id)->whereIn('product_id',$productids)->first();
+                if(!empty($coupoon)){
+                    if(!empty($coupoon->minimum_spend) && $coupoon->minimum_spend >=$sum ){
+                        return response()->json(['status' => false, 'message' => "Coupon is not applicable", 'subtotal'=>$sum, 'total'=>$sum, 'discount' => 0,'cart' => $cart], 200);
+                    }
+                    if(!empty($coupoon->maximum_spend) && $coupoon->maximum_spend <=$sum){
+                        return response()->json(['status' => false, 'message' => "Coupon is not applicable", 'subtotal'=>$sum, 'total'=>$sum, 'discount' => 0,'cart' => $cart],  200);
+                    }
+                    //User coupon limit
+                    $CouponUser = CouponUser::where('user_id',$userid)->first();
+                    if(!empty($coupoon->limit_per_user)){
+                        if(isset($CouponUser->total_use_time) && ($coupoon->limit_per_user ==$CouponUser->total_use_time)){
+                            return response()->json(['status' => false, 'message' => "Coupon is not applicable", 'subtotal'=>$sum, 'total'=>$sum, 'discount' => 0,'cart' => $cart],  200);
+                        }
+                    }
+                    //coupon expiry
+                    $coupoonexpir = Coupon::where('code',$request->coupon_code)->whereDate('expiry_date','<=',$currentDate)->first();
+                    if(!empty($coupoonexpir)){
+                        return response()->json(['status' => false, 'message' => "Coupon expired"],  200);
+                    }
+                    //apply coupon
+                    if(!empty($CouponUser)){
+                        $userlimit = $CouponUser->total_use_time;
+                        $updateLimit = (int)$CouponUser->total_use_time + 1;
+                        $CouponUser = CouponUser::where('id',$CouponUser->id)->update([
+                            'coupon_id' => $coupoon->id,
+                            'user_id' => $userid,
+                            'total_use_time' => $updateLimit,
+                        ]);
+                    } 
+                    else{
 
+                        $CouponUser = CouponUser::create([
+                            'coupon_id' => $coupoon->id,
+                            'user_id' => $userid,
+                            'total_use_time' => 1,
+                        ]);
 
-            return response()->json(['status' => true, 'message' => "Success", 'subtotal'=>$sum, 'cart' => $cart], 200);
+                    }
+                   
+                    if($coupoon->discount_type == "flat_rate"){
+                        $couponAmount = $coupoon->coupon_amount;
+                    }
+                    else{
+                        $couponAmount = ($coupoon->coupon_amount * $sum) / 100;
 
+                    }
 
+                    $totalAmount = $sum - $couponAmount;
+                    return response()->json(['status' => true, 'message' => "Success", 'subtotal'=>$sum, 'total'=>$totalAmount, 'discount' => $couponAmount,'cart' => $cart], 200);
+                    
+                }
+
+            }
+            return response()->json(['status' => true, 'message' => "Success", 'subtotal'=>$sum, 'total'=>$sum, 'discount' => 0,'cart' => $cart], 200);
 
         }
 
         else{
 
-
-
             return response()->json(['status' => false, 'message' => "data not found",'subtotal'=>0,  'cart' => []], 200);
-
-
-
         }
-
-
-
-       
 
     }
 
@@ -268,6 +316,10 @@ class CartApiController extends Controller
 
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+        }
+        $already = Cart::where('user_id',$user_id)->where('product_id',404)->first();
+        if(!empty($already)){
+            return response()->json(['status' => false, 'message' => 'already exist in cart'], 200);   
         }
         $cart = Cart::create([
 
@@ -322,7 +374,13 @@ class CartApiController extends Controller
 
     {
 
-      
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required',
+            'quantity' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => false,'code'=>$succcessCode, 'message' => implode("", $validator->errors()->all())], 200);
+        }
 
         $userid = Auth::user()->token()->user_id;
 
@@ -334,6 +392,9 @@ class CartApiController extends Controller
 
         if(empty($product)){
             return response()->json(['status' => false, 'message' => "product not found",'subtotal'=>0,  'cart' => []], 200);
+        }
+        if($product->in_stock <=0){
+            return response()->json(['status' => false, 'message' => "product is out of stock",'subtotal'=>0,  'cart' => []], 200);
         }
 
 
@@ -422,11 +483,8 @@ class CartApiController extends Controller
     public function qtyupdate(Request $request){
 
         $userid = Auth::user()->token()->user_id;
-
         if(!isset($userid)){
-
             return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
-
         }
 
         $sum=Cart::where('user_id','=',$userid)->sum('price');
@@ -439,6 +497,34 @@ class CartApiController extends Controller
 
                 $product = Product::where('id',$cart->product_id)->first();
 
+               if($product->product_type == 'giftcard'){
+
+                $giftcardprice = CustomAttributes::where('cart_id',$cart->id)->first();
+
+                $price = $val['qty'] * $giftcardprice->price;
+
+                $cartupdate = Cart::where('id',$val['id'])->update([
+
+                    'quantity' =>  $val['qty'],
+
+                    'price' => $price,
+
+                ]);
+               }
+            //    elseif($product->product_type == 'card'){
+            //         $price = $val['qty'] * $product->s_price;
+
+            //         $cartupdate = Cart::where('id',$val['id'])->update([
+
+            //         'quantity' =>  $val['qty'],
+
+            //         'price' => $price,
+
+            //     ]);
+
+            //    }
+               else{
+
                 $price = $val['qty'] * $product->s_price;
 
                 $cartupdate = Cart::where('id',$val['id'])->update([
@@ -448,6 +534,8 @@ class CartApiController extends Controller
                     'price' => $price,
 
                 ]);
+
+               }
 
             }
 

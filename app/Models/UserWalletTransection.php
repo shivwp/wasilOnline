@@ -14,6 +14,8 @@ class UserWalletTransection extends Model
         'user_id',
         'amount',
         'amount_type',
-        'description'
+        'description',
+        'title',
+        'status'
     ];
 }

@@ -455,6 +455,8 @@ class UserApiController extends Controller
 
         'last_name' =>$request->last_name,
 
+        'name'      =>$request->display_name,
+
         'email' =>$request->email,
 
         'phone' =>$request->phone,
@@ -1199,6 +1201,7 @@ class UserApiController extends Controller
             $user->first_name = $request->first_name;
 
             $user->last_name = $request->last_name;
+            $user->name = $request->first_name.''.$request->last_name;
 
 
 
@@ -1250,7 +1253,7 @@ class UserApiController extends Controller
 
              
 
-            $vendordetail = array('store_url'=> $request->store_url,'store_name'=> $request->store_name);
+            $vendordetail = array('store_url'=> $request->store_url,'store_name'=> $request->store_name,'store_location'=> $request->store_location);
 
 
 
@@ -1418,7 +1421,9 @@ class UserApiController extends Controller
                 'user_id' => $user_id,
                 'amount' => $giftcaradamount->gift_card_amount,
                 'amount_type' => 'gift card transection',
-                'description' => 'transection from cart to wallet',
+                'description' => 'Gift Card',
+                'title' => 'Paid from',
+                'status' => 'paid'
 
 
             ]);

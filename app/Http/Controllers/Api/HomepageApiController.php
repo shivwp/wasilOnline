@@ -23,6 +23,7 @@ class HomepageApiController extends Controller
 
             foreach($data->slider as $key => $val){
                $val->image = url('img/slider/' . $val->image);
+               $val->banner_mobile = url('img/slider/' . $val->banner_mobile);
             }
             foreach($data->sale as $s_key => $s_val){
                 $s_val->image = url('img/slider/' . $s_val->image);

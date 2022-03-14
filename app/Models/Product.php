@@ -42,7 +42,8 @@ class Product extends Model
         'offer_start_date',
         'offer_end_date',
         'offer_discount',
-        'top_hunderd'
+        'top_hunderd',
+        'return_days'
     ];
 
   public function category()
@@ -58,6 +59,10 @@ class Product extends Model
     {
         return $this->belongsToMany(Coupon::class);
 
+    }
+    public function ticket()
+    {
+        return $this->hasMany(SupportTickets::class);
     }
     
 }

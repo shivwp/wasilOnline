@@ -12,6 +12,7 @@ class OrderNote extends Model
     protected $fillable = [
         'order_id',
         'order_status',
-        'order_note'
+        'order_note',
+        'status'
     ];
 }

@@ -22,7 +22,7 @@ class OrderedProducts extends Model
         'product_price',
         'discount',
         'total_price',
-        'tax'
+        'tax',
     ];
 
     public function order()

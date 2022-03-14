@@ -46,8 +46,11 @@ use App\Http\Controllers\admin\MenuController;
 
 use App\Http\Controllers\admin\VendorSettingController;
 
+use App\Http\Controllers\admin\SupportTicketsController;
 
 use App\Http\Controllers\admin\GeneralSettingController;
+
+use App\Http\Controllers\admin\SupportCategoryController;
 
 use App\Http\Controllers\admin\WithdrowController;
 
@@ -147,6 +150,19 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
     //testimonials
 
     Route::resource('testimonials', TestimonialsController::class);
+
+    //support category
+    Route::resource('support-category', SupportCategoryController::class);
+
+    //support
+    Route::resource('support-tickets', SupportTicketsController::class);
+
+    //support comment
+    Route::post('support-comments',[App\Http\Controllers\admin\SupportTicketsController::class, 'sendComment'])->name('support-comments');
+
+    //ticket close
+
+    Route::post('close-ticket',[App\Http\Controllers\admin\SupportTicketsController::class, 'closeTicket'])->name('close-ticket');
 
 
     //Category

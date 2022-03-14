@@ -619,7 +619,7 @@
 
 						<label class="form-label">Return Policy</label>
 
-						<select class="form-control select2" >
+						<select class="form-control select2" name="return_days">
 
 						<option value="none">None</option>
 

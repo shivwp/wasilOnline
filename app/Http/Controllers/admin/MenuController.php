@@ -61,6 +61,7 @@ class MenuController extends Controller
             'position'     => $request->input('position'),
             'url'     => $request->input('url'),
             'parent'     => 0, 
+            'icon'     => $request->input('icon'),
         ]);
        
    $menu->update();

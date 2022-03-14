@@ -30,10 +30,21 @@ class ShippingApiController extends Controller
            $shipdats[$k]['min_order_free'] = $v->min_order_free;
            $shipdats[$k]['ship_price'] = $v->ship_price;
            }
-        return response()->json(['status' => true, 'message' => "All product list", 'shipping' => $shipdats], 200);
+        return response()->json(['status' => true, 'message' => "shiiping methods", 'shipping' => $shipdats], 200);
        }
        else{
-        return response()->json(['status' => false, 'message' => "All product list", 'shipping' => []], 200);
+        $productShipping = [[
+            "title" =>  "Free shipping",
+            "min_order_free" => 800,
+            "ship_price" =>  0
+          ],
+          [
+            "title" =>  "Fixed shipping",
+            "min_order_free" =>  0,
+            "ship_price" => 50
+          ]]; 
+
+        return response()->json(['status' => true, 'message' => "shiiping methods", 'shipping' =>$productShipping ], 200);
        }
         
     }
