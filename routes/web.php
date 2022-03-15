@@ -160,9 +160,7 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
     //support comment
     Route::post('support-comments',[App\Http\Controllers\admin\SupportTicketsController::class, 'sendComment'])->name('support-comments');
 
-    //ticket close
 
-    Route::post('close-ticket',[App\Http\Controllers\admin\SupportTicketsController::class, 'closeTicket'])->name('close-ticket');
 
 
     //Category

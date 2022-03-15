@@ -76,7 +76,8 @@ class AttributeValueController extends Controller
     {
         $attribute = AttributeValue::updateOrCreate(['id' => $request->id],[
                     'attr_id'               => $request->input('attrid'),
-                    'attr_value_name'       => $request->input('attr_value')
+                    'attr_value_name'       => $request->input('attr_value'),
+                    'arab_name'       => $request->input('arab_name'),
          ]);
 
          return redirect('/dashboard/attr-value/'.$attribute->attr_id)->with('status', 'your data is updated');

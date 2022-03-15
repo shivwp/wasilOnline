@@ -60,6 +60,8 @@ class PagesController extends Controller
             // 'user_id'   => Auth::user()->id,
             'title'     => $request->input('title'),
             'content'     => $request->input('content'),
+            'arab_title'     => $request->input('arab_title'),
+            'arab_content'     => $request->input('arab_content'),
             
         ]);
         $metaarray=[

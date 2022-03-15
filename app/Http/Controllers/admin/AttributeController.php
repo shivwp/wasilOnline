@@ -103,6 +103,7 @@ class AttributeController extends Controller
             [
 
             'name'     => $request->input('name'),
+            'arab_name'     => $request->input('arab_name'),
             
              ]);
            
@@ -236,8 +237,9 @@ class AttributeController extends Controller
       $data = new AttributeValue();
       $data->attr_id = $id;
       $data->attr_value_name = $request->attr_value;
+      $data->arab_name = $request->arab_name;
       $data->save();
- return redirect('dashboard/attribute');
+      return redirect('dashboard/attribute');
     }
 
 

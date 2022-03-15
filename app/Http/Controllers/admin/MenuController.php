@@ -57,6 +57,7 @@ class MenuController extends Controller
                 'id' => $request->id
             ],
             [
+            'arab_title'     => $request->input('arab_title'),
             'title'     => $request->input('title'),
             'position'     => $request->input('position'),
             'url'     => $request->input('url'),

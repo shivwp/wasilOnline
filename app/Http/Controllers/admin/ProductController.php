@@ -167,6 +167,9 @@ class ProductController extends Controller
 
             'featured'          => !empty($request->input('featured')) && ($request->input('featured') == 'on') ? '1' : '0',
 
+            'arab_pname'          => $request->input('arab_pname'),
+            'arab_short_description'          => $request->input('arab_short_description'),
+            'arab_long_description'          => $request->input('arab_long_description')
           ]);
 
          if($request->hasfile('featured_image'))
@@ -481,6 +484,9 @@ class ProductController extends Controller
             'meta_keyword'          => $parent_product->meta_keyword,
             'meta_description'      => $parent_product->meta_description,
             'parent_id'             =>$parent_product->id,
+            'arab_pname'          => $parent_product->arab_pname,
+            'arab_short_description'          => $parent_product->arab_short_description, 
+            'arab_long_description'          => $parent_product->arab_long_description
 
           ]);
 

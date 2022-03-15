@@ -67,17 +67,23 @@
 
                                                 <input type="hidden" name="content" value="{{ isset($page) ? $page->content : '' }}">
 
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">Title</label>
-                                                    <input type="text" class="form-control" name="title" placeholder="Title" value="{{ old('title', isset($page) ? $page->title : '') }}" required>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Title(English)</label>
+                                                        <input type="text" class="form-control" name="title" placeholder="Title" value="{{ old('title', isset($page) ? $page->title : '') }}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-label">Title(Arabic)</label>
+                                                        <input type="text" class="form-control" name="arab_title" placeholder="Title" value="{{ old('title', isset($page) ? $page->arab_title : '') }}" required>
+                                                    </div>
+                                                    <label class="form-label">Content(English)</label>
+                                                    <div id="summernote"></div>
+                                                    </div>
                                                 </div>
-                                                <label class="form-label">Content</label>
-                                                <div id="summernote"></div>
+                                                <div class="col-12">
+                                                    <label class="form-label">Content(Arabic)</label> 
+                                                    <textarea id="editor1" name="arab_content" value=""><?php echo isset($page) ? $page->arab_content : '' ?></textarea>
                                                 </div>
-                                            </div>
-
-                                            
 
                                             <div class="col-12">
                                                 <label class="form-label">Meta title</label> 
@@ -122,6 +128,11 @@
 <script src="{{ URL::asset('assets/js/summernote.js') }}"></script>
 
 <script src="{{ URL::asset('assets/js/formeditor.js') }}"></script>
+<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+<script>
+	CKEDITOR.replace( 'editor1' );
+</script>
+
 
 <script>     
 

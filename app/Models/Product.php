@@ -43,7 +43,10 @@ class Product extends Model
         'offer_end_date',
         'offer_discount',
         'top_hunderd',
-        'return_days'
+        'return_days',
+        'arab_pname',
+        'arab_short_description',
+        'arab_long_description'
     ];
 
   public function category()

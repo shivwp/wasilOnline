@@ -68,14 +68,26 @@
 
 			<div class="row">
 
-				<div class="col-12">	
+				<div class="col-6">	
 
 					<div class="form-group">
 						<input type="hidden" name="id" value="{{ isset($attribute) ? $attribute->id : ''}}">
 						
-						<label class="form-label">Name</label>
+						<label class="form-label">Name(English)</label>
 
 						<input type="text" class="form-control" name="name" placeholder="Name" value="{{isset($attribute) ? $attribute->name : '' }}">
+
+					</div>
+
+				</div>
+				<div class="col-6">	
+
+					<div class="form-group">
+						<input type="hidden" name="id" value="{{ isset($attribute) ? $attribute->id : ''}}">
+						
+						<label class="form-label">Name(Arabic)</label>
+
+						<input type="text" class="form-control" name="arab_name" placeholder="Name" value="{{isset($attribute) ? $attribute->arab_name : '' }}">
 
 					</div>
 

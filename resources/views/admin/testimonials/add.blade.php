@@ -68,47 +68,86 @@
 
 			<div class="row">
 
-				<div class="col-12">	
+				<div class="col-6">	
 
 					<input type="hidden" name="id" value="{{ isset($Testimonials) ? $Testimonials->id : '' }}">
 
 					<div class="form-group">
 
-						<label class="form-label">Title</label>
+						<label class="form-label">Title(English)</label>
 
 						<input type="text" class="form-control" name="title" placeholder="Title" value="{{isset($Testimonials) ? $Testimonials->title : '' }}">
 
 					</div>
 
 				</div>
-				
-				<div class="col-12">
-					<div class="form-group">
-						<label class="form-label">Discription</label>
-						<textarea class="form-control" name="discription" rows="6" placeholder="text here.." >{{isset($Testimonials) ? $Testimonials->description : '' }}</textarea>
-						
-					</div>
-				</div>
+				<div class="col-6">	
 
-				<div class="col-12">
 					<div class="form-group">
-						<label class="form-label">Long Discription</label>
-						<div id="summernote"><?php echo isset($Testimonials) ? $Testimonials->long_description : '' ?></div>
+
+						<label class="form-label">Title(Arabic)</label>
+
+						<input type="text" class="form-control" name="arab_title" placeholder="Title" value="{{isset($Testimonials) ? $Testimonials->arab_title : '' }}">
+
+					</div>
+
+				</div>
+				
+				<div class="col-6">
+					<div class="form-group">
+						<label class="form-label">Discription(English)</label>
+						<textarea class="form-control" name="discription" rows="6" placeholder="text here.." >{{isset($Testimonials) ? $Testimonials->description : '' }}</textarea>
 						
 					</div>
 				</div>
 
 				<div class="col-6">
 					<div class="form-group">
-						<label class="form-label">Customer Name</label>
+						<label class="form-label">Discription(Arabic)</label>
+						<textarea class="form-control" name="arab_description" rows="6" placeholder="text here.." >{{isset($Testimonials) ? $Testimonials->arab_description : '' }}</textarea>
+						
+					</div>
+				</div>
+				<div class="col-12">
+					<div class="form-group">
+						<label class="form-label">Long Discription(English)</label>
+						<div id="summernote"><?php echo isset($Testimonials) ? $Testimonials->long_description : '' ?></div>
+						
+					</div>
+				</div>
+
+				<div class="col-12">
+					<div class="form-group">
+						<label class="form-label">Long Discription(Arabic)</label>
+						<textarea id="editor1" name="arab_long_description" value=""><?php echo isset($Testimonials) ? $Testimonials->arab_long_description : '' ?></textarea>
+						
+					</div>
+				</div>
+
+				<div class="col-6">
+					<div class="form-group">
+						<label class="form-label">Customer Name(English)</label>
 						
 						<input type="text" class="form-control" name="customer_name" placeholder="Customer Name" value="{{isset($Testimonials) ? $Testimonials->customer_name : '' }}">	
 					</div>
 				</div>
 				<div class="col-6">
 					<div class="form-group">
-						<label class="form-label">Customer Designation</label>
+						<label class="form-label">Customer Name(Arabic)</label>
+						
+						<input type="text" class="form-control" name="arab_customer_name" placeholder="Customer Name" value="{{isset($Testimonials) ? $Testimonials->arab_customer_name : '' }}">	
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="form-group">
+						<label class="form-label">Customer Designation(English)</label>
 						<input type="text" class="form-control" name="designation" placeholder="Designation" value="{{isset($Testimonials) ? $Testimonials->designation : '' }}">	
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="form-group">
+						<label class="form-label">Customer Designation(Arabic)</label>
+						<input type="text" class="form-control" name="arab_designation" placeholder="Designation" value="{{isset($Testimonials) ? $Testimonials->arab_designation : '' }}">	
 					</div>
 				</div>
 				<div class="col-md-12">
@@ -229,6 +268,10 @@
 <script src="{{ URL::asset('assets/plugins/time-picker/toggles.min.js') }}"></script>
 
 <script src="{{ URL::asset('assets/js/form-elements.js') }}"></script>
+<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+<script>
+	CKEDITOR.replace( 'editor1' );
+</script>
 
 <script>
 

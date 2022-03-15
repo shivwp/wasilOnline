@@ -19,6 +19,7 @@ class Menu extends Model
         'url',
         'position',
         'parent',
+        'arab_title'
     ];
 
     public function sluggable(): array

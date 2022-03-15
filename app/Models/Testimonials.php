@@ -17,6 +17,11 @@ class Testimonials extends Model
         'image',
         'customer_name',
         'designation',
-        'long_description'
+        'long_description',
+        'arab_title',
+        'arab_description',
+        'arab_long_description',
+        'arab_designation',
+        'arab_customer_name'
     ];
 }

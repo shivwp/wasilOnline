@@ -44,7 +44,9 @@ class Category extends Model
 
         'slug',
         'category_image',
-        'category_image_banner'
+        'category_image_banner',
+        'arab_title',
+        'arab_description'
 
     ];
 

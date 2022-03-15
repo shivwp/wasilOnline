@@ -47,12 +47,18 @@
 						</select>
 					</div>
 				</div>
-				<div class="col-12">
+				<div class="col-6">
 						<div class="form-group">
-							<label class="form-label">Attribute Value Name</label>
+							<label class="form-label">Attribute Value Name(English)</label>
 							<input type="text" class="form-control" name="attr_value" placeholder="Attribute Name" value="{{ isset($attributeVal) ? $attributeVal->attr_value_name : '' }}">
 						</div>
 				</div>
+				<div class="col-6">
+					<div class="form-group">
+						<label class="form-label">Attribute Value Name(Arabic)</label>
+						<input type="text" class="form-control" name="arab_name" placeholder="Attribute Name" value="{{ isset($attributeVal) ? $attributeVal->arab_name : '' }}">
+					</div>
+			</div>
 			</div>
 			<button class="btn btn-success-light mt-3 " type="submit">Success</button>
 		</form>

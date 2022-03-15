@@ -77,9 +77,22 @@
 
 					<div class="form-group">
 
-						<label class="form-label">Title</label>
+						<label class="form-label">Title (English)</label>
 
 						<input type="text" class="form-control" name="title" placeholder="Title" value="{{isset($category) ? $category->title : '' }}">
+
+					</div>
+
+				</div>
+				<div class="col-6">	
+
+					<input type="hidden" name="id" value="{{ isset($category) ? $category->id : '' }}">
+
+					<div class="form-group">
+
+						<label class="form-label">Title (Arabic)</label>
+
+						<input type="text" class="form-control" name="arab_title" placeholder="Title" value="{{isset($category) ? $category->arab_title : '' }}">
 
 					</div>
 
@@ -115,7 +128,7 @@
 				@endif
 
 
-				<div class="col-6">
+				<div class="col-12">
 
 					<div class="form-group">
 
@@ -142,10 +155,17 @@
 					</div>
 
 				</div>
-				<div class="col-12">
+				<div class="col-6">
 					<div class="form-group">
-						<label class="form-label">Discription</label>
+						<label class="form-label">Discription(English)</label>
 						<textarea class="form-control" name="discription" rows="6" placeholder="text here.." >{{isset($category) ? $category->discription : '' }}</textarea>
+						
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="form-group">
+						<label class="form-label">Discription(Arabic)</label>
+						<textarea class="form-control" name="arab_description" rows="6" placeholder="text here.." >{{isset($category) ? $category->arab_description : '' }}</textarea>
 						
 					</div>
 				</div>

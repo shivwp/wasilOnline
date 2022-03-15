@@ -32,9 +32,15 @@
                                                
                                                 <div class="col-md-12">
                                                     <div class="form-group">
-                                                        <label class="form-label">Title</label>
+                                                        <label class="form-label">Title(English)</label>
                                                         <input type="text" class="form-control" name="title" placeholder="Title" value="{{ old('title', isset($menu) ? $menu->title : '') }}" required>
                                                     </div>
+                                                    <div class="form-group">
+                                                        <label class="form-label">Title(Arabic)</label>
+                                                        <input type="text" class="form-control" name="arab_title" placeholder="Title" value="{{ old('title', isset($menu) ? $menu->arab_title : '') }}" required>
+                                                    </div>
+                                                    
+                                                    
                                                      <div class="form-group">
                                                         <label class="form-label">url</label>
                                                         <input type="text" class="form-control" name="url" placeholder="Title" value="{{ old('url', isset($menu) ? $menu->url : '') }}" required>

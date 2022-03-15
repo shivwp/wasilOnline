@@ -14,7 +14,8 @@ class Attribute extends Model
 
     protected $fillable = [
         'name',
-        'slug'
+        'slug',
+        'arab_name'
     ];
 
     protected $guarded = [];

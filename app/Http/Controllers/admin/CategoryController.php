@@ -172,7 +172,7 @@ class CategoryController extends Controller
 
         }
 
- $disc =$request->discription;
+        $disc =$request->discription;
           
 
        $category = Category::updateOrCreate(
@@ -197,7 +197,9 @@ class CategoryController extends Controller
 
             'level'         => !empty($level) ? $level : 0,
 
-            'status'        => $request->input('status')
+            'status'        => $request->input('status'),
+            'arab_title'        => $request->input('arab_title'),
+            'arab_description'        => $request->input('arab_description'),
         ]);
         if($request->hasfile('category_image'))
           {
@@ -240,7 +242,7 @@ class CategoryController extends Controller
 
         
 
-   $category->update();
+        $category->update();
 
     return redirect('/dashboard/category')->with('status', 'your data is updated');
 

@@ -91,25 +91,36 @@
 				</div>
 				@endif
 
-				<div class="col-md-12">
+				<div class="col-md-6">
 
 					<div class="form-group">
 
-						<label class="form-label">Procuct Name</label>
+						<label class="form-label">Procuct Name(English)</label>
 
-						<input type="hidden" name="pid" value="{{ isset($product->id)?$product->id:'' }}" class="pid" required>
+							<input type="hidden" name="pid" value="{{ isset($product->id)?$product->id:'' }}" class="pid" required>
 
 						<input type="text" class="form-control" name="productname" placeholder="Name"  value="{{isset($product) ? $product->pname : '' }}">
 
 					</div>
 
 				</div>
+				<div class="col-md-6">
 
-				<div class="col-md-12">
+					<div class="form-group">
+
+						<label class="form-label">Procuct Name(Arabic)</label>
+
+						<input type="text" class="form-control" name="arab_pname" placeholder="Name"  value="{{isset($product) ? $product->arab_pname : '' }}">
+
+					</div>
+
+				</div>
+
+				<div class="col-md-6">
 
 					<div class="form-group mb-0">
 
-						<label class="form-label">Short Discription</label>
+						<label class="form-label">Short Discription(English)</label>
 
 						<textarea class="form-control" name="example-textarea-input" rows="6" placeholder="text here.." required>{{isset($product) ? $product->short_description : '' }}</textarea>
 
@@ -117,17 +128,44 @@
 
 				</div>
 
+				<div class="col-md-6">
+
+					<div class="form-group mb-0">
+
+						<label class="form-label">Short Discription(Arabic)</label>
+
+						<textarea class="form-control" name="arab_short_description" rows="6" placeholder="text here.." required>{{isset($product) ? $product->arab_short_description : '' }}</textarea>
+
+					</div>
+
+				</div>
+
 				<div class="col-md-12">
 
 					<div class="form-group mb-0">
 
-						<label class="form-label">Detailed Discription</label>
+						<label class="form-label">Detailed Discription(English)</label>
 
                                                         <div id="summernote"><?php echo isset($product) ? $product->long_description : '' ?></div>
 
 					</div>
 
 				</div>
+
+				<div class="col-md-12">
+
+					<div class="form-group mb-0">
+
+						<label class="form-label">Detailed Discription(Arabic)</label>
+						<textarea id="editor1" name="arab_long_description" value=""><?php echo isset($product) ? $product->arab_long_description : '' ?></textarea>
+
+						
+
+					</div>
+
+				</div>
+
+				
 
 				<div class="col-md-6">
 
@@ -929,6 +967,10 @@
 <script src="{{ URL::asset('assets/js/summernote.js') }}"></script>
 
 <script src="{{ URL::asset('assets/js/formeditor.js') }}"></script>
+<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+<script>
+	CKEDITOR.replace( 'editor1' );
+</script>
 
 <script>     
 

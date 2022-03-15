@@ -68,13 +68,17 @@ class SupportTicketApiController extends Controller
 
         $user = Auth::guard('api')->user();
 
-        $SupportTickets = SupportTickets::where('user_id',$user->id)->get();
+        $SupportTickets = SupportTickets::where('user_id',$user->id)->orderBy('id','DESC')->get();
 
         if(count($SupportTickets) > 0){
 
             foreach($SupportTickets as $key => $val){
 
                 $comment = SupportComment::where('ticket_id',$val->id)->get();
+                $suportCat = SupportCategory::where('id',$val->cat_id)->first();
+                $proName = Product::where('id',$val->product_id)->first();
+                $SupportTickets[$key]['category'] = !empty($suportCat->title) ? $suportCat->title : "";
+                $SupportTickets[$key]['product'] = !empty($proName->pname) ? $proName->pname : "";
 
                 foreach($comment as $comm => $c_val){
 

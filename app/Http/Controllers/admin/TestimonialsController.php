@@ -89,6 +89,11 @@ class TestimonialsController extends Controller
             'customer_name'     => $request->input('customer_name'),
 
             'designation'         =>  $request->input('designation'),
+            'arab_title'         =>  $request->input('arab_title'),
+            'arab_description'         =>  $request->input('arab_description'),
+            'arab_long_description'         =>  $request->input('arab_long_description'),
+            'arab_designation'         =>  $request->input('arab_designation'),
+            'arab_customer_name'         =>  $request->input('arab_customer_name'),
         ]);
 
         if($request->hasfile('image'))
