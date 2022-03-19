@@ -53,6 +53,10 @@ class ProductApiController extends Controller
             $prod->where('products.in_stock','>',0);     
          }
         }
+        if(!empty($request->on_sale) && $request->on_sale == true){
+
+            $prod->where('products.offer_discount','!=', null); 
+        }
         if($request->attr_value_id){
 
             $ProductAttribute = ProductAttribute::select('product_id')->whereIn('attr_value_id',$request->attr_value_id)->groupBy('product_id')->get();
@@ -123,6 +127,14 @@ class ProductApiController extends Controller
                     $product[$key]['currency_sign'] = $currency['sign'];
                     $product[$key]['currency_code'] = $currency['code'];
                 }
+               // language
+                if(!empty($request->language) && ($request->language = "arabic")){
+
+                    $product[$key]['pname'] = $val->arab_pname;
+                    $product[$key]['short_description'] = $val->arab_short_description;
+                    $product[$key]['long_description'] = $val->arab_long_description;
+                }
+
                 if($val->product_type == "single"){
                     $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
                     if(count($productAttributes)>0){
@@ -244,6 +256,14 @@ class ProductApiController extends Controller
                 $product[$key]['currency_sign'] = $currency['sign'];
                 $product[$key]['currency_code'] = $currency['code'];
             }
+             // language
+             if(!empty($request->language) && ($request->language = "arabic")){
+
+                $product[$key]['pname'] = $val->arab_pname;
+                $product[$key]['short_description'] = $val->arab_short_description;
+                $product[$key]['long_description'] = $val->arab_long_description;
+            }
+
 
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -423,6 +443,14 @@ class ProductApiController extends Controller
                 $product[$key]['currency_sign'] = $currency['sign'];
                 $product[$key]['currency_code'] = $currency['code'];
             }
+             // language
+             if(!empty($request->language) && ($request->language = "arabic")){
+
+                $product[$key]['pname'] = $val->arab_pname;
+                $product[$key]['short_description'] = $val->arab_short_description;
+                $product[$key]['long_description'] = $val->arab_long_description;
+            }
+
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
                 if(count($productAttributes)>0){
@@ -535,6 +563,13 @@ class ProductApiController extends Controller
                 $currency = $this->currencyFetch($request->currency_code);
                 $product[$key]['currency_sign'] = $currency['sign'];
                 $product[$key]['currency_code'] = $currency['code'];
+            }
+            // language
+            if(!empty($request->language) && ($request->language = "arabic")){
+
+                $product[$key]['pname'] = $val->arab_pname;
+                $product[$key]['short_description'] = $val->arab_short_description;
+                $product[$key]['long_description'] = $val->arab_long_description;
             }
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -650,6 +685,13 @@ class ProductApiController extends Controller
                 $currency = $this->currencyFetch($request->currency_code);
                 $product[$key]['currency_sign'] = $currency['sign'];
                 $product[$key]['currency_code'] = $currency['code'];
+            }
+              // language
+            if(!empty($request->language) && ($request->language = "arabic")){
+
+                $product[$key]['pname'] = $val->arab_pname;
+                $product[$key]['short_description'] = $val->arab_short_description;
+                $product[$key]['long_description'] = $val->arab_long_description;
             }
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -769,6 +811,13 @@ class ProductApiController extends Controller
                 $product[$key]['currency_sign'] = $currency['sign'];
                 $product[$key]['currency_code'] = $currency['code'];
             }
+              // language
+            if(!empty($request->language) && ($request->language = "arabic")){
+
+                $product[$key]['pname'] = $val->arab_pname;
+                $product[$key]['short_description'] = $val->arab_short_description;
+                $product[$key]['long_description'] = $val->arab_long_description;
+            }
 
             if($val->product_type == "single"){
                 $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
@@ -874,6 +923,13 @@ class ProductApiController extends Controller
                     $product['currency_sign'] = $currency['sign'];
                     $product['currency_code'] = $currency['code'];
                 }
+                  // language
+                if(!empty($request->language) && ($request->language = "arabic")){
+
+                    $product['pname'] = $product->arab_pname;
+                    $product['short_description'] = $product->arab_short_description;
+                    $product['long_description'] = $product->arab_long_description;
+                }
                 if($product->product_type == "single"){
                     $productAttributes = ProductAttribute::where('product_id',$product->id)->groupBy('attr_id')->get();
                     if(count($productAttributes)>0){
@@ -910,6 +966,7 @@ class ProductApiController extends Controller
                             $attrval = AttributeValue::where('id',  $t_val->attribute_term_id)->first();
                             $stocks = ProductVariants::where('id',$t_val->variant_id)->first();
 
+                            $attr_term[$t_key]['id'] = $attrval->id;
                             $attr_term[$t_key]['name'] = $attrval->slug;
                             $attr_term[$t_key]['sku'] = $stocks->variant_sku;
                             $attr_term[$t_key]['price'] = $stocks->variant_price;
@@ -1162,6 +1219,14 @@ class ProductApiController extends Controller
                     $product[$key]['currency_sign'] = $currency['sign'];
                     $product[$key]['currency_code'] = $currency['code'];
                 }
+                // language
+                if(!empty($request->language) && ($request->language = "arabic")){
+
+                    $product[$key]['pname'] = $val->arab_pname;
+                    $product[$key]['short_description'] = $val->arab_short_description;
+                    $product[$key]['long_description'] = $val->arab_long_description;
+                }
+                
                 if($val->product_type == "single"){
                     $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();
                     if(count($productAttributes)>0){
@@ -1280,6 +1345,13 @@ class ProductApiController extends Controller
                     $currency = $this->currencyFetch($request->currency_code);
                     $products[$key]['currency_sign'] = $currency['sign'];
                     $products[$key]['currency_code'] = $currency['code'];
+                }
+                // language
+                if(!empty($request->language) && ($request->language = "arabic")){
+
+                    $products[$key]['pname'] = $val->arab_pname;
+                    $products[$key]['short_description'] = $val->arab_short_description;
+                    $products[$key]['long_description'] = $val->arab_long_description;
                 }
                 
                 if($val->product_type == "single"){
@@ -1402,6 +1474,13 @@ class ProductApiController extends Controller
                     $currency = $this->currencyFetch($request->currency_code);
                     $products[$key]['currency_sign'] = $currency['sign'];
                     $products[$key]['currency_code'] = $currency['code'];
+                }
+                 // language
+                 if(!empty($request->language) && ($request->language = "arabic")){
+
+                    $products[$key]['pname'] = $val->arab_pname;
+                    $products[$key]['short_description'] = $val->arab_short_description;
+                    $products[$key]['long_description'] = $val->arab_long_description;
                 }
                  if($val->product_type == "single"){
                      $productAttributes = ProductAttribute::where('product_id',$val->id)->groupBy('attr_id')->get();

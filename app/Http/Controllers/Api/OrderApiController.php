@@ -41,6 +41,7 @@ use App\Models\CustomAttributes;
 use App\Models\VendorEarnings;
 
 use App\Models\UserWalletTransection;
+use App\Models\OrderProductNote;
 
 use AmrShawky\LaravelCurrency\Facade\Currency as CurrencyConvert;
 
@@ -63,7 +64,6 @@ class OrderApiController extends Controller
     use CurrencyTrait;
 
     public function index()
-
     {
 
         if (Auth::guard('api')->check()) {
@@ -122,20 +122,7 @@ class OrderApiController extends Controller
 
     }
 
-
-
-    /**
-
-     * Show the form for creating a new resource.
-
-     *
-
-     * @return \Illuminate\Http\Response
-
-     */
-
     public function create()
-
     {
 
         //
@@ -143,7 +130,6 @@ class OrderApiController extends Controller
     }
 
     public function return( Request $request)
-
     {
 
          $validator = Validator::make($request->all(), [
@@ -176,23 +162,11 @@ class OrderApiController extends Controller
 
     }
 
-
-
-    /**
-
-     * Store a newly created resource in storage.
-
-     *
-
-     * @param  \Illuminate\Http\Request  $request
-
-     * @return \Illuminate\Http\Response
-
-     */
-
     public function store(Request $request)
-
     {
+        
+        // $convertedCurrency = $this->currencyConvert($request->currency_code,$request->totPrice);
+        // dd($convertedCurrency);
 
              if (Auth::guard('api')->check()) {
 
@@ -310,21 +284,10 @@ class OrderApiController extends Controller
 
                         'status_note'           =>  'new order',
 
-                       // 'total_price'           => $total_price,
-
-                      //  'currency_sign'         => $request->input('currency_sign'),
-
-                      //  'giftcard_used_amount'  => $giftcard_used_amount,
-
-                    // 'shipping_type'          => $request->input('shipping_type'),
-
                         'shipping_method'          => $request->input('shipping_method'),
 
-                       // 'shipping_price'     => $request->input("shipping_price"),
-
-                    // 'payment_mode'   => $request->input("payment_mode"),
-
                         'payment_status'        => 'pending',
+                        'currency_code'        => $request->input('currency_code')
 
                 ]);
 
@@ -348,21 +311,10 @@ class OrderApiController extends Controller
 
                         'status_note'           =>  'new order',
 
-                       // 'total_price'           => $total_price,
-
-                      //  'currency_sign'         => $request->input('currency_sign'),
-
-                      //  'giftcard_used_amount'  => $giftcard_used_amount,
-
-                    // 'shipping_type'          => $request->input('shipping_type'),
-
                        'shipping_method'          => $request->input('shipping_method'),
 
-                   //     'shipping_price'     => $request->input("shipping_price"),
-
-                    // 'payment_mode'   => $request->input("payment_mode"),
-
                         'payment_status'        => 'pending',
+                        'currency_code'        => $request->input('currency_code')
 
                 ]);
 
@@ -386,19 +338,7 @@ class OrderApiController extends Controller
 
                             'status_note'           =>  'new order',
 
-                           // 'total_price'           => $total_price,
-
-                           // 'currency_sign'         => $request->input('currency_sign'),
-
-                           // 'giftcard_used_amount'  => $giftcard_used_amount,
-
-                        // 'shipping_type'          => $request->input('shipping_type'),
-
                             'shipping_method'          => $request->input('shipping_method'),
-
-                        //   'shipping_price'     => $request->input("shipping_price"),
-
-                        // 'payment_mode'   => $request->input("payment_mode"),
 
                             'payment_status'        => 'pending',
 
@@ -445,12 +385,21 @@ class OrderApiController extends Controller
                             'total_price' => $cartdata->price,
 
                             'tax' => 0,
+                            'status' => "new",
+                            'vendor_id' => $product->vendor_id
 
                         ]);
 
                         $productmeta = [
-                            'product_image' => $product->featured_image
+                            'product_image' => $product->featured_image,
+                          
                         ];
+                        OrderProductNote::create([
+                            'order_id'      => $order->id,
+                            'product_id'    => $product->id,
+                            'status' => "new",
+                            'note' => "new order",
+                        ]);
 
 
                         foreach($productmeta as $metakey => $metaval){
@@ -483,8 +432,6 @@ class OrderApiController extends Controller
                           ]);
 
                 }
-
-          
 
 
 
@@ -540,7 +487,7 @@ class OrderApiController extends Controller
                 //cuurency convert
                 $convertedCurrency = $this->currencyConvert($request->currency_code,$total_price);
 
-                $billing['total_price'] =     round($convertedCurrency);
+                $billing['total_price'] =     $total_price;
 
                 $billing['currency_sign'] =   $request->input('currency_sign');
 
@@ -901,7 +848,7 @@ class OrderApiController extends Controller
 
                    }
 
-                        $this->ordernote($order->id,$status,$msg);
+                        $this->ordernote($order->id,$status,$msg,"new");
                  }
                  elseif($request->shipping_method == "wallet"){
 
@@ -926,7 +873,7 @@ class OrderApiController extends Controller
                         'status' => 'paid'
                     ]);
 
-                    $this->ordernote($order->id,$status,$msg);
+                    $this->ordernote($order->id,$status,$msg,"new");
 
                  }
 
@@ -942,18 +889,19 @@ class OrderApiController extends Controller
 
     }
 
+
     public function orderTracking(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'orderid' => 'required'
+            'orderid' => 'required',
+            'productid' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
 
         }
-
-        $order = Order::findOrFail($request->orderid)->first();
-        $ordernote = OrderNote::where('order_id',$request->orderid)->get();
+       
+        $ordernote = OrderProductNote::where('order_id',$request->orderid)->where('product_id',$request->productid)->get();
         $status = [];
         $date = [];
         foreach($ordernote as $key1 => $val1){
@@ -1011,10 +959,7 @@ class OrderApiController extends Controller
 
     }
 
-
-    
     public function show($id)
-
     {
 
         //
@@ -1023,7 +968,7 @@ class OrderApiController extends Controller
 
 
 
-    public function ordernote($orderid,$status,$msg){
+    public function ordernote($orderid,$status,$msg,$orderstatus){
 
 
 
@@ -1034,6 +979,8 @@ class OrderApiController extends Controller
             'order_status' => $status,
 
             'order_note' => $msg,
+
+            'status' => $orderstatus,
 
         ]);
 
@@ -1134,18 +1081,23 @@ class OrderApiController extends Controller
 
          $userid = Auth::user()->token()->user_id;
 
+        
+
             //  dd($userid);
 
         // $order=order::join('ordered_products', 'ordered_products.order_id', '=', 'orders.id' )->join('products','products.id','=','ordered_products.product_id')->join('users', 'users.id', '=', 'products.vendor_id' )->join('categories', 'categories.id', '=', 'products.cat_id' )->where('user_id','=',$userid)->get();
 
         $orders = Order::with('orderItem')->where('user_id','=',$userid)->orderBy('orders.created_at','DESC')->where('parent_id','=',0)->get();
 
-
+      
 
         if(count($orders) >0 ){
 
-            foreach($orders as $key => $val){
+            foreach($orders as $key => $val){ 
 
+                $delvery_date = Carbon::createFromFormat('Y-m-d H:i:s', $val->created_at);
+                $expected_date = $delvery_date->addDays(7);
+                $exp_date = $expected_date->toDateString();
                 $meta1 = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','billing_address')->first();
 
                 $meta2 = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','shipping_address')->first();
@@ -1160,6 +1112,21 @@ class OrderApiController extends Controller
 
                $orders[$key]['shipping'] = (!empty($meta2->meta_value) ? json_decode($meta2->meta_value) : '' );
 
+            //    if($val->currency_code != "KWD"){
+
+            //         $convertedCurrency =    CurrencyConvert::convert()
+            //         ->from($val->currency_code)
+            //         ->to("KWD")
+            //         ->amount($total_price->meta_value)
+            //         ->get();
+            //         $covertedprice = round($convertedCurrency);
+            //        // var_dump($covertedprice);
+            //         $orders[$key]['total_price'] = !empty($covertedprice) ? $covertedprice :'';
+            //     }
+            //     else{
+            //         $orders[$key]['total_price'] = !empty($total_price->meta_value) ? $total_price->meta_value :'';
+            //     }
+
                $orders[$key]['total_price'] = !empty($total_price->meta_value) ? $total_price->meta_value :'';
 
                $orders[$key]['currency_sign'] = !empty($currency_sign->meta_value) ? $currency_sign->meta_value :'';
@@ -1171,6 +1138,8 @@ class OrderApiController extends Controller
                 $val->orderItem[$orderitemkey]['featured_image'] = url('products/feature/'. $orderproductmeta->meta_value);
 
                }
+
+               $orders[$key]['expected_date'] = $exp_date;
 
             }
 
@@ -1280,6 +1249,26 @@ class OrderApiController extends Controller
 
         return $paymentIntent;
 
+
+
+    }
+
+    public function cancelOrder(Request $request){
+        $validator = Validator::make($request->all(), [
+            'itemid' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+
+        }
+
+        $OrderedProducts = OrderedProducts::findOrFail($request->itemid);
+
+        $OrderedProducts->update([
+            'status' => "cancelled"
+        ]);
+
+        return response()->json([ 'status'=> true , 'message' => "success"], 200);
 
 
     }

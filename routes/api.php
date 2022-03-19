@@ -179,6 +179,7 @@ Route::post('coupons', [App\Http\Controllers\Api\CouponApiController::class, 'in
 
 
 Route::post('order-track', [App\Http\Controllers\Api\OrderApiController::class, 'orderTracking'] );
+Route::post('order-cancel', [App\Http\Controllers\Api\OrderApiController::class, 'cancelOrder'] );
 
 Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
 

@@ -266,6 +266,7 @@ Route::post('get-attr-select',[App\Http\Controllers\admin\ProductController::cla
      //
 
      Route::get('delivered-orders',[App\Http\Controllers\admin\OrderController::class, 'deliveredorders'])->name('delivered-orders');
+     Route::post('chnage-order-status',[App\Http\Controllers\admin\OrderController::class, 'changestatus'])->name('chnage-order-status');
 
 
 
