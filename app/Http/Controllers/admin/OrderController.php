@@ -18,6 +18,7 @@ use App\Models\Address;
 use App\Models\OrderMeta;
 use App\Models\OrderProductNote;
 use App\Models\OrderedProducts;
+use App\Models\OrderPayment;
 use DB;
 
 use Auth;
@@ -75,10 +76,10 @@ class OrderController extends Controller
             $billingaddress = $this->ordermeta($val->id,'billing_address');
             $shipaddress = $this->ordermeta($val->id,'shipping_address');
             $shipcharge = $this->ordermeta($val->id,'shipping_price');
-            $orders[$key]['amount']    = $amount;
+            $orders[$key]['amount']    = !empty($amount)?$amount:'';
             $orders[$key]['billing']    = $billingaddress;
             $orders[$key]['ship']    = $shipaddress;
-            $orders[$key]['ship_price']    = $shipcharge;
+            $orders[$key]['ship_price']    = !empty($shipcharge) ? $shipcharge : 0;
            
            
         }
@@ -92,7 +93,14 @@ class OrderController extends Controller
     public function ordermeta($orderid,$metakey){
 
         $metadata =OrderMeta::where('meta_key',$metakey)->where('order_id',$orderid)->first();
-        return $metadata->meta_value;
+        if(!empty($metadata) && $metadata != null){
+            return $metadata->meta_value;
+        }
+        else{
+            return "";
+        }
+      //  dd($metadata);
+       
     }
 
 
@@ -197,9 +205,9 @@ class OrderController extends Controller
         $billing_state = $this->ordermeta($order->id,'billing_state');
         $billing_zip_code = $this->ordermeta($order->id,'billing_zip_code');
         $billing_country = $this->ordermeta($order->id,'billing_country');
-        $order['billing_first_name']    = $billing_first_name;
-        $order['billing_last_name']    = $billing_last_name;
-        $order['billing_phone']    = $billing_phone;
+        $order['billing_first_name']    = !empty($billing_first_name)?$billing_first_name : '';
+        $order['billing_last_name']    = !empty($billing_last_name)?$billing_last_name : '';
+        $order['billing_phone']    = !empty($billing_phone)?$billing_phone : '';
         $order['billing_address2']    = $billing_address2;
         $order['billing_city']    = $billing_city;
         $order['billing_state']    = $billing_state;
@@ -234,11 +242,48 @@ class OrderController extends Controller
     }
 
     public function changestatus(Request $request){
-    //dd($request);
         OrderedProducts::where('id',$request->id)->update([
             'status' => $request->status
         ]);
-        $orderstatus =  ["new","in process","packed","ready to ship","shipped","out for delivery","delivered","cancelled","return","refunded","out for reach"];
+        $order = Order::where('id',$request->orderid)->firstOrFail();
+        $orderpayment = OrderPayment::where('order_id',$request->orderid)->firstOrFail();
+        $amount =OrderedProducts::where('order_id',$request->orderid)->where('product_id',$request->productid)->first();
+        if($request->status == "cancelled"){
+            //Stripe Refund Amount  
+
+            try{
+            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+
+            $stripe->refunds->create(
+                ['payment_intent' => $orderpayment->trans_id, 'amount' => $amount->total_price*100]
+              );
+
+              //return stripe;
+            }catch(\Stripe\Exception\InvalidRequestException $e){
+                
+                return response()->json(['status' => false, 'message' => $e->getError()->message], 200);
+            }
+
+            $OrderProductNote = OrderProductNote::create([
+                'order_id' => $request->orderid,
+                'product_id' => $request->productid,
+                'status' => "cancelled",
+                'note' => "Order cancelled",
+            ]);
+
+            
+
+            return redirect('/dashboard/order/'.$request->orderid)->with('status', 'order status is updated');
+        }
+        $orderstatus =  ["new","in process","packed","ready to ship","shipped","out for delivery","delivered","cancel requested","cancelled","return","refunded","out for reach"];
+        $prevStatus = OrderProductNote::where('order_id',$request->orderid)->where('product_id',$request->productid)->orderBy('id', 'DESC')->first();
+        $arryaseachpostionnow = array_search($request->status, $orderstatus);
+        $arryaseachpostionPrev = array_search($prevStatus->status, $orderstatus);
+        if($arryaseachpostionnow <  $arryaseachpostionPrev){
+
+            $deleteprivious =  OrderProductNote::where('order_id',$request->orderid)->where('product_id',$request->productid)->delete();
+
+        }
         $note = count(OrderProductNote::where('order_id',$request->orderid)->where('product_id',$request->productid)->get());
         $statusnote = array_slice($orderstatus,$note);
        // dd($statusnote);

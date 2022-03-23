@@ -48,7 +48,8 @@ class OrderedProducts extends Model
 
         'tax',
         'status',
-        'vendor_id'
+        'vendor_id',
+        'status_note'
 
     ];
 

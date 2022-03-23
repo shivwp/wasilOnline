@@ -57,7 +57,8 @@ class Order extends Model
         'receipt_amount',
 
         'currency_code',
-        'child_id'
+        'child_id',
+        'shipping_price'
 
     ];
 

@@ -231,7 +231,7 @@
                             </tr>
                             <tr>
                                 <th>Total:</th>
-                                <td>{{$total + $order->shipping_price}}{{$currency}}</td>
+                                <td>{{$total + (int)$order->shipping_price}}{{$currency}}</td>
                             </tr>
                           </table>
                       </div>
@@ -252,6 +252,7 @@
                         <th class="wd-15p">Product Name</th>
                         <th class="wd-15p">Cost</th>
                         <th class="wd-15p">Quantity</th>
+                        <th class="wd-15p">Vendor Earning</th>
                         <th class="wd-15p">status</th>
                        
                         <th class="wd-15p">Total</th>
@@ -277,6 +278,7 @@
                             <td>{{$item->product_name}}</td>
                             <td>{{$item->product_price}}{{$currency}}</td>
                             <td>{{$item->quantity}}</td>
+                            <td>{{$item->product_price}}{{$currency}}</td>
                             <td>  <button  type="button" class="btn btn-sm btn-primary status-change" data-toggle="modal" data-target="#exampleModal1" value="{{$item->id}}" data-attr-order-id ="{{$item->order_id}}" data-attr-product-id ="{{$item->product_id}}">
                                 {{$item->status}}
                                 </button></td>
@@ -334,8 +336,8 @@
                <option value="shipped">shipped</option>
                <option value="out for delivery">out for delivery</option>
                <option value="delivered">delivered</option>
-               <option value="">cancelled</option>
-               <option value="cancelled">return</option>
+               <option value="cancelled">cancelled</option>
+               <option value="return">return</option>
                <option value="refunded">refunded</option>
                <option value="out for reach">out for reach</option>
            </select>

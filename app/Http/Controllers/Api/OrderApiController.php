@@ -16,6 +16,8 @@ use App\Models\Address;
 
 use App\Models\Product;
 
+use App\Models\OrderShipping;
+
 use App\Models\OrderedProducts;
 use App\Models\OrderProductMeta;
 
@@ -521,8 +523,6 @@ class OrderApiController extends Controller
 
                     );
 
-
-
                 }
 
 
@@ -542,10 +542,16 @@ class OrderApiController extends Controller
                     ['meta_value' => json_encode($shipping)]
 
                 );
-
-
-
+                foreach($request->shipping as $valship){
+                    OrderShipping::create([
+                        'order_id' => $order->id,
+                        'vendor_id' => $valship['store_id'],
+                        'shipping_title' => $valship['title'],
+                        'shipping_price' => $valship['ship_price'],
+                    ]);
+                }
                  //order Stripe payment
+                 $shippingprice =  $this->currencyConvert($request->currency_code,$request->shipping_price);
 
                  if($request->shipping_method == "stripe"){
                     try{
@@ -558,9 +564,9 @@ class OrderApiController extends Controller
 
                             'customer' => $user->customer_id,
 
-                           'amount' => round($convertedCurrency) * 100,
+                           'amount' => round($convertedCurrency + $shippingprice) * 100,
 
-                           'currency' => 'gbp',
+                           'currency' => $request->currency_code,
 
                            'payment_method_types' => ['card'],
 
@@ -877,7 +883,7 @@ class OrderApiController extends Controller
 
                  }
 
-               Cart::whereIn('id',$request->cart_id)->delete();
+            //   Cart::whereIn('id',$request->cart_id)->delete();
 
              
 
@@ -898,7 +904,13 @@ class OrderApiController extends Controller
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
-
+        }
+        $OrderedProducts = OrderedProducts::where('order_id',$request->orderid)->where('product_id',$request->productid)->first();
+        if(empty($OrderedProducts)){
+            return response()->json(['status' => false, 'message' => "order not found"], 200);
+        }
+        if($OrderedProducts->status = "cancelled"){
+            return response()->json(['status' => false, 'message' => "order cancelled"], 200);
         }
        
         $ordernote = OrderProductNote::where('order_id',$request->orderid)->where('product_id',$request->productid)->get();
@@ -944,7 +956,8 @@ class OrderApiController extends Controller
                                     "title" => "delivered",
                                     "completed"=>"",
                                     "date"=>""
-                                    ],
+                                    ]
+                                          
         ];
            $i = 0;
         foreach($orderstatus as $key => $val){
@@ -1255,18 +1268,25 @@ class OrderApiController extends Controller
 
     public function cancelOrder(Request $request){
         $validator = Validator::make($request->all(), [
-            'itemid' => 'required'
+            'itemid' => 'required',
+            'order_id' => 'required',
+            'reason' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
-
         }
-
-        $OrderedProducts = OrderedProducts::findOrFail($request->itemid);
-
-        $OrderedProducts->update([
-            'status' => "cancelled"
-        ]);
+        foreach($request->itemid as $val){
+            $OrderedProducts = OrderedProducts::where('order_id',$request->order_id)->where('product_id',$val)->firstOrFail();
+            $OrderedProducts->update([
+                'status' => "cancel requested"
+            ]);
+            $OrderProductNote = OrderProductNote::create([
+                'order_id' => $request->order_id,
+                'product_id' => $val,
+                'status' => "cancel requested",
+                'note' => $request->reason,
+            ]);
+        }
 
         return response()->json([ 'status'=> true , 'message' => "success"], 200);
 
