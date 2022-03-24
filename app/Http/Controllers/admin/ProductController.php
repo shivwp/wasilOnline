@@ -5,11 +5,14 @@ use App\Http\Controllers\Controller;
 use Intervention\Image\Exception\NotReadableException;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\Setting;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\ProductAttribute;
 use App\Models\ProductVariants;
 use App\Models\User;
+use App\Models\Brand;
+use App\Models\VendorSetting;
 use App\Models\ShippingMethod;
 use App\Models\ShippingProduct;
 use App\Models\VendorShipping;
@@ -27,10 +30,10 @@ class ProductController extends Controller
       $d['title'] = "PRODUCT";
       $d['buton_name'] = "ADD NEW";
       if(Auth::user()->roles->first()->title == 'Admin'){
-        $product = Product::orderBy('id')->leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0);
+        $product = Product::orderBy('id','DESC')->leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0);
       }
       elseif(Auth::user()->roles->first()->title == 'Vendor'){
-        $product=Product::orderBy('id')->leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0)->where('vendor_id','=',Auth::user()->id);
+        $product=Product::orderBy('id','DESC')->leftjoin('categories', 'categories.id', '=', 'products.cat_id')->select('products.*', 'categories.title')->where('products.parent_id','=',0)->where('vendor_id','=',Auth::user()->id);
       }
       else{
         $product = [];
@@ -54,6 +57,7 @@ class ProductController extends Controller
         $d['title'] = "Product Add";
         $d['category']=Category::where('parent_id','=',0)->get();
         $d['tax']=Tax::all();
+        $d['brand']=Brand::all();
         $d['all_vendors']=User::join('role_user', 'role_user.user_id', '=', 'users.id')->where('role_user.role_id', '=', '3')->get();
         $attributes = [];
         $attribute=Attribute::all();
@@ -96,6 +100,23 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+      //product Aprroval
+      $publish = 0;
+      $Setting = Setting::where('id', 100)->first();
+      if(!empty($Setting) && $Setting->value == 1){
+      $publish = 1;
+      }
+      else{
+        //Auth::user()->roles->first()->title == 'Admin'
+        $vendor = User::where('id',$request->vendor_id)->first();
+        if(!empty($vendor) && ($vendor->is_approved == 1)){
+          $vendorsettings = VendorSetting::where('name','product_publish')->where('vendor_id',$request->vendor_id)->first();
+          if(!empty($vendorsettings) && $vendorsettings->value == 1){
+            $publish = 1;
+          }
+        }
+       
+      }
 
         $product = Product::updateOrCreate(['id' => $request->id],
 
@@ -169,7 +190,9 @@ class ProductController extends Controller
 
             'arab_pname'          => $request->input('arab_pname'),
             'arab_short_description'          => $request->input('arab_short_description'),
-            'arab_long_description'          => $request->input('arab_long_description')
+            'arab_long_description'          => $request->input('arab_long_description'),
+            'is_publish'          => $publish,
+            'brand_slug'          => $request->brand,
           ]);
 
          if($request->hasfile('featured_image'))
@@ -852,6 +875,7 @@ class ProductController extends Controller
     {
         $d['title'] = "Product Edit";
         $product = Product::findOrFail($id);
+        $d['brand']=Brand::all();
         $d['product'] = $product;
         $d['all_vendors']=User::join('role_user', 'role_user.user_id', '=', 'users.id')->where('role_user.role_id', '=', '3')->get();
         $d['child_product'] = Product::where('parent_id',$id)->get();

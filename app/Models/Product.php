@@ -48,7 +48,9 @@ class Product extends Model
         'return_days',
         'arab_pname',
         'arab_short_description',
-        'arab_long_description'
+        'arab_long_description',
+        'is_publish',
+        'brand_slug'
     ];
 
   public function category()

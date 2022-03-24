@@ -110,7 +110,7 @@
 
 						<label class="form-label">Procuct Name(Arabic)</label>
 
-						<input type="text" class="form-control" name="arab_pname" placeholder="Name"  value="{{isset($product) ? $product->arab_pname : '' }}">
+						<input type="text" class="form-control" name="arab_pname" placeholder="Name"  value="{{isset($product) ? $product->arab_pname : '' }}" required>
 
 					</div>
 
@@ -157,7 +157,7 @@
 					<div class="form-group mb-0">
 
 						<label class="form-label">Detailed Discription(Arabic)</label>
-						<textarea id="editor1" name="arab_long_description" value=""><?php echo isset($product) ? $product->arab_long_description : '' ?></textarea>
+						<textarea id="editor1" name="arab_long_description" value="" required><?php echo isset($product) ? $product->arab_long_description : '' ?></textarea>
 
 						
 
@@ -244,6 +244,32 @@
 					</div>
 
 				</div>
+				<div class="col-md-6">
+
+					<div class="form-group">
+
+						<label class="form-label">Select Brand</label>
+
+						<select name="brand" class="form-control select2" id="pc" >
+  						
+							<option value="">Select</option>
+
+							@if(count($brand) > 0)
+
+								@foreach($brand as $val)
+
+									<option value="{{$val->slug}}" {{isset($product) && ($product->brand_slug == $val->slug) ? 'selected' : ''}}>{{$val->title}}</option>
+
+								@endforeach
+
+							@endif
+
+						</select>
+
+					</div>
+
+				</div>
+
 				@if(Auth::user()->roles->first()->title == "Admin" && !empty($product))
 				<div class="col-md-6">
 					<div class="form-group">

@@ -9,16 +9,22 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 use App\Models\Order;
 
 use App\Models\OrderNote;
+use App\Models\OrderShipping;
+use App\Models\Mails;
+use App\Mail\OrderMail;
+use Mail;
 
 use App\Models\Address;
 use App\Models\OrderMeta;
 use App\Models\OrderProductNote;
 use App\Models\OrderedProducts;
 use App\Models\OrderPayment;
+use App\Models\User;
 use DB;
 
 use Auth;
@@ -80,6 +86,8 @@ class OrderController extends Controller
             $orders[$key]['billing']    = $billingaddress;
             $orders[$key]['ship']    = $shipaddress;
             $orders[$key]['ship_price']    = !empty($shipcharge) ? $shipcharge : 0;
+            $shippingdata = OrderShipping::where('order_id',$val->id)->where('vendor_id',Auth::user()->id)->first();
+            $orders[$key]['ship_pr']    = !empty($shippingdata->shipping_price) ? $shippingdata->shipping_price : 0;
            
            
         }
@@ -236,6 +244,9 @@ class OrderController extends Controller
             $orderproductvendor =OrderedProducts::where('order_id',$order->id)->where('vendor_id',Auth::user()->id)->get();
             $order['orderItem']    = $orderproductvendor;
         }
+        $shippingdata = OrderShipping::where('order_id',$order->id)->where('vendor_id',Auth::user()->id)->first();
+        $order['ship_pr']    = !empty($shippingdata->shipping_price) ? $shippingdata->shipping_price : 0;
+        $order['ship_title']    = !empty($shippingdata->shipping_title) ? $shippingdata->shipping_title : 0;
         $d['order'] = $order;
 
         return view('admin/order/show',$d);
@@ -246,8 +257,10 @@ class OrderController extends Controller
             'status' => $request->status
         ]);
         $order = Order::where('id',$request->orderid)->firstOrFail();
+        $user = User::where('id',$order->user_id)->first();
         $orderpayment = OrderPayment::where('order_id',$request->orderid)->firstOrFail();
         $amount =OrderedProducts::where('order_id',$request->orderid)->where('product_id',$request->productid)->first();
+        $shipping = OrderShipping::where('order_id',$order->id)->where('vendor_id',$amount->vendor_id)->first();
         if($request->status == "cancelled"){
             //Stripe Refund Amount  
 
@@ -271,7 +284,36 @@ class OrderController extends Controller
                 'note' => "Order cancelled",
             ]);
 
-            
+            //Order Cancel Mail
+            $products_list = '<tr style="border-collapse: collapse;border-bottom: 1px solid #eaedf1; ">
+            <td><h6 style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin: 10px 0px;">'.$amount->product_name.' </h6></td>
+            <td><h6 align="center" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin: 10px 0px; align: center;">'.$amount->quantity.' </h6></td>
+            <td>
+                <h6 align="right" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53;  align: right; margin: 10px 0px;">$'.$amount->product_price.'</h6>
+            </td>
+            </tr>';
+            $basicinfo = [
+                '{total}' => $amount->product_price,
+                '{sub_total}' => $amount->product_price,
+                '{products_list}' => $products_list,
+                '{order_date}' => Carbon::parse($order->created_at)->format('M d Y'),
+                '{order_number}' => $order->id,
+                '{currency}' => $request->currency_sign,
+            ];
+            $mail_data = Mails::where('msg_category', 'cancelled')->first();
+            $msg = $mail_data->message;
+            foreach($basicinfo as $key=> $info){
+                $msg = str_replace($key,$info,$msg);
+            }
+
+            $config = ['from_email' => $mail_data->mail_from,
+                "reply_email" => $mail_data->reply_email,
+                'subject' => $mail_data->subject, 
+                'name' => $mail_data->name,
+                'message' => $msg,
+            ];
+
+            Mail::to($user->email)->send(new OrderMail($config));
 
             return redirect('/dashboard/order/'.$request->orderid)->with('status', 'order status is updated');
         }
@@ -307,6 +349,30 @@ class OrderController extends Controller
             'note' => $request->comment,
         ]);
         $i++;
+       }
+       
+       if($request->status == "delivered"){
+
+        $basicinfo = [
+            '{order_number}' => $order->id,
+            '{order_product}' => $amount->product_name,
+        ];
+        $mail_data = Mails::where('msg_category', 'delivered')->first();
+        $msg = $mail_data->message;
+        foreach($basicinfo as $key=> $info){
+            $msg = str_replace($key,$info,$msg);
+        }
+
+        $config = ['from_email' => $mail_data->mail_from,
+            "reply_email" => $mail_data->reply_email,
+            'subject' => $mail_data->subject, 
+            'name' => $mail_data->name,
+            'message' => $msg,
+        ];
+
+        Mail::to($user->email)->send(new OrderMail($config));
+
+           
        }
       
 

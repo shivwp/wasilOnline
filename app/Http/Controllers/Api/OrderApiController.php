@@ -53,6 +53,7 @@ use App\Http\Traits\CurrencyTrait;
 use Illuminate\Support\Str;
 use App\Models\Mails;
 use App\Mail\GiftCardEmail;
+use App\Mail\OrderMail;
 use Mail;
 
 use Validator;
@@ -355,21 +356,17 @@ class OrderApiController extends Controller
             $getCartData = Cart::whereIn('id',$getVendor)->get();
 
            
-
-                foreach($getCartData as $cartdata){
+                $products_list = ''; 
+                foreach($getCartData as $k => $cartdata){
 
                     $product = Product::where('id',$cartdata->product_id)->first();
 
 
 
                     $orderedProduct = OrderedProducts::updateOrCreate([
-
                         'id' => $request->pro_id
-
                         ],
-
                         [
-
                             'order_id' =>$order->id,
 
                             'product_id' => $product->id,
@@ -391,6 +388,23 @@ class OrderApiController extends Controller
                             'vendor_id' => $product->vendor_id
 
                         ]);
+
+                        $products_list .= '<tr style="border-collapse: collapse;border-bottom: 1px solid #eaedf1; ">
+                        <td><h6 style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin: 10px 0px;">'.$product->pname.' </h6></td>
+                        <td><h6 align="center" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin: 10px 0px; align: center;">'.$cart->quantity.' </h6></td>
+                        <td>
+                            <h6 align="right" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53;  align: right; margin: 10px 0px;">$'.$cart->price.'</h6>
+                        </td>
+                        </tr>';
+                        if(count($getCartData) == ($k + 1)) {
+                            // 
+                            $products_list .= '
+                                        <tr style="border-collapse: collapse;border-bottom: 1px solid #eaedf1;">
+                                            <td colspan="3">
+                                                <h6 style="font-size: 15px;margin: 10px 0px;font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53;  "><br></h6>
+                                            </td>
+                                        </tr>';
+                        }
 
                         $productmeta = [
                             'product_image' => $product->featured_image,
@@ -496,6 +510,13 @@ class OrderApiController extends Controller
                 $billing['giftcard_used_amount'] =   $giftcard_used_amount;
 
                 $billing['shipping_price'] =   $request->input("shipping_price");
+
+                $billing_address = '<h6 align="left" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin:10px 0px;  ">'.$billing['billing_address'].' '.$billing['billing_address2'].'</h6>
+                    
+                <h6 align="left" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin:10px 0px; ">'.$billing['billing_city'].', '.$billing['billing_state'].'</h6>
+        
+                <h6 align="left" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin:10px 0px; ">'.$billing['billing_state'].'</h6>
+                <h6 align="left" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin:10px 0px; ">'.$billing['billing_country'].' '.$billing['billing_zip_code'].'</h6>';
 
 
 
@@ -882,11 +903,37 @@ class OrderApiController extends Controller
                     $this->ordernote($order->id,$status,$msg,"new");
 
                  }
+                 //Remove from cart
+                Cart::whereIn('id',$request->cart_id)->delete();
 
-            //   Cart::whereIn('id',$request->cart_id)->delete();
-
+               //Order Mail
              
+               $basicinfo = [
+                '{email}' =>  $user->email,
+                '{phone}' => $billing['billing_phone'],
+                '{billing_address}' => $billing_address,
+                '{total}' => $total_price + $request->shipping_price,
+                '{sub_total}' => isset($order->shipping_price)?($total_price - $request->shipping_price) : $total_price,
+                '{products_list}' => $products_list,
+                '{order_date}' => Carbon::parse($order->created_at)->format('M d Y'),
+                '{order_number}' => $order->id,
+                '{shipping}' => $request->shipping_price,
+                '{currency}' => $request->currency_sign,
+            ];
+            $mail_data = Mails::where('msg_category', 'placed')->first();
+            $msg = $mail_data->message;
+            foreach($basicinfo as $key=> $info){
+                $msg = str_replace($key,$info,$msg);
+            }
 
+            $config = ['from_email' => $mail_data->mail_from,
+            "reply_email" => $mail_data->reply_email,
+            'subject' => $mail_data->subject, 
+            'name' => $mail_data->name,
+            'message' => $msg,
+            ];
+
+            Mail::to($user->email)->send(new OrderMail($config));
 
 
         return response()->json(['status' => true, 'message' => "Success"], 200);
