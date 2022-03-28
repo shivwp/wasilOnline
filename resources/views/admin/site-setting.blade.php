@@ -85,30 +85,18 @@
    
 
       <div class="row">
-
-         <div class="col-md-2">
-
-          <div class="form-group">
-
-            <label class="control-label ">Business logo </label>
-
-            <input type="hidden" name="logo" value="Business logo">
-
-           <input type="file" class="form-control" id="exampleInputuname_1" name="logo" value="{{($setting['logo'])??''}}">
-
-          </div>
-
-        </div>
-
-             <div class="col-md-4">
-
-          <div class="form-group">
-
-            <img src="{{ url('images/logo').'/'.$setting['logo'] ?? "" }}" style="height:100px;width:200px;" alt="logo">
-
+          <div class="col-md-2">
+            <div class="form-group">
+              <label class="control-label ">Business logo </label>
+              <input type="hidden" name="logo" value="Business logo">
+              <input type="file" class="form-control" id="exampleInputuname_1" name="logo" value="{{($setting['logo'])??''}}">
             </div>
-
-        </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+            <img src="{{ url('images/logo').'/'.$setting['logo'] ?? "" }}" style="height:100px;width:200px;" alt="logo">
+          </div>
+      </div>
 
        
 
@@ -292,77 +280,147 @@
 
     
 
-          <div class="col-md-2">
-
-          <div class="form-group">
-
-            <label class="control-label ">Value OF the day Banner</label>
-
-            <input type="hidden" name="value_banner" value="banner">
-
-           <input type="file" class="form-control" id="exampleInputuname_1" name="value_banner" value="{{($setting['value_banner'])??''}}">
-
-          </div>
-
-        </div>
-
-          <div class="col-md-4">
-
-          <div class="form-group">
-
-            <img src="{{ url('images/').'/'.$setting['value_banner'] ?? "" }}"  alt="banner">
-
-            </div>
-
-        </div>
-
-          <div class="col-md-2">
-
-          <div class="form-group">
-
-            <label class="control-label ">Top 100 Banner</label>
-
-            <input type="hidden" name="top_banner" value="banner">
-
-           <input type="file" class="form-control" id="exampleInputuname_1" name="top_banner" value="{{($setting['top_banner'])??''}}">
-
-          </div>
-
-        </div>
-
-          <div class="col-md-4">
-
-          <div class="form-group">
-
-            <img src="{{ url('images/').'/'.$setting['top_banner'] ?? "" }}"  alt="banner">
-
-            </div>
-
-        </div>
-
-          <div class="col-md-2">
-
+          <div class="col-md-6">
             <div class="form-group">
-
-              <label class="control-label ">New Arrival Banner</label>
-
-              <input type="hidden" name="arrival_banner" value="banner">
-
-            <input type="file" class="form-control" id="exampleInputuname_1" name="arrival_banner" value="{{($setting['arrival_banner'])??''}}">
-
+                <label class="control-label ">Value OF the day Banner(English)</label>
+                <input type="hidden" name="value_banner" value="banner">
+                <input type="file" class="form-control" id="exampleInputuname_1" name="value_banner" value="{{($setting['value_banner'])??''}}">
             </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <img src="{{ url('images/').'/'.$setting['value_banner'] ?? "" }}"  alt="banner">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">Value OF the day Banner(Arabic)</label>
+                <input type="hidden" name="arab_value_banner" value="banner">
+                <input type="file" class="form-control" id="exampleInputuname_1" name="arab_value_banner" value="{{($setting['arab_value_banner'])??''}}">
+            </div>
+          </div>
 
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <img src="{{ url('images/').'/'.$setting['arab_value_banner'] ?? "" }}"  alt="banner">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">Top 100 Banner(English)</label>
+                <input type="hidden" name="top_banner" value="banner">
+                <input type="file" class="form-control" id="exampleInputuname_1" name="top_banner" value="{{($setting['top_banner'])??''}}">
+            </div>
           </div>
 
           <div class="col-md-4">
-
-          <div class="form-group">
-
-            <img src="{{ url('images/').'/'.$setting['arrival_banner'] ?? "" }}"  alt="banner">
-
+            <div class="form-group">
+                  <img src="{{ url('images/').'/'.$setting['top_banner'] ?? "" }}"  alt="banner">
             </div>
+          </div>
 
-        </div>
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">Top 100 Banner(Arabic)</label>
+                <input type="hidden" name="arab_top_banner" value="banner">
+                <input type="file" class="form-control" id="exampleInputuname_1" name="arab_top_banner" value="{{($setting['arab_top_banner'])??''}}">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+                  <img src="{{ url('images/').'/'.$setting['arab_top_banner'] ?? "" }}"  alt="banner">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label ">New Arrival Banner(English)</label>
+              <input type="hidden" name="arrival_banner" value="banner">
+              <input type="file" class="form-control" id="exampleInputuname_1" name="arrival_banner" value="{{($setting['arrival_banner'])??''}}">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <img src="{{ url('images/').'/'.$setting['arrival_banner'] ?? "" }}"  alt="banner">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label ">New Arrival Banner(Arabic)</label>
+              <input type="hidden" name="arab_arrival_banner" value="banner">
+              <input type="file" class="form-control" id="exampleInputuname_1" name="arab_arrival_banner" value="{{($setting['arab_arrival_banner'])??''}}">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <img src="{{ url('images/').'/'.$setting['arab_arrival_banner'] ?? "" }}"  alt="banner">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label ">Sale with us(English)</label>
+              <input type="hidden" name="sale_with_us" value="banner">
+              <input type="file" class="form-control" id="exampleInputuname_1" name="sale_with_us" value="{{($setting['sale_with_us'])??''}}">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <img src="{{ url('images/').'/'.$setting['sale_with_us'] ?? "" }}"  alt="banner">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label ">Sale with us(Arabic)</label>
+              <input type="hidden" name="arab_sale_with_us" value="banner">
+              <input type="file" class="form-control" id="exampleInputuname_1" name="arab_sale_with_us" value="{{($setting['arab_sale_with_us'])??''}}">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <img src="{{ url('images/').'/'.$setting['arab_sale_with_us'] ?? "" }}"  alt="banner">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label ">All category page banner(English)</label>
+              <input type="hidden" name="all_cat_page_banner" value="banner">
+              <input type="file" class="form-control" id="exampleInputuname_1" name="all_cat_page_banner" value="{{($setting['all_cat_page_banner'])??''}}">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <img src="{{ url('images/').'/'.$setting['all_cat_page_banner'] ?? "" }}"  alt="banner">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label ">All category page banner(Arabic)</label>
+              <input type="hidden" name="arab_all_cat_page_banner" value="banner">
+              <input type="file" class="form-control" id="exampleInputuname_1" name="arab_all_cat_page_banner" value="{{($setting['arab_all_cat_page_banner'])??''}}">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <img src="{{ url('images/').'/'.$setting['arab_all_cat_page_banner'] ?? "" }}"  alt="banner">
+            </div>
+          </div>
+
+          
+          
 
         <div class="col-md-6">
 

@@ -32,6 +32,8 @@ use App\Models\User;
 use App\Models\Coupon;
 
 use App\Models\Cart;
+use App\Models\VendorSetting;
+use App\Models\Category;
 
 use App\Models\OrderMeta;
 
@@ -175,7 +177,7 @@ class OrderApiController extends Controller
 
                 $user = Auth::guard('api')->user();
 
-            } 
+             } 
 
             $user_id = $user->id;
 
@@ -360,8 +362,23 @@ class OrderApiController extends Controller
                 foreach($getCartData as $k => $cartdata){
 
                     $product = Product::where('id',$cartdata->product_id)->first();
+                    $vendor = VendorSetting::where('vendor_id',$product->vendor_id)->where('name','commision')->first();
+                    $category =Category::where('id',$product->cat_id)->first();
 
-
+                    //Vendor Earning
+                    $vendorearning = $product->s_price;
+                    if($product->commission > 0){
+                        $commission = $product->s_price * ($product->commission / 100);
+                        $vendorearning = $product->s_price - $commission;
+                    }
+                    elseif(!empty($vendor) && $vendor->value >0){
+                        $commission = $product->s_price * ($vendor->value / 100);
+                        $vendorearning = $product->s_price - $commission;
+                    }
+                    elseif(!empty($category) && $category->commision > 0){
+                        $commission = $product->s_price * ($category->commision / 100);
+                        $vendorearning = $product->s_price - $commission;
+                    }
 
                     $orderedProduct = OrderedProducts::updateOrCreate([
                         'id' => $request->pro_id
@@ -430,22 +447,13 @@ class OrderApiController extends Controller
                         }
 
                         $vendorEarning =    VendorEarnings::create([
-
-
-
                             'order_id'              =>$order->id,
-
                             'vendor_id'             =>$product->vendor_id,
-
                             'product_id'            =>$product->id,
-
-                            'amount'                =>$product->s_price,
-
+                            'amount'                =>$vendorearning,
                             'payment_status'        =>"pending"
 
-    
-
-                          ]);
+                        ]);
 
                 }
 
@@ -904,7 +912,7 @@ class OrderApiController extends Controller
 
                  }
                  //Remove from cart
-                Cart::whereIn('id',$request->cart_id)->delete();
+               // Cart::whereIn('id',$request->cart_id)->delete();
 
                //Order Mail
              
@@ -956,7 +964,7 @@ class OrderApiController extends Controller
         if(empty($OrderedProducts)){
             return response()->json(['status' => false, 'message' => "order not found"], 200);
         }
-        if($OrderedProducts->status = "cancelled"){
+        if($OrderedProducts->status == "cancelled"){
             return response()->json(['status' => false, 'message' => "order cancelled"], 200);
         }
        
@@ -970,7 +978,7 @@ class OrderApiController extends Controller
 
         $orderstatus =  [
             [
-            "title" => "new",
+            "title" => "order placed",
             "completed"=>"",
             "date"=>""
             ],
@@ -1003,9 +1011,39 @@ class OrderApiController extends Controller
                                     "title" => "delivered",
                                     "completed"=>"",
                                     "date"=>""
-                                    ]
+                                ],
+                                // [
+                                //     "title" => "return",
+                                //     "completed"=>"",
+                                //     "date"=>""
+                                // ],
+                                // [
+                                //     "title" => "refunded",
+                                //     "completed"=>"",
+                                //     "date"=>""
+                                //     ]
                                           
         ];
+
+        if(in_array("cancel requested",$status)){
+            $cancelRequestarrayposition = array_search("cancel requested", $status);
+            $value =  [
+                "title" => "cancel requested",
+                "completed"=>"",
+                "date"=>""
+            ];
+            $orderstatus = array_merge(array_slice($orderstatus, 0, $cancelRequestarrayposition), array($value), array_slice($orderstatus, $cancelRequestarrayposition));
+        }
+        if(in_array("cancelled",$status)){
+            $cancelRequestarrayposition = array_search("cancelled", $status);
+            $value =  [
+                "title" => "cancelled",
+                "completed"=>"",
+                "date"=>""
+            ];
+            $orderstatus = array_merge(array_slice($orderstatus, 0, $cancelRequestarrayposition), array($value), array_slice($orderstatus, $cancelRequestarrayposition));
+        }
+        
            $i = 0;
         foreach($orderstatus as $key => $val){
             if(in_array($val['title'], $status)){
@@ -1323,16 +1361,45 @@ class OrderApiController extends Controller
             return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
         }
         foreach($request->itemid as $val){
+            $orderstatus =  ["order placed","in process","packed","ready to ship","shipped","out for delivery","delivered","return","refunded","out for reach"];
+
+            $addorderStatus = "cancel requested";
+            $prevStatus = OrderProductNote::where('order_id',$request->order_id)->where('product_id',$val)->orderBy('id', 'DESC')->first();
+
+            $arryaseachpostionPrev = array_search($prevStatus->status, $orderstatus);
+
             $OrderedProducts = OrderedProducts::where('order_id',$request->order_id)->where('product_id',$val)->firstOrFail();
+            if($OrderedProducts->status == "delivered" || $OrderedProducts->status == "return" || $OrderedProducts->status == "refunded" && $OrderedProducts->status == "out for reach"){
+                return response()->json([ 'status'=> false , 'message' => "order is not cancelable"], 200);
+            }
+            
+            $orderstatusNew = array_merge(array_slice($orderstatus, 0, $arryaseachpostionPrev+1), array($addorderStatus), array_slice($orderstatus, $arryaseachpostionPrev+1));
             $OrderedProducts->update([
                 'status' => "cancel requested"
             ]);
+            $note = count(OrderProductNote::where('order_id',$request->order_id)->where('product_id',$val)->get());
+            $statusnote = array_slice($orderstatusNew,$note);
+           $i =1;
+           foreach($statusnote as $value){
+                if($value == "cancel requested"){
+                    $OrderProductNote = OrderProductNote::create([
+                        'order_id' => $request->order_id,
+                        'product_id' => $val,
+                        'status' => $value,
+                        'note' => "order cancel requested",
+                    ]);
+                break;
+            }
             $OrderProductNote = OrderProductNote::create([
                 'order_id' => $request->order_id,
                 'product_id' => $val,
-                'status' => "cancel requested",
-                'note' => $request->reason,
+                'status' => $value,
+                'note' => "order cancel requested",
             ]);
+            $i++;
+           }
+
+           
         }
 
         return response()->json([ 'status'=> true , 'message' => "success"], 200);

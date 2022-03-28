@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Page;
+use App\Models\PageMeta;
 
 
 
@@ -32,19 +33,27 @@ class PageApiController extends Controller
 
     {
 
-        $page = Page::where('id','=',$request->id)->get();
+        $page = Page::select('id','title','arab_title','content','arab_content')->where('id','=',$request->id)->first();
 
         if(!empty($request->language) && $request->language == "arabic"){
-                foreach($page as $key => $val){
-
-                    $val->title = $val->arab_title;
-                    $val->content = $val->arab_content;
-
-                }
+            $page->title = $page->arab_title;
+            $page->content = $page->arab_content;
+         
         }
+        $metatitle = $this->getMeta($page->id,'Pagemeta_title');
+        $metades = $this->getMeta($page->id,'Pagemeta_details');
+        $metakeyword = $this->getMeta($page->id,'Pagemeta_keywords');
+        $page['metatitle'] = !empty($metatitle) ? $metatitle : "";
+        $page['meta_details'] = !empty($metades) ? $metades : "";
+        $page['meta_keyword'] = !empty($metakeyword) ? $metakeyword : "";
 
             return response()->json(['status' => true, 'message' => "page", 'data' => $page], 200);
 
+    }
+
+    public function getMeta($pageid,$title){
+        $PageMeta = PageMeta::where('page_id',$pageid)->where('key',$title)->first();
+        return $PageMeta->value;
     }
 
 

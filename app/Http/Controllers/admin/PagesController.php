@@ -51,7 +51,7 @@ class PagesController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request);
+       // dd($request);
         $page = Page::updateOrCreate(
             [
                 'id' => $request->id
@@ -67,7 +67,7 @@ class PagesController extends Controller
         $metaarray=[
 
             'Pagemeta_title'=>$request->input('page_title'),
-
+            'Pagemeta_keywords' =>$request->input('page_keywords'),
             'Pagemeta_details'=>$request->input('page_details'),
 
 

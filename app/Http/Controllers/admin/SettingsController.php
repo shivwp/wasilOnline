@@ -195,7 +195,7 @@ class SettingsController extends Controller
         //   // }
 
 
-
+//dd($request);
         $setting['logo'] = '';
 
         $setting['value_banner'] = '';
@@ -203,6 +203,13 @@ class SettingsController extends Controller
         $setting['top_banner'] = '';
 
         $setting['arrival_banner'] = '';
+        $setting['arab_value_banner'] = '';
+        $setting['arab_top_banner'] = '';
+        $setting['arab_arrival_banner'] = '';
+        $setting['sale_with_us'] = '';
+        $setting['arab_sale_with_us'] = '';
+        $setting['all_cat_page_banner'] = '';
+        $setting['arab_all_cat_page_banner'] = '';
 
         $setting['name'] = $request->name;
 
@@ -348,6 +355,191 @@ class SettingsController extends Controller
                     ]);
 
             }
+
+            if($key == 'arab_value_banner'   && $request->hasfile('arab_value_banner')){ 
+
+      
+
+                $file=$request->arab_value_banner;
+
+      
+
+                $extention = $file->getClientOriginalExtension();
+
+                $filename = time().'.'.$extention;
+
+                $file->move('images', $filename);
+
+                Setting::updateOrCreate([
+
+                        'name'=>$key,
+
+                    ], [
+
+                        'value'=>$filename
+
+                    ]);
+
+            }
+
+            if($key == 'arab_top_banner'   && $request->hasfile('arab_top_banner')){ 
+
+      
+
+                $file=$request->arab_top_banner;
+
+      
+
+                $extention = $file->getClientOriginalExtension();
+
+                $filename = time().'.'.$extention;
+
+                $file->move('images', $filename);
+
+                Setting::updateOrCreate([
+
+                        'name'=>$key,
+
+                    ], [
+
+                        'value'=>$filename
+
+                    ]);
+
+            }
+
+            if($key == 'arab_arrival_banner'   && $request->hasfile('arab_arrival_banner')){ 
+
+      
+
+                $file=$request->arab_arrival_banner;
+
+      
+
+                $extention = $file->getClientOriginalExtension();
+
+                $filename = time().'.'.$extention;
+
+                $file->move('images', $filename);
+
+                Setting::updateOrCreate([
+
+                        'name'=>$key,
+
+                    ], [
+
+                        'value'=>$filename
+
+                    ]);
+
+            }
+
+            if($key == 'sale_with_us'   && $request->hasfile('sale_with_us')){ 
+
+      
+
+                $file=$request->sale_with_us;
+
+      
+
+                $extention = $file->getClientOriginalExtension();
+
+                $filename = time().'.'.$extention;
+
+                $file->move('images', $filename);
+
+                Setting::updateOrCreate([
+
+                        'name'=>$key,
+
+                    ], [
+
+                        'value'=>$filename
+
+                    ]);
+
+            }
+
+
+            if($key == 'arab_sale_with_us'   && $request->hasfile('arab_sale_with_us')){ 
+
+      
+
+                $file=$request->arab_sale_with_us;
+
+      
+
+                $extention = $file->getClientOriginalExtension();
+
+                $filename = time().'.'.$extention;
+
+                $file->move('images', $filename);
+
+                Setting::updateOrCreate([
+
+                        'name'=>$key,
+
+                    ], [
+
+                        'value'=>$filename
+
+                    ]);
+
+            }
+
+             if($key == 'all_cat_page_banner'   && $request->hasfile('all_cat_page_banner')){ 
+
+      
+
+                $file=$request->all_cat_page_banner;
+
+      
+
+                $extention = $file->getClientOriginalExtension();
+
+                $filename = time().'.'.$extention;
+
+                $file->move('images', $filename);
+
+                Setting::updateOrCreate([
+
+                        'name'=>$key,
+
+                    ], [
+
+                        'value'=>$filename
+
+                    ]);
+
+            }
+
+
+            if($key == 'arab_all_cat_page_banner'   && $request->hasfile('arab_all_cat_page_banner')){ 
+
+      
+
+                $file=$request->arab_all_cat_page_banner;
+
+      
+
+                $extention = $file->getClientOriginalExtension();
+
+                $filename = time().'.'.$extention;
+
+                $file->move('images', $filename);
+
+                Setting::updateOrCreate([
+
+                        'name'=>$key,
+
+                    ], [
+
+                        'value'=>$filename
+
+                    ]);
+
+            }
+
 
 
 

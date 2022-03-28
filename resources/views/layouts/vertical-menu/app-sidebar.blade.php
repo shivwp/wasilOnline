@@ -357,7 +357,7 @@
 
 
 
-                             <!--    <li><a href="{{ route('dashboard.attribute-value.index') }}" class="slide-item">Attribute Value</a></li> -->
+                         
 
 
 
@@ -661,11 +661,11 @@
 
                                     <li><a href="{{ route('dashboard.withdrow.index') }}" class="slide-item">Withdrawal Request</a></li>
 
-                                @if(Auth::user()->roles->first()->title == "Vendor")
+                                    <li><a href="{{ route('dashboard.vendor-earning-list') }}" class="slide-item">Vendor Earnings</a></li>
 
-                                    <li><a href="{{ route('dashboard.withdrow.create') }}" class="slide-item">Withdraw</a></li>
+                               
 
-                                @endif
+                               
 
 
 
@@ -680,13 +680,10 @@
                            @can('withdrawl_settings')
 
                         <li>
-
-
-
                             <a class="side-menu__item" href="{{ route('dashboard.withdrow.index') }}"><i class="side-menu__icon icon icon-wallet"></i><span class="side-menu__label">Withdrawl requests</span></a>
-
-
-
+                        </li>
+                        <li>
+                            <a class="side-menu__item" href="{{ route('dashboard.vendor-earning-list') }}"><i class="side-menu__icon fa fa-euro"></i><span class="side-menu__label">Vendor Earnings</span></a>
                         </li>
 
                          @endcan
@@ -795,7 +792,7 @@
                         </li>
                         @endcan 
                         <li>
-                            <a class="side-menu__item" href="{{url("/clear-cache")}}"><i class="side-menu__icon fa fa-hourglass-half"></i><span class="side-menu__label">Clear Cache</span></a>
+                            <a class="side-menu__item" href="{{url("/clear-cache")}}"><i class="side-menu__icon ti-brush-alt"></i><span class="side-menu__label">Clear Cache</span></a>
                         </li>
 
 

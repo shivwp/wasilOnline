@@ -90,6 +90,10 @@
                                                 <input type="text" class="form-control" name="page_title" placeholder="Title" value="{{($data['Pagemeta_title'])??''}}">
                                             </div>
                                             <div class="col-12">
+                                                <label class="form-label">Meta keywords</label> 
+                                                <textarea type="text" class="form-control" name="page_keywords" row="20" placeholder="keywords" value="">{{($data['Pagemeta_keywords'])??''}}</textarea>
+                                            </div>
+                                            <div class="col-12">
                                                 <label class="form-label">Meta Deatils</label> 
                                                 <textarea type="text" class="form-control" name="page_details" row="20" placeholder="Title" value="">{{($data['Pagemeta_details'])??''}}</textarea>
                                             </div>

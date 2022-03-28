@@ -253,129 +253,56 @@ class OrderController extends Controller
     }
 
     public function changestatus(Request $request){
+        //dd($request);
         OrderedProducts::where('id',$request->id)->update([
             'status' => $request->status
         ]);
-        $order = Order::where('id',$request->orderid)->firstOrFail();
-        $user = User::where('id',$order->user_id)->first();
-        $orderpayment = OrderPayment::where('order_id',$request->orderid)->firstOrFail();
-        $amount =OrderedProducts::where('order_id',$request->orderid)->where('product_id',$request->productid)->first();
-        $shipping = OrderShipping::where('order_id',$order->id)->where('vendor_id',$amount->vendor_id)->first();
+        $ordercurrentSatus = OrderProductNote::where('order_id',$request->orderid)->where('product_id',$request->productid)->orderBy('id', 'DESC')->first();
+
         if($request->status == "cancelled"){
-            //Stripe Refund Amount  
+            $orderstatus =  ["order placed","in process","packed","ready to ship","shipped","out for delivery","delivered","return","refunded","out for reach"];
+          
+            $addorderStatus_1 = "cancelled";
+            $addorderStatus_2 = "cancel requested";
+            $prevStatus = OrderProductNote::where('order_id',$request->orderid)->where('product_id',$request->productid)->where('status',"!=","cancel requested")->orderBy('id', 'DESC')->first();
+            $arryaseachpostionPrev = array_search($prevStatus->status, $orderstatus);
+            $orderstatusNew = array_merge(array_slice($orderstatus, 0, $arryaseachpostionPrev+1), array($addorderStatus_1), array_slice($orderstatus, $arryaseachpostionPrev+1));
+            $orderstatusNew_1 = array_merge(array_slice($orderstatusNew, 0, $arryaseachpostionPrev+1), array($addorderStatus_2), array_slice($orderstatusNew, $arryaseachpostionPrev+1));
 
-            try{
-            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
-
-            $stripe->refunds->create(
-                ['payment_intent' => $orderpayment->trans_id, 'amount' => $amount->total_price*100]
-              );
-
-              //return stripe;
-            }catch(\Stripe\Exception\InvalidRequestException $e){
-                
-                return response()->json(['status' => false, 'message' => $e->getError()->message], 200);
-            }
-
-            $OrderProductNote = OrderProductNote::create([
-                'order_id' => $request->orderid,
-                'product_id' => $request->productid,
-                'status' => "cancelled",
-                'note' => "Order cancelled",
-            ]);
-
-            //Order Cancel Mail
-            $products_list = '<tr style="border-collapse: collapse;border-bottom: 1px solid #eaedf1; ">
-            <td><h6 style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin: 10px 0px;">'.$amount->product_name.' </h6></td>
-            <td><h6 align="center" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin: 10px 0px; align: center;">'.$amount->quantity.' </h6></td>
-            <td>
-                <h6 align="right" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53;  align: right; margin: 10px 0px;">$'.$amount->product_price.'</h6>
-            </td>
-            </tr>';
-            $basicinfo = [
-                '{total}' => $amount->product_price,
-                '{sub_total}' => $amount->product_price,
-                '{products_list}' => $products_list,
-                '{order_date}' => Carbon::parse($order->created_at)->format('M d Y'),
-                '{order_number}' => $order->id,
-                '{currency}' => $request->currency_sign,
-            ];
-            $mail_data = Mails::where('msg_category', 'cancelled')->first();
-            $msg = $mail_data->message;
-            foreach($basicinfo as $key=> $info){
-                $msg = str_replace($key,$info,$msg);
-            }
-
-            $config = ['from_email' => $mail_data->mail_from,
-                "reply_email" => $mail_data->reply_email,
-                'subject' => $mail_data->subject, 
-                'name' => $mail_data->name,
-                'message' => $msg,
-            ];
-
-            Mail::to($user->email)->send(new OrderMail($config));
-
-            return redirect('/dashboard/order/'.$request->orderid)->with('status', 'order status is updated');
         }
-        $orderstatus =  ["new","in process","packed","ready to ship","shipped","out for delivery","delivered","cancel requested","cancelled","return","refunded","out for reach"];
-        $prevStatus = OrderProductNote::where('order_id',$request->orderid)->where('product_id',$request->productid)->orderBy('id', 'DESC')->first();
-        $arryaseachpostionnow = array_search($request->status, $orderstatus);
-        $arryaseachpostionPrev = array_search($prevStatus->status, $orderstatus);
-        if($arryaseachpostionnow <  $arryaseachpostionPrev){
+        else{
+            $orderstatusNew_1 =  ["order placed","in process","packed","ready to ship","shipped","out for delivery","delivered","return","refunded","out for reach"];
+        }
+        //delete and insert again
+        $arryaseachpostionnow = array_search($request->status, $orderstatusNew_1);
+        $arryaseachpostionPrev_1 = array_search($ordercurrentSatus->status, $orderstatusNew_1);
+        if($arryaseachpostionnow <  $arryaseachpostionPrev_1){
 
             $deleteprivious =  OrderProductNote::where('order_id',$request->orderid)->where('product_id',$request->productid)->delete();
 
         }
+
         $note = count(OrderProductNote::where('order_id',$request->orderid)->where('product_id',$request->productid)->get());
-        $statusnote = array_slice($orderstatus,$note);
-       // dd($statusnote);
+        $statusnote = array_slice($orderstatusNew_1,$note);
        $i =1;
-       foreach($statusnote as $val){
-            if($val == $request->status){
+       foreach($statusnote as $value){
+            if($value == $request->status){
                 $OrderProductNote = OrderProductNote::create([
                     'order_id' => $request->orderid,
                     'product_id' => $request->productid,
-                    'status' => $val,
+                    'status' => $value,
                     'note' => $request->comment,
                 ]);
-
             break;
-
         }
         $OrderProductNote = OrderProductNote::create([
             'order_id' => $request->orderid,
             'product_id' => $request->productid,
-            'status' => $val,
-            'note' => $request->comment,
+            'status' => $value,
+            'note' =>  $request->comment,
         ]);
         $i++;
        }
-       
-       if($request->status == "delivered"){
-
-        $basicinfo = [
-            '{order_number}' => $order->id,
-            '{order_product}' => $amount->product_name,
-        ];
-        $mail_data = Mails::where('msg_category', 'delivered')->first();
-        $msg = $mail_data->message;
-        foreach($basicinfo as $key=> $info){
-            $msg = str_replace($key,$info,$msg);
-        }
-
-        $config = ['from_email' => $mail_data->mail_from,
-            "reply_email" => $mail_data->reply_email,
-            'subject' => $mail_data->subject, 
-            'name' => $mail_data->name,
-            'message' => $msg,
-        ];
-
-        Mail::to($user->email)->send(new OrderMail($config));
-
-           
-       }
-      
-
         return redirect('/dashboard/order/'.$request->orderid)->with('status', 'order status is updated');
     
     }

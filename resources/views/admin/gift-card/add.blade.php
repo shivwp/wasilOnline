@@ -1,163 +1,42 @@
 @extends('layouts.vertical-menu.master')
-
-
-
 @section('css')
-
-
-
 <link href="{{ URL::asset('assets/plugins/ion.rangeSlider/css/ion.rangeSlider.css')}}" rel="stylesheet">
-
-
-
 <link href="{{ URL::asset('assets/plugins/ion.rangeSlider/css/ion.rangeSlider.skinSimple.css')}}" rel="stylesheet">
-
-
-
 <link href="{{ URL::asset('assets/plugins/bootstrap-daterangepicker/daterangepicker.css')}}" rel="stylesheet" />
-
-
-
 <link href="{{ URL::asset('assets/plugins/date-picker/spectrum.css')}}" rel="stylesheet" />
-
-
-
 <link href="{{ URL::asset('assets/plugins/fileuploads/css/fileupload.css')}}" rel="stylesheet" />
-
-
-
 <link href="{{ URL::asset('assets/plugins/multipleselect/multiple-select.css')}}" rel="stylesheet" />
-
-
-
 <link href="{{ URL::asset('assets/plugins/select2/select2.min.css')}}" rel="stylesheet" />
-
-
-
 <link href="{{ URL::asset('assets/plugins/time-picker/jquery.timepicker.css')}}" rel="stylesheet" />
-
-
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" integrity="sha512-xmGTNt20S0t62wHLmQec2DauG9T+owP9e6VU8GigI0anN7OXLip9i7IwEhelasml2osdxX71XcYm6BQunTQeQg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-
-
 @endsection
-
-
-
 @section('page-header')
-
-
-
-<!-- PAGE-HEADER -->
-
-
-
 <div>
-
-
-
 	<h1 class="page-title">{{$title}}</h1>
-
-
-
 	<ol class="breadcrumb">
-
-
-
 		<li class="breadcrumb-item"><a href="{{ route('dashboard.product.index') }}">Gift-card</a></li>
-
-
-
 		@if(isset($GiftCard->id))
-
             <li class="breadcrumb-item active" aria-current="page">Edit</li>
-
         @else
-
             <li class="breadcrumb-item active" aria-current="page">Add</li>
-
         @endif
-
-
-
 	</ol>
-
-
-
 </div>
-
-
-
-
-
-
-
 <!-- PAGE-HEADER END -->
-
-
-
 @endsection
-
-
-
-
-
-
-
 @section('content')
-
-
-
 <!-- ROW-1 OPEN-->
-
-
-
 <div class="card">
-
-
-
 	<div class="card-body">
-
-
-
 		<form method="POST" action="{{ route('dashboard.gift-card.store') }}" enctype="multipart/form-data">
-
-
-
 			@csrf
-
-
-
 			<div class="row">
-
-
-
 				<input type="hidden" name="id" value="{{ isset($GiftCard) ? $GiftCard->id : '' }}">
-
-
-
 				<div class="col-md-6">
-
-
-
 					<div class="form-group">
-
-
-
 						<label class="form-label">Title</label>
-
-
-
 						<input type="text" class="form-control" name="title" placeholder="title"  value="{{isset($GiftCard) ? $GiftCard->title : '' }}">
-
-
-
 					</div>
-
-
-
 				</div>
 
 
@@ -347,8 +226,8 @@
 					</div>
 
 
-
-					<input type="file" class="dropify" data-height="300" name="image" value="" data-default-file="{{url('giftcard/'.$GiftCard->image)}}">
+					
+					<input type="file" class="dropify" data-height="300" name="image" value="" data-default-file="{{isset($GiftCard->image)? url('giftcard/'.$GiftCard->image) : ''}}">
 
 
 

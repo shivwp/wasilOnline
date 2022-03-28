@@ -71,7 +71,7 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     //testimonials
       Route::resource('testimonials', TestimonialsController::class);
-
+ 
 
       //support category
       Route::resource('support-category', SupportCategoryController::class);
@@ -146,6 +146,8 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
     Route::get('approve-request',[App\Http\Controllers\admin\WithdrowController::class, 'approve'])->name('approve-request');
 
     Route::get('reject-request',[App\Http\Controllers\admin\WithdrowController::class, 'reject'])->name('reject-request');
+
+    Route::get('vendor-earning-list',[App\Http\Controllers\admin\WithdrowController::class, 'vendorEarninglist'])->name('vendor-earning-list');
 
      //Menus
     Route::resource('menus', MenuController::class);
