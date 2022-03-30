@@ -42,6 +42,9 @@ class ProductApiController extends Controller
         if($request->category_id){
             $prod->where('products.cat_id',$request->category_id); 
         }
+        if($request->brand){
+            $prod->where('products.brand_slug',$request->brand);  
+        }
         if($request->price_range){
             $exp = explode("-",$request->price_range); 
                 $min_price = $exp[0];
@@ -1003,7 +1006,7 @@ class ProductApiController extends Controller
     public function allFilters(Request $request)
     {
         if($request->category_id){
-            $product = Product::where('cat_id',$request->category_id)->where('parent_id',0)->get();
+            $product = Product::whereIn('cat_id',$request->category_id)->where('parent_id',0)->get();
             $pro_id = [];
             $attrdata = [];
             if(count($product) > 0){

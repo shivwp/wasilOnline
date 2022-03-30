@@ -38,29 +38,21 @@ class StoreApiController extends Controller
 
     public function singlestore( Request $request)
     {
-          $data['vendor'] = User::where('id','=',$request->id)->get();
+          $data['vendor'] = User::where('id','=',$request->id)->first();
 
-        foreach (  $data['vendor'] as $key => $value) {
-
-            $data=$this->getVendorMeta($value->id);
-
-            $data['profile_img']=isset($data['profile_img'])?url('images/vendor/settings/' . $data['profile_img']):'';
+          $data=$this->getVendorMeta($request->id);
+          $data['profile_img']=isset($data['profile_img'])?url('images/vendor/settings/' . $data['profile_img']):'';
             $data['banner_img']=isset($data['banner_img'])?url('images/vendor/settings/' . $data['banner_img']):'';
-            if(!empty($request->cat_id)){
-            $data['product'] = Product::where('vendor_id','=',$request->id)->where('cat_id','=',$request->cat_id)->get();
-            }else{
-                $data['product'] = Product::where('vendor_id','=',$request->id)->get();
-
+            $data['product'] = Product::where('vendor_id','=',$request->id)->get();
+            foreach($data['product'] as $product_key => $product_val){
+                $product_val->featured_image = isset($product_val->featured_image)?url('products/feature/' . $product_val->featured_image):'';
+                 // currency 
+                 if(!empty($request->currency_code)){
+                    $currency = $this->currencyFetch($request->currency_code);
+                    $data['product'][$product_key]['currency_sign'] = $currency['sign'];
+                    $data['product'][$product_key]['currency_code'] = $currency['code'];
+                 }
             }
-
-            foreach ($data['product'] as $key => $value) {
-                $value['featured_image'] = url('products/feature/'. $value->featured_image);
-                $value['gallery_image'] = json_decode($value->gallery_image);
-                $value['gallery_image'] = url('products/feature/'. $value->featured_image);
-
-            }
-
-        }
         return response()->json(['status' => true, 'message' => "Store list", 'data' => $data], 200);
 
     }

@@ -1,11 +1,5 @@
 @extends('layouts.vertical-menu.master')
-
-
-
 @section('css')
-
-
-
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <style>
@@ -126,27 +120,27 @@
 
           <div class="col-md-6">
 
-          <div class="form-group">
+            <div class="form-group">
 
-            <input type="hidden" name="name_1" value="Business Name">
+              <input type="hidden" name="name_1" value="Business Name">
 
-            <label class="control-label ">Country </label>
+              <label class="control-label ">Country </label>
 
-            <input type="text" class="form-control" id="exampleInputuname_1" name="country" value="{{($setting['country'])??''}}">
+              <input type="text" class="form-control" id="exampleInputuname_1" name="country" value="{{($setting['country'])??''}}">
+
+            </div>
 
           </div>
-
-        </div>
 
         <div class="col-md-6">
 
-          <div class="form-group">
+            <div class="form-group">
 
-            <label class="control-label ">State </label>
+              <label class="control-label ">State </label>
 
-            <input type="text" class="form-control" id="exampleInputuname_1" name="state" value="{{($setting['state'])??''}}">
+              <input type="text" class="form-control" id="exampleInputuname_1" name="state" value="{{($setting['state'])??''}}">
 
-          </div>
+            </div>
 
         </div>
 
@@ -548,70 +542,6 @@
        
 
       </div>
-
-      <div class="col-md-12">
-
-        <h4 class="mt-5">Shipping Options</h4><hr>
-
-        <div class="row">
-
-          <div class="col-md-4">     
-
-            <div class="form-group">
-
-              <label class="switch">
-
-                  <input type="checkbox" id="free" name="free" {{ isset($ship_meth_1) && ($ship_meth_1->is_available == 1) ?  'checked' : '' }}>
-
-                  <span class="slider round"></span>
-
-              </label>
-
-              <label for="scales">Free Shipping</label>
-
-            </div>
-
-          </div>
-
-          <div class="col-md-4">
-
-            <div class="form-group">
-
-              <label class="switch">
-
-                <input type="checkbox" id="fixed" name="fixed" {{ isset($ship_meth_2) && ($ship_meth_2->is_available == 1) ?  'checked' : '' }}>
-
-                <span class="slider round"></span>
-
-              </label>
-
-            <label for="scales">Fixed Shipping</label>
-
-            </div>
-
-          </div>
-
-          <div class="col-md-4">
-
-            <div class="form-group">
-
-              <label class="switch">
-
-                <input type="checkbox" id="wasil" name="wasil" {{ isset($ship_meth_3) && ($ship_meth_3->is_available == 1) ?  'checked' : '' }}>
-
-                <span class="slider round"></span>
-
-              </label>
-
-              <label for="scales">Wasil Shipping</label>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
       <div class="col-md-12">
 
         <h4 class="mt-5">Product Approval Options</h4><hr>
@@ -641,6 +571,147 @@
         </div>
 
       </div>
+      <div class="col-md-12">
+
+        <h4 class="mt-5">Shipping Options</h4><hr>
+
+        <div class="row">
+
+          <div class="col-md-4">     
+
+            <div class="form-group">
+
+              <label class="switch">
+
+                  <input type="checkbox" id="free-shipping" name="free" {{ isset($setting) && ($setting['free_shipping_is_applied'] == 1) ?  'checked' : '' }} onchange="freeShipping()">
+
+                  <span class="slider round"></span>
+
+              </label>
+
+              <label for="scales">Free Shipping</label>
+
+            </div>
+
+          </div>
+          <div class="col-md-4 " >
+            <input type="number" name="free_shipping" value="{{ isset($setting['free_shipping_over']) ? $setting['free_shipping_over'] : '' }}" class="form-control free-shipping">
+          </div>
+          <div class="col-md-4"></div>
+
+          {{-- <div class="col-md-4">
+
+            <div class="form-group">
+
+              <label class="switch">
+
+                <input type="checkbox" id="fixed" name="fixed" {{ isset($ship_meth_2) && ($ship_meth_2->is_available == 1) ?  'checked' : '' }}>
+
+                <span class="slider round"></span>
+
+              </label>
+
+            <label for="scales">Fixed Shipping</label>
+
+            </div>
+
+          </div> --}}
+
+          {{-- <div class="col-md-4">
+
+            <div class="form-group">
+
+              <label class="switch">
+
+                <input type="checkbox" id="wasil" name="wasil" {{ isset($ship_meth_3) && ($ship_meth_3->is_available == 1) ?  'checked' : '' }}>
+
+                <span class="slider round"></span>
+
+              </label>
+
+              <label for="scales">Wasil Shipping</label>
+
+            </div>
+
+          </div> --}}
+
+          <div class="col-md-4">
+
+            <div class="form-group">
+
+              <label class="switch">
+                <input type="checkbox" id="normal-shipping" name="normal" {{ isset($setting) && ($setting['normal_shipping_is_applied'] == 1) ?  'checked' : '' }} onchange="normalShipping()">
+
+                <span class="slider round"></span>
+
+              </label>
+
+              <label for="scales">Normal Shipping</label>
+
+            </div>
+
+          </div>
+          <div class="col-md-4">
+            <input type="number" name="admin_normal_price" value="{{ isset($setting['normal_price']) ? $setting['normal_price'] :'' }}" class="form-control normal-shipping" >
+          </div>
+          <div class="col-md-4"></div>
+
+          <div class="col-md-4">
+
+            <div class="form-group">
+
+              <label class="switch">
+
+                <input type="checkbox" id="city-shipping" name="wasil" {{ isset($ship_meth_3) && ($ship_meth_3->is_available == 1) ?  'checked' : '' }} onchange="cityShipping()">
+
+                <span class="slider round"></span>
+
+              </label>
+
+              <label for="scales">Shipping By City</label>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+     
+      {{-- Shipping By City --}}
+      <div class="row city-shipping" style="display: none">
+        <div class="col-md-12">
+          <h4 class="mt-5">Shipping By City</h4><hr>
+        </div>
+        <?php $i = 0; ?>
+        @if(count($city_list) > 0)
+          @foreach ($city_list as $item)
+          @php
+           $singlePrice = \App\Models\CityPrice::where('city_id',$item->city_id)->first(); 
+          @endphp
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="hidden" name="city[{{$i}}][city_id]" value="{{$item->city_id}}">
+              <input type="text" class="form-control" id="exampleInputuname_1" name="country" value="{{($item['city_name'])??''}}" disabled>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="text" name="city[{{$i}}][admin_normal_price]" value="{{!empty($singlePrice->normal_price) ? $singlePrice->normal_price : ''}}" class="form-control" placeholder="normal price">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="text" name="city[{{$i}}][admin_city_wise_price]" value="{{!empty($singlePrice->priority_price) ? $singlePrice->priority_price : ''}}" class="form-control" placeholder="priority price">
+            </div>
+          </div>
+          <?php $i++ ?>
+          @endforeach
+        @endif
+      </div>
+    
+      
+     
 
     </div>
 
@@ -729,28 +800,45 @@ $('select').select2({
 </script>
 
 <script>
+  if(document.getElementById('free-shipping').checked) {
+    $(".free-shipping").show();
+  }
+  if(document.getElementById('normal-shipping').checked) {
+    $(".normal-shipping").show();
+  }
+  else{
+    $(".normal-shipping").hide();
+  }
+   function freeShipping()
+	{
+		if($('#free-shipping').is(":checked"))   
+			$(".free-shipping").show();
+		else
+			$(".free-shipping").hide();
+	}
+  function normalShipping()
+	{
+		if($('#normal-shipping').is(":checked"))   
+			$(".normal-shipping").show();
+		else
+			$(".normal-shipping").hide();
+	}
+  function cityShipping()
+	{
+		if($('#city-shipping').is(":checked"))   
+			$(".city-shipping").show();
+		else
+			$(".city-shipping").hide();
+	}
 
   $(document).ready(function() {
-
 		$("#tags").change(function(){
-
-			
-
 			var tagval = $('input[name="ship_method"]').val();
 
 			$('#ship_method').val(tagval);
 
-
-
-		
-
 		});
-
-    
-
 	});
-
-
 
 </script>
 

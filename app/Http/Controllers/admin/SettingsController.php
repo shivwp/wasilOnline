@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Setting;
 
 use App\Models\ShippingMethod;
-
+use App\Models\City;
+use App\Models\CityPrice;
 class SettingsController extends Controller
 
 {
@@ -51,6 +52,8 @@ class SettingsController extends Controller
          $d['ship_meth_2'] = ShippingMethod::where('id',2)->first();
 
          $d['ship_meth_3'] = ShippingMethod::where('id',3)->first();
+         $state = [2150,2151,2152,2153,2154,2155,2156,2157,2158];
+         $d['city_list'] = City::whereIn('state_id',$state)->get();
 
 
 
@@ -102,100 +105,7 @@ class SettingsController extends Controller
 
          $ship = explode(",",$request->ship_method);
 
-        //  $mailData=['host' => $request->host,
-
-
-
-        //   'port' => $request->port,
-
-
-
-        //   'encrypt' =>$request->encrypt,
-
-
-
-        //   'name'=>$request->sname,
-
-
-
-        //   'email'=>$request->semail,
-
-
-
-        //   'password'=>$request->password];
-
-        //     for($i=0;$i<17;$i++){
-
-        //     $name="name_".$i;
-
-        //     $value="value_".$i;
-
-        //     $id="id_".$i;
-
-        //     if($request->has($name) && $request->has($value)){
-
-        //     if($request->file($value)){
-
-        //     $setting= Setting::updateOrCreate(['id'=>$request->$id],[
-
-        //     'name'=>$request->$name,
-
-        //     'value'=>$request->file($value)->move('logo',uniqid().$request->file($value)->getClientOriginalName())
-
-
-
-        //     ]); 
-
-        //     }else{
-
-        //     $setting= Setting::updateOrCreate(['id'=>$request->$id],[
-
-        //     'name'=>$request->$name,
-
-        //     'value'=>$request->$value
-
-        //     ]);   
-
-        //     } 
-
-        //     }
-
-        //     if($i==14){
-
-        //       $setting= Setting::updateOrCreate(['id'=>$request->$id],[
-
-        //         'name'=>$request->$name,
-
-        //         'value'=>json_encode($mailData)
-
-        //         //json_encode(['mail_type'=>$mailtype,'mail_data'=>$mailData])
-
-    
-
-        //         ]); 
-
-        //     } 
-
-        // }
-
-        // $mailData=null;
-
-        // // if($request->mail=="smtp"){
-
-
-
-        //   // $mailtype=$request->mail;
-
-
-
-        //   // }elseif($request->mail=="sendmail"){
-
-        //   // $mailtype=$request->mail;
-
-        //   // }
-
-
-//dd($request);
+//dd($request->input('normal'));
         $setting['logo'] = '';
 
         $setting['value_banner'] = '';
@@ -244,10 +154,13 @@ class SettingsController extends Controller
         $setting['facebook'] = $request->facebook;
 
         $setting['pinterest'] = $request->pinterest;
+        $setting['facebook'] = $request->facebook;
+        $setting['normal_price'] = $request->admin_normal_price;
+        $setting['free_shipping_over'] = $request->free_shipping;
+        $setting['free_shipping_is_applied'] =  isset($request->free) && ($request->free == "on") ? 1 : 0 ;
+        $setting['normal_shipping_is_applied'] =   isset($request->normal) && ($request->normal == "on") ? 1 : 0 ;
         $setting['approval'] = isset($request->approval) && ($request->approval == "on") ? 1 : 0 ;
-
-        
-
+      
         foreach ($setting as $key => $value) {
 
            
@@ -540,9 +453,6 @@ class SettingsController extends Controller
 
             }
 
-
-
-
             if($value)
 
             Setting::updateOrCreate([
@@ -556,73 +466,17 @@ class SettingsController extends Controller
                     ]);
 
         }
-
-
-
-        //Shipping Method
-
-
-
-        if(isset($request->free) && $request->free == "on"){
-
-            ShippingMethod::where('id',1)->update([
-
-                'is_available' => 1
-
-            ]);
-
+      //Shipping Method
+        $metaData = [];
+        foreach($request->city as $c_key => $c_val){
+            CityPrice::updateOrCreate([
+                'city_id'=>$c_val['city_id'],
+                ], [
+                    'city_id'=>$c_val['city_id'],
+                    'normal_price'=>!empty($c_val['admin_normal_price']) ? $c_val['admin_normal_price'] : 0,
+                    'priority_price'=>!empty($c_val['admin_city_wise_price']) ? $c_val['admin_city_wise_price'] : 0,
+                ]); 
         }
-
-        else{
-
-            ShippingMethod::where('id',1)->update([
-
-                'is_available' => 0
-
-            ]);
-
-        }
-
-        if(isset($request->fixed) && $request->fixed == "on"){
-
-            ShippingMethod::where('id',2)->update([
-
-                'is_available' => 1
-
-            ]);
-
-        }
-
-        else{
-
-            ShippingMethod::where('id',2)->update([
-
-                'is_available' => 0
-
-            ]);
-
-        }
-
-        if(isset($request->wasil) && $request->wasil == "on"){
-
-            ShippingMethod::where('id',3)->update([
-
-                'is_available' => 1
-
-            ]);
-
-        }
-
-        else{
-
-            ShippingMethod::where('id',3)->update([
-
-                'is_available' => 0
-
-            ]);
-
-        }
-
            
 
               

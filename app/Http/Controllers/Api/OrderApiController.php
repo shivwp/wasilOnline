@@ -888,15 +888,16 @@ class OrderApiController extends Controller
                  elseif($request->shipping_method == "wallet"){
 
                     $userwalletamount = User::where('id',$user_id,)->first();
-                    $updateAmount = $userwalletamount->user_wallet - $request->totPrice;
+                    $price = $request->totPrice + $request->shipping_price;
+                    $updateAmount = $userwalletamount->user_wallet - $price;
 
-                    if($request->totPrice > $userwalletamount->user_wallet ){
+                    if($price > $userwalletamount->user_wallet ){
 
                         return response()->json(['status' => false, 'message' => "Wallet Amount is not sufficient for this order"], 200);
                     }
 
                     User::where('id',$user_id,)->update([
-                        'wallet' =>  $updateAmount
+                        'user_wallet' =>  $updateAmount
                     ]);
                     $msg = "deducted ".$request->totPrice." amount from user wallet";
                     UserWalletTransection::create([
@@ -905,14 +906,14 @@ class OrderApiController extends Controller
                         'amount_type' => 'Wallet',
                         'description' => 'User Wallet',
                         'title' => 'Paid from',
-                        'status' => 'paid'
+                        'status' => 'paid'  
                     ]);
 
-                    $this->ordernote($order->id,$status,$msg,"new");
+                    $this->ordernote($order->id,'wallet transection success',$msg,"new");
 
                  }
                  //Remove from cart
-               // Cart::whereIn('id',$request->cart_id)->delete();
+             Cart::whereIn('id',$request->cart_id)->delete();
 
                //Order Mail
              

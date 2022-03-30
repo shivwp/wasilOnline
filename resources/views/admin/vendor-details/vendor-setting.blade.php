@@ -35,21 +35,8 @@
 
 
   <div class="card-body" id="add_space">
-
-
-
     <form action="{{ route("dashboard.vendorsettings.store") }}" method="post" enctype="multipart/form-data">
-
-
-
       @csrf
-
-
-
-
-
-
-
       <input type="hidden" class="form-control" name="vendor_id" value="{{ isset($vendor) ? $vendor->id : '' }}">
 
 
