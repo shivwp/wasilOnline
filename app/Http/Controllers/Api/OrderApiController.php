@@ -228,50 +228,28 @@ class OrderApiController extends Controller
 
 
             //Gift Card
+            if(count($request->gift_card) > 0){
+                foreach($request->gift_card as $gift_k => $gift_val){
+                    $giftcard = GiftCardUser::where('gift_card_code',$gift_val['code'])->where('gift_card_amount','!=',0)->first();
+                    if(!empty($giftcard)){
+                        $updateAmount = $giftcard->gift_card_amount - $gift_val['amount'];
+                         $giftcard->update([
+                            'gift_card_amount' => $updateAmount
+                        ]);
 
-            $giftcard = GiftCardUser::where('gift_card_code',$request->giftcard_code)->where('gift_card_amount','!=',0)->first();
-
-
-
-            if(!empty($giftcard)){
-
-                $giftcard_used_amount = $giftcard->gift_card_amount;
-
-                $total_price = $request->input("totPrice") - $giftcard_used_amount;
-
-                $cardid= $giftcard->card_id;
-
-                $giftcard->update([
-
-                    'gift_card_amount' => 0
-
-                ]);
-
-                GiftCardLog::where('gift_card_code',$request->giftcard_code)->create([
-
-                    'user_id'           => $user_id,
-
-                    'card_id'           => $cardid,
-
-                    'gift_card_code'    => $request->giftcard_code,
-
-                    'gift_card_amount'  =>  $giftcard->gift_card_amount,
-
-                    'note'              =>  "gift card code used in order",
-
-                ]);
-
-
-
+                        GiftCardLog::where('gift_card_code',$request->giftcard_code)->create([
+                            'user_id'           => $user_id,
+                            'gift_card_code'    => $gift_val['code'],
+                            'gift_card_amount'  =>  $gift_val['amount'],
+                            'note'              =>  "gift card code used in order",
+                        ]);
+                    }
+                }
+            }else{
+                return response()->json(['status' => false, 'message' => "no gift card"], 200);
             }
 
-            else{
 
-                $giftcard_used_amount = "0";
-
-                $total_price = $request->totPrice;
-
-            }
 
         if (count(array_unique($vendorid)) === 1) {
 
@@ -482,6 +460,7 @@ class OrderApiController extends Controller
                 $shipping['shipping_zip_code']    = $request->shipping_address['zip_code'];
 
                 $shipping['shipping_landmark']    = $request->shipping_address['landmark'];
+                $shipping['refund_amount_in']    = !empty($request->refund_amount_in) && ($request->refund_amount_in == "store") ? "store" : "bank";
 
 
 
@@ -509,13 +488,14 @@ class OrderApiController extends Controller
 
                 $billing['billing_landmark']    = $request->billing_address['landmark'];
                 //cuurency convert
-                $convertedCurrency = $this->currencyConvert($request->currency_code,$total_price);
+                //$convertedCurrency = $this->currencyConvert($request->currency_code,$total_price);
 
-                $billing['total_price'] =     $total_price;
+                 $billing['subtotal_price'] =     $request->subtotPrice;
+                 $billing['total_price'] =     $request->totPrice;
+                 $billing['gift_card_amount'] =     !empty($request->gift_card_amount) ? $request->gift_card_amount : 0;
+                 $billing['gift_card_data'] =    json_encode($request->gift_card);  
 
                 $billing['currency_sign'] =   $request->input('currency_sign');
-
-                $billing['giftcard_used_amount'] =   $giftcard_used_amount;
 
                 $billing['shipping_price'] =   $request->input("shipping_price");
 
@@ -580,308 +560,309 @@ class OrderApiController extends Controller
                     ]);
                 }
                  //order Stripe payment
-                 $shippingprice =  $this->currencyConvert($request->currency_code,$request->shipping_price);
 
                  if($request->shipping_method == "stripe"){
-                    try{
-
-                       $stripeAccount = new \Stripe\StripeClient(env('STRIPE_SECRET'));
-
-                       \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-
-                       $paymentIntent = \Stripe\PaymentIntent::create([
-
-                            'customer' => $user->customer_id,
-
-                           'amount' => round($convertedCurrency + $shippingprice) * 100,
-
-                           'currency' => $request->currency_code,
-
-                           'payment_method_types' => ['card'],
-
-                           'payment_method' => $request->stripe_token,
-
-                           'transfer_group' => $order->id,
-
-                           'confirm'=>'true',
-
-                           'shipping' => [
-
-                               'name' => 'shipping name',
-
-                               'phone' => '9090909090',
-
-                               'address' => [
-
-                                   'city' => 'city',
-
-                                   'country' => 'country',
-
-                                   'line1' => 'line1',
-
-                                   'line2' => 'line2',
-
-                                   'postal_code' => 'postal_code',
-
-                                   'state' => 'state',
-
-                               ]
-
-                           ]
-
-                       ]);
-
-
-
-                       if($paymentIntent->status == 'succeeded'){
-
-
-
-                           $status = $paymentIntent->status;
-
-                           $msg = "Order Success";
-
-
-
-                         $order->update([
-
-                             'payment_status' => 'success'
-
-                         ]);
-
-
-
-                         Order::where('parent_id',$order->id)->update([
-
-                               'payment_status' => 'success'
-
-                           ]);
-
-
-
-                       }
-
-                       else{
-
-
-
-                           $status = $paymentIntent->status;
-
-                           $msg = "Order Pending";
-
-
-
-                           $order->update([
-
-                               'payment_status' => 'failed'
-
-                           ]);
-
-
-
-                       }
-
-
-
-                       OrderPayment::create([
-
-
-
-                           'order_id'  =>$order->id,
-
-                           'status'    =>$status,
-
-                           'trans_id' =>$paymentIntent->id,
-
-                           'charges_id' =>$paymentIntent->charges->data[0]->id,
-
-                           'balance_transaction' =>$paymentIntent->charges->data[0]->balance_transaction,
-
-                           'message' => $paymentIntent->status
-
-
-
-                         ]);
-
-
-
-                       $vendorEarning->update([
-
-                               'payment_status' => 'success'
-
-                       ]);
-
-                       $vendorEarning->save();
-
-
-
-                        //if product is card or gift card
-
-                        $getCartData = Cart::whereIn('id',$getVendor)->get();
-
-                        foreach($getCartData as $gc_key => $gc_val){
-
-                         $producttype = Product::where('id',$gc_val->product_id)->first();
-
-                           //stock update
-
-                           $orderstock = $gc_val->quantity;
-
-                           $updatestock = $producttype->in_stock - $orderstock;
-
-                           Product::where('id',$producttype->id)->update([
-
-                               'in_stock' => $updatestock
-
-                           ]);
-                         
-                             if($producttype->product_type == "giftcard"){
-
-                                $giftcard = GiftCard::where('id',$gc_val->card_id)->first();
-                               $CustomAttributes = CustomAttributes::where('cart_id',$gc_val->id)->first();
-                               $attr = json_decode($CustomAttributes->custom_attributes);
-                              $to = $attr->to;
-                              $from = $attr->from;
-
-                                 if($gc_val->quantity >  1){
-
-                                     for($i=1;$i<=$gc_val->quantity;$i++){
-
-     
-
-                                         $code=Str::random(16);
-
-                                         $code=substr_replace($code, '-', 4, 0);
-
-                                         $code=substr_replace($code, '-', 9, 0); 
-
-                                         $code=substr_replace($code, '-', 14, 0);
-
-                                         $gift_expiry_date=Carbon::now()->addDays($giftcard->valid_days);
-
-                         
-
-                                         $userGiftCard = GiftCardUser::create([
-
-                                             'user_id' => $user_id,
-
-                                             'card_id' => $gc_val->card_id,
-
-                                             'gift_card_code' => $code,
-
-                                             'gift_card_amount' => $gc_val->card_amount,
-
-                                             'gift_expiry_date' => $gift_expiry_date
-
-                                 
-
-                                         ]);
-
-                                         //custom_attributes::where()
-
-                                         $this->sendGift($userGiftCard,$to,$from);
-
-                         
-
-                                     }
-
- 
-
-                                 }
-
-                                 else{
-
-                                     
-
-                                     $code=Str::random(16);
-
-                                     $code=substr_replace($code, '-', 4, 0);
-
-                                     $code=substr_replace($code, '-', 9, 0); 
-
-                                     $code=substr_replace($code, '-', 14, 0);
-
-                                     $gift_expiry_date=Carbon::now()->addDays($giftcard->valid_days);
-
-                         
-
-                                     $userGiftCard = GiftCardUser::create([
-
-                         
-
-                                         'user_id' => $user_id,
-
-                                         'card_id' => $gc_val->card_id,
-
-                                         'gift_card_code' => $code,
-
-                                         'gift_card_amount' => $gc_val->card_amount,
-
-                                         'gift_expiry_date' => $gift_expiry_date
-
-                             
-
-                                     ]);
-
-                                     $this->sendGift($userGiftCard,$to,$from);
-
-                                 }
-
-                             }
-
-                             elseif($producttype->product_type == "card"){
-
-
-
-                                $getuserwalletamount = User::where('id',$user_id)->first();
-
-                                $userwalletamount = $getuserwalletamount->user_wallet;
-
-                                $updateamount = $userwalletamount+$gc_val->card_amount;
-
-                                //update wallet
-
-                                $getuserwalletamount->user_wallet = $updateamount;
-
-                                $getuserwalletamount->save();
-
-                                 
-
-                                UserWalletTransection::create([
-
-
-
-                                    'user_id' => $user_id,
-
-                                    'amount' => $gc_val->card_amount,
-
-                                    'amount_type' => 'CARD',
-
-                                    'description' => 'Dabit / Cradit Card',
-                                    'title' => 'Received from',
-                                    'status' => 'received',
-
-
-
+                    if($request->totPrice > 0){
+                        try{
+
+                            $stripeAccount = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+    
+                            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+    
+                            $paymentIntent = \Stripe\PaymentIntent::create([
+    
+                                'customer' => $user->customer_id,
+    
+                                'amount' => $request->totPrice * 100,
+    
+                                'currency' => $request->currency_code,
+    
+                                'payment_method_types' => ['card'],
+    
+                                'payment_method' => $request->stripe_token,
+    
+                                'transfer_group' => $order->id,
+    
+                                'confirm'=>'true',
+    
+                                'shipping' => [
+    
+                                    'name' => 'shipping name',
+    
+                                    'phone' => '9090909090',
+    
+                                    'address' => [
+    
+                                        'city' => 'city',
+    
+                                        'country' => 'country',
+    
+                                        'line1' => 'line1',
+    
+                                        'line2' => 'line2',
+    
+                                        'postal_code' => 'postal_code',
+    
+                                        'state' => 'state',
+    
+                                    ]
+    
+                                ]
+    
+                            ]);
+    
+    
+    
+                            if($paymentIntent->status == 'succeeded'){
+    
+    
+    
+                                $status = $paymentIntent->status;
+    
+                                $msg = "Order Success";
+    
+    
+    
+                            $order->update([
+    
+                                'payment_status' => 'success'
+    
+                            ]);
+    
+    
+    
+                            Order::where('parent_id',$order->id)->update([
+    
+                                    'payment_status' => 'success'
+    
                                 ]);
-
-
-
-                                 
-
-                             }
-
- 
-
+    
+    
+    
+                            }
+    
+                            else{
+    
+    
+    
+                                $status = $paymentIntent->status;
+    
+                                $msg = "Order Pending";
+    
+    
+    
+                                $order->update([
+    
+                                    'payment_status' => 'failed'
+    
+                                ]);
+    
+    
+    
+                            }
+    
+    
+    
+                            OrderPayment::create([
+    
+    
+    
+                                'order_id'  =>$order->id,
+    
+                                'status'    =>$status,
+    
+                                'trans_id' =>$paymentIntent->id,
+    
+                                'charges_id' =>$paymentIntent->charges->data[0]->id,
+    
+                                'balance_transaction' =>$paymentIntent->charges->data[0]->balance_transaction,
+    
+                                'message' => $paymentIntent->status
+    
+    
+    
+                            ]);
+    
+    
+    
+                            $vendorEarning->update([
+    
+                                    'payment_status' => 'success'
+    
+                            ]);
+    
+                            $vendorEarning->save();
+    
+    
+    
+                            //if product is card or gift card
+    
+                            $getCartData = Cart::whereIn('id',$getVendor)->get();
+    
+                            foreach($getCartData as $gc_key => $gc_val){
+    
+                            $producttype = Product::where('id',$gc_val->product_id)->first();
+    
+                                //stock update
+    
+                                $orderstock = $gc_val->quantity;
+    
+                                $updatestock = $producttype->in_stock - $orderstock;
+    
+                                Product::where('id',$producttype->id)->update([
+    
+                                    'in_stock' => $updatestock
+    
+                                ]);
+                            
+                                if($producttype->product_type == "giftcard"){
+    
+                                    $giftcard = GiftCard::where('id',$gc_val->card_id)->first();
+                                    $CustomAttributes = CustomAttributes::where('cart_id',$gc_val->id)->first();
+                                    $attr = json_decode($CustomAttributes->custom_attributes);
+                                $to = $attr->to;
+                                $from = $attr->from;
+    
+                                    if($gc_val->quantity >  1){
+    
+                                        for($i=1;$i<=$gc_val->quantity;$i++){
+    
+        
+    
+                                            $code=Str::random(16);
+    
+                                            $code=substr_replace($code, '-', 4, 0);
+    
+                                            $code=substr_replace($code, '-', 9, 0); 
+    
+                                            $code=substr_replace($code, '-', 14, 0);
+    
+                                            $gift_expiry_date=Carbon::now()->addDays($giftcard->valid_days);
+    
+                            
+    
+                                            $userGiftCard = GiftCardUser::create([
+    
+                                                'user_id' => $user_id,
+    
+                                                'card_id' => $gc_val->card_id,
+    
+                                                'gift_card_code' => $code,
+    
+                                                'gift_card_amount' => $gc_val->card_amount,
+    
+                                                'gift_expiry_date' => $gift_expiry_date
+    
+                                    
+    
+                                            ]);
+    
+                                            //custom_attributes::where()
+    
+                                            $this->sendGift($userGiftCard,$to,$from);
+    
+                            
+    
+                                        }
+    
+    
+    
+                                    }
+    
+                                    else{
+    
+                                        
+    
+                                        $code=Str::random(16);
+    
+                                        $code=substr_replace($code, '-', 4, 0);
+    
+                                        $code=substr_replace($code, '-', 9, 0); 
+    
+                                        $code=substr_replace($code, '-', 14, 0);
+    
+                                        $gift_expiry_date=Carbon::now()->addDays($giftcard->valid_days);
+    
+                            
+    
+                                        $userGiftCard = GiftCardUser::create([
+    
+                            
+    
+                                            'user_id' => $user_id,
+    
+                                            'card_id' => $gc_val->card_id,
+    
+                                            'gift_card_code' => $code,
+    
+                                            'gift_card_amount' => $gc_val->card_amount,
+    
+                                            'gift_expiry_date' => $gift_expiry_date
+    
+                                
+    
+                                        ]);
+    
+                                        $this->sendGift($userGiftCard,$to,$from);
+    
+                                    }
+    
+                                }
+    
+                                elseif($producttype->product_type == "card"){
+    
+    
+    
+                                    $getuserwalletamount = User::where('id',$user_id)->first();
+    
+                                    $userwalletamount = $getuserwalletamount->user_wallet;
+    
+                                    $updateamount = $userwalletamount+$gc_val->card_amount;
+    
+                                    //update wallet
+    
+                                    $getuserwalletamount->user_wallet = $updateamount;
+    
+                                    $getuserwalletamount->save();
+    
+                                    
+    
+                                    UserWalletTransection::create([
+    
+    
+    
+                                        'user_id' => $user_id,
+    
+                                        'amount' => $gc_val->card_amount,
+    
+                                        'amount_type' => 'CARD',
+    
+                                        'description' => 'Dabit / Cradit Card',
+                                        'title' => 'Received from',
+                                        'status' => 'received',
+    
+    
+    
+                                    ]);
+    
+    
+    
+                                    
+    
+                                }
+    
+    
+    
+                            }
+    
+                        }catch(\Stripe\Exception\InvalidRequestException $e){
+    
+    
+    
+                            return response()->json(['status' => false, 'message' => $e->getError()->message], 200);
+    
                         }
-
-                   }catch(\Stripe\Exception\InvalidRequestException $e){
-
-
-
-                       return response()->json(['status' => false, 'message' => $e->getError()->message], 200);
-
-                   }
+                    }
 
                         $this->ordernote($order->id,$status,$msg,"new");
                  }
@@ -913,7 +894,7 @@ class OrderApiController extends Controller
 
                  }
                  //Remove from cart
-             Cart::whereIn('id',$request->cart_id)->delete();
+                Cart::whereIn('id',$request->cart_id)->delete();
 
                //Order Mail
              
@@ -921,8 +902,8 @@ class OrderApiController extends Controller
                 '{email}' =>  $user->email,
                 '{phone}' => $billing['billing_phone'],
                 '{billing_address}' => $billing_address,
-                '{total}' => $total_price + $request->shipping_price,
-                '{sub_total}' => isset($order->shipping_price)?($total_price - $request->shipping_price) : $total_price,
+                '{total}' => $request->totPrice + $request->shipping_price,
+                '{sub_total}' => isset($order->shipping_price)?($request->totPrice - $request->shipping_price) : $request->totPrice,
                 '{products_list}' => $products_list,
                 '{order_date}' => Carbon::parse($order->created_at)->format('M d Y'),
                 '{order_number}' => $order->id,

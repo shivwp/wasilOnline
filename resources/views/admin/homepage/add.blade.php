@@ -132,6 +132,10 @@ $content = json_decode($homepage_content->content);
 								</div>
 
 							</div>
+							<div class="col-md-2">
+								<label class="form-label">Alt tag</label> 
+								<input type ="text" class="form-control" name="slider_image[{{$i}}][slider_alt]"  placeholder="alt tag" value="{{isset($val->slider_alt) ? $val->slider_alt : '' }}">
+							</div>
 						</div>
 						<?php $i++; ?>
 						@endforeach
@@ -152,6 +156,8 @@ $content = json_decode($homepage_content->content);
 					</div>
 				</div>
 
+			
+
 				<div class="col-12">
 				    	<label class="form-label mt-4"> Sale Images</label> 
                         <hr>
@@ -160,7 +166,11 @@ $content = json_decode($homepage_content->content);
 								<label class="form-label">url</label> 
 								<input type ="text" class="form-control" name="sale_image[1][url]" value="{{isset($content->sale[0]) ? $content->sale[0]->url : ''}}" placeholder="banner url" required>
 							</div>
-							<div class="col-md-5">
+							<div class="col-md-2">
+								<label class="form-label">Alt tag</label> 
+									<input type ="text" class="form-control" name="sale_image[1][sale_alt]"  placeholder="alt tag" value="{{isset($content->sale[0]) ? $content->sale[0]->sale_alt : ''}}">
+							</div>
+							<div class="col-md-4">
 								<div class="row">
 									<div class="col-md-8">
 										<label class="form-label">Sale image 1</label> 
@@ -174,7 +184,7 @@ $content = json_decode($homepage_content->content);
 									</div>
 								</div>
 							</div>
-							<div class="col-md-5">
+							<div class="col-md-4">
 								<div class="row">
 									<div class="col-md-8">
 										<label class="form-label">Sale image 1(arabic)</label> 
@@ -190,14 +200,16 @@ $content = json_decode($homepage_content->content);
 							</div>
 						</div>
 
-
-
 					<div class="row mt-2">
 		                <div class="col-md-2">
 							<label class="form-label">url</label> 
 							<input type ="text" class="form-control" name="sale_image[2][url]" value="{{isset($content->sale[1]) ? $content->sale[1]->url : ''}}" placeholder="banner url" required>
 						</div>
-						<div class="col-md-5">
+						<div class="col-md-2">
+								<label class="form-label">Alt tag</label> 
+								<input type ="text" class="form-control" name="sale_image[2][sale_alt]"  placeholder="alt tag" value="{{isset($content->sale[1]) ? $content->sale[1]->sale_alt : ''}}">
+						</div>
+						<div class="col-md-4">
 							<div class="row">
 								<div class="col-md-8">
 									<label class="form-label">Sale image 2</label> 
@@ -211,7 +223,7 @@ $content = json_decode($homepage_content->content);
 								</div>
 							</div>
 						</div>
-						<div class="col-md-5">
+						<div class="col-md-4">
 							<div class="row">
 								<div class="col-md-8">
 									<label class="form-label">Sale image 2(arabic)</label> 
@@ -234,7 +246,11 @@ $content = json_decode($homepage_content->content);
 							<label class="form-label">url</label> 
 							<input type ="text" class="form-control" name="sale_image[3][url]" value="{{isset($content->sale[2]) ? $content->sale[2]->url : ''}}" placeholder="banner url" required>
 						</div>
-						<div class="col-md-5">
+						<div class="col-md-2">
+								<label class="form-label">Alt tag</label> 
+								<input type ="text" class="form-control" name="sale_image[3][sale_alt]"  placeholder="alt tag" value="{{isset($content->sale[2]) ? $content->sale[2]->sale_alt : ''}}">
+						</div>
+						<div class="col-md-4">
                          	<div class="row">
                         		<div class="col-md-8">
 									<label class="form-label">Sale image 3</label> 
@@ -249,7 +265,7 @@ $content = json_decode($homepage_content->content);
 								</div>
 							</div>
 						</div>
-						<div class="col-md-5">
+						<div class="col-md-4">
                          	<div class="row">
                         		<div class="col-md-8">
 									<label class="form-label">Sale image 3</label> 
@@ -299,6 +315,10 @@ $content = json_decode($homepage_content->content);
 							@endif
 						</div>
 					</div>
+					<div class="row">
+						<label class="form-label">Sale Banner Alt tag</label> 
+						<input type ="text" class="form-control" name="sale_banner_alt_tag"  placeholder="alt tag" value="{{isset($content->sale_banner_alt_tag) ? $content->sale_banner_alt_tag: ''}}">
+					</div>
 				</div>
 
 
@@ -334,6 +354,53 @@ $content = json_decode($homepage_content->content);
 							@endif
 						</div>
 					</div>
+					<div class="row">
+						<label class="form-label">Advertisement Banner Alt tag</label> 
+						<input type ="text" class="form-control" name="adv_alt_tag"  placeholder="alt tag" value="{{isset($content->adv_alt_tag) ? $content->adv_alt_tag: ''}}">
+					</div>
+				</div>
+
+				<div class="col-12 mt-5">
+				    	<label class="form-label mt-4">Gift Card Image</label> 
+                        <hr>
+						<div class="row">
+							<div class="col-md-2">
+								<label class="form-label">url</label> 
+								<input type ="text" class="form-control" name="giftcard_image_url" value="{{isset($content->giftcard_image_url) ? $content->giftcard_image_url: ''}}" placeholder="banner url" required>
+							</div>
+							<div class="col-md-2">
+								<label class="form-label">Alt tag</label> 
+									<input type ="text" class="form-control" name="giftcard_image_alt"  placeholder="alt tag" value="{{isset($content->giftcard_image_alt) ? $content->giftcard_image_alt: ''}}">
+							</div>
+							<div class="col-md-4">
+								<div class="row">
+									<div class="col-md-8">
+										<label class="form-label">Giftcard image</label> 
+										<input type ="file" class="form-control" name="giftcard_image" value="" placeholder="banner image" >
+										<input type="hidden" name="prev_giftcard_image" value="{{isset($content->giftcard_image) ? $content->giftcard_image: ''}}" >
+									</div>
+									<div class="col-md-4">
+										@if(!empty($content->sale))
+											<img src="{{url('img/slider/'.$content->giftcard_image)}}"  width="100%">
+										@endif
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="row">
+									<div class="col-md-8">
+										<label class="form-label">Gift Card Imaage(arabic)</label> 
+										<input type ="file" class="form-control" name="arab_giftcard_image" value="" placeholder="banner image" >
+										<input type="hidden" name="prev_arab_giftcard_image" value="{{ isset($content->arab_giftcard_image)?$content->arab_giftcard_image:""}}" >
+									</div>
+									<div class="col-md-4">
+										@if(!empty($content->sale))
+											<img src="{{url('img/slider/'.$content->arab_giftcard_image)}}"  width="100%">
+										@endif
+									</div>
+								</div>
+							</div>
+						</div>
 				</div>
 
 

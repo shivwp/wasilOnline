@@ -117,8 +117,6 @@ Route::post('stores', [App\Http\Controllers\Api\StoreApiController::class, 'inde
 
 Route::post('single-store', [App\Http\Controllers\Api\StoreApiController::class, 'singlestore'] );
 
-Route::post('single-store', [App\Http\Controllers\Api\StoreApiController::class, 'singlestore'] );
-
 Route::post('single-store-category', [App\Http\Controllers\Api\StoreApiController::class, 'singlestorecategory'] );
 Route::post('single-store-category-product', [App\Http\Controllers\Api\StoreApiController::class, 'singlestorecategoryproduct'] );
 
@@ -210,6 +208,10 @@ Route::middleware('auth:api')->group(function () {
     Route::post('wallet-transaction-gift', [App\Http\Controllers\Api\GiftCardApiController::class, 'index2'] );
 
     Route::post('gift-card-user', [App\Http\Controllers\Api\GiftCardApiController::class, 'store'] );
+
+    Route::post('apply-giftcard', [App\Http\Controllers\Api\GiftCardApiController::class, 'applyGiftcard'] );
+    Route::post('get-giftcard', [App\Http\Controllers\Api\GiftCardApiController::class, 'getGiftcard'] );
+    Route::post('remove-giftcard', [App\Http\Controllers\Api\GiftCardApiController::class, 'removeGiftcard'] );
 
     Route::post('wallet-transaction', [App\Http\Controllers\Api\GiftCardApiController::class, 'index2'] );
 

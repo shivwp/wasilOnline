@@ -79,7 +79,7 @@ class BrandController extends Controller
 
     {
 
-        $d['title'] = "Tax Create";
+        $d['title'] = "Brand";
 
         return view('admin/brand/add',$d);
 
@@ -102,6 +102,7 @@ class BrandController extends Controller
     public function store(Request $request)
 
     {
+      //  dd($request);
 
         $page = Brand::updateOrCreate(
 
@@ -115,7 +116,8 @@ class BrandController extends Controller
 
             // 'user_id'   => Auth::user()->id,
 
-            'title'     => $request->input('title')
+            'title'     => $request->input('title'),
+            'arabic_title'     => $request->input('arab_title')
 
             
 
@@ -175,9 +177,9 @@ class BrandController extends Controller
 
         
 
-        $d['title'] = "PAGE";
+        $d['title'] = "Brand";
 
-        $d['tax']=Brand::findorfail($id);
+        $d['brand']=Brand::findorfail($id);
 
         return view('admin/brand/add',$d);
 

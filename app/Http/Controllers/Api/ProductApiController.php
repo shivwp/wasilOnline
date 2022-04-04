@@ -513,7 +513,7 @@ class ProductApiController extends Controller
         
     }
     public function bestseller(Request $request){
-        $prod=Product::where('best_saller',1)->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('5')->where('is_publish','=',1); 
+        $prod=Product::where('featured','=',1)->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('5')->where('is_publish','=',1)->orderBy('id', 'DESC'); 
         if(!empty($request->location)){
             $prod->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
             $prod->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
@@ -1616,8 +1616,28 @@ class ProductApiController extends Controller
 
     public function brands(Request $request){
 
-        $brands = brand::all();
+        if($request->cat_id){
+            $product = Product::where('cat_id',$request->cat_id)->groupBy('brand_slug')->get();
+            $getslug = [];
+            foreach($product as $val){
+                $getslug[] = $val->brand_slug;
+            }
+            $brands = Brand::whereIn('slug',$getslug)->get();
+        }
+        else{
+            $brands = Brand::all();
+        }
+       
+      
         if(count($brands) > 0){
+
+            if($request->language){
+
+                foreach($brands as $key => $val){
+                    $val->title = $val->arabic_title;
+                }
+
+            }
 
             return response()->json(['status' => true,'message' => "success" ,"brand"=>$brands], 200);
 

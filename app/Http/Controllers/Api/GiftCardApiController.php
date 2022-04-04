@@ -2,7 +2,7 @@
 
 
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Api;
 
 
 
@@ -10,19 +10,43 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 
-use App\Models\Category;
-
 use App\Models\GiftCard;
+
+use App\Models\GiftCardUser;
+
+use App\Models\User;
+
+use App\Models\Setting;
+
+use App\Models\Cart;
+
+use App\Models\CustomAttributes;
+
+use App\Models\Mails;
+
+use Illuminate\Support\Str;
+
+use Illuminate\Support\Carbon;
+
+use App\Mail\GiftCardEmail;
+
+use App\Models\UserWalletTransection;
 
 use App\Models\GiftCardLog;
 
-use App\Models\Product;
+use App\Models\ApplyGiftcard;
 
-use DB;
+use Validator;
+
+use Mail;
 
 
 
-class GiftCardController extends Controller
+
+
+use Auth;
+
+class GiftCardApiController extends Controller
 
 {
 
@@ -36,83 +60,160 @@ class GiftCardController extends Controller
 
      */
 
-    public function index(Request $request)
+    public function index()
 
     {
 
-        $d['title'] = "Gift Card";
-
-        $d['buton_name'] = "ADD NEW";
-
-        $giftcard=GiftCard::all();
+        $giftcard = GiftCard::all();
 
 
 
-        $d['giftcard'] = $giftcard;
+        if(count($giftcard) > 0){
 
-         $pagination=10;
 
-        if(isset($_GET['paginate'])){
 
-            $pagination=$_GET['paginate'];
+            return response()->json(['status' => true, 'message' => "gift cards", 'data' => $giftcard], 200);
 
         }
 
-         $q=GiftCard::select('*');
-
-            if($request->search){
-
-                $q->where('title', 'like', "%$request->search%");  
-
-            }
-
-             $d['giftcard']=$q->paginate($pagination)->withQueryString();
-
-       
+        else{
 
 
 
-        return view('admin/gift-card/index',$d);
+            return response()->json(['status' => false, 'message' => "gift cards not found", 'data' => []], 200);
+
+
+
+        }
 
     }
 
-
-
-
-
-     public function index2(Request $request)
+    public function index2()
 
     {
 
-        $d['buton_name'] = "ADD NEW";
+        $userid = Auth::user()->token()->user_id;
 
-        $d['title'] = "Gift Card";
+        if(empty($userid)){
 
-        $d['giftcards']=GiftCard::join('user_giftcard_log', 'user_giftcard_log.card_id', '=', 'gift_card.id' )->join('users','users.id','=','user_giftcard_log.user_id')->select('user_giftcard_log.*','users.*','gift_card.*')->get();
-
-         
-
-        $pagination=10;
-
-        if(isset($_GET['paginate'])){
-
-            $pagination=$_GET['paginate'];
+            return response()->json(['status' => true, 'message' => "user not found", 'data' => []], 200); 
 
         }
 
-        $q=GiftCard::select('*');
+        $userwalletbalance = User::findorfail($userid);
 
-        if($request->search){
+        $giftcard = UserWalletTransection::where('user_id',$userid)->get();
 
-           $q->where('title', 'like', "%$request->search%");  
+
+
+        if(count($giftcard) > 0){
+
+
+
+            return response()->json(['status' => true, 'message' => "success",'wallet'=>$userwalletbalance->user_wallet,'data' => $giftcard], 200);
 
         }
 
-        $d['giftcard']=$q->paginate($pagination)->withQueryString();
+        else{
 
 
 
-         return view('admin/gift-card/index2',$d);
+            return response()->json(['status' => false, 'message' => "unsuccess", 'data' => []], 200);
+
+
+
+        }
+
+    }
+
+    public function applyGiftcard(Request $request){
+        if (Auth::guard('api')->check()) {
+            $user = Auth::guard('api')->user();
+        } 
+
+        $user_id = $user->id;
+
+        $giftcard = GiftCardUser::where('gift_card_code',$request->giftcard_code)->where('gift_card_amount','!=',0)->first();
+
+        if(!empty($giftcard)){
+        
+            $amount = $request->amount;
+
+            $giftcard_amount = $giftcard->gift_card_amount;
+
+            if($amount > $giftcard_amount){
+                $resultAmount = $amount - $giftcard_amount;
+                $gift_card_amount =$giftcard_amount;
+            }
+            else{
+                $result = $giftcard_amount - $amount; 
+                $resultAmount = 0; 
+                $gift_card_amount =$amount;
+            }
+
+            ApplyGiftcard::create([
+                'user_id'           => $user_id,
+                'giftcard_code'     => $request->giftcard_code,
+                'gift_card_amount'  => $gift_card_amount
+            ]);
+
+            //dd($resultAmount);
+
+            // $giftcard->update([
+            //     'gift_card_amount' => 0
+            // ]);
+
+            // GiftCardLog::create([
+
+            //     'user_id'           => $user_id,
+
+            //     'gift_card_code'    => $request->giftcard_code,
+
+            //     'gift_card_amount'  =>   $giftcard_amount,
+
+            //     'note'              =>  "gift card code used in order",
+
+            // ]);
+            return response()->json(['status' => true, 'message' => "gift card applied", 'amount' => $resultAmount], 200);
+
+        }
+        else{
+            return response()->json(['status' => false, 'message' => "invalid gift card"], 200);
+        }
+
+
+    }
+
+    public function getGiftcard(Request $request){
+        if (Auth::guard('api')->check()) {
+            $user = Auth::guard('api')->user();
+        } 
+
+        $user_id = $user->id;
+
+        $giftcard = ApplyGiftcard::where('user_id',$user_id)->get();
+        $sum = ApplyGiftcard::where('user_id',$user_id)->sum('gift_card_amount');
+
+        if(count($giftcard) > 0){
+            return response()->json(['status' => true, 'message' => "success", 'giftcard' => $giftcard,'total_amount' => $sum], 200);
+
+        }else{
+            return response()->json(['status' => false, 'message' => "unsuccess", 'giftcard' => []], 200);
+        }
+        
+
+    }
+
+    public function removeGiftcard(Request $request){
+       $ApplyGiftcard = ApplyGiftcard::where('id',$request->id)->first();
+
+       if(!empty($ApplyGiftcard)){
+        $ApplyGiftcard->delete();
+            return response()->json(['status' => true, 'message' => "success"], 200);
+       }
+       else{
+            return response()->json(['status' => false, 'message' => "unsuccess"], 200);
+       }
 
     }
 
@@ -132,11 +233,7 @@ class GiftCardController extends Controller
 
     {
 
-        $d['title'] = " Gift Card";
-
-        $d['products'] = Product::where('parent_id',0)->where('product_type','giftcard')->get();
-
-        return view('admin/gift-card/add',$d);
+        //
 
     }
 
@@ -158,67 +255,145 @@ class GiftCardController extends Controller
 
     {
 
-       $GiftCard = GiftCard::updateOrCreate(
+        $userid = Auth::user()->token()->user_id;
 
-            [
 
-                'id' => $request->id
 
-            ],
+        $validator = Validator::make($request->all(), [
 
-            [
+            'card_id' => 'required',
 
-            // 'user_id'   => Auth::user()->id,
+            'card_amount' => 'required',
 
-            'title'             => $request->input('title'),
+            'recipient_email' => 'required',
 
-            'description'       => $request->input('description'),
+            'user_name' => 'required',
 
-            'amount'            => $request->input('amount_val'),
+            'message' => 'required',
 
-            'valid_days'        => $request->input('valid_days'),
+            'quanatity' => 'required',
 
-            'status'        => $request->input('status'),
-
-            
+            'product_id' => 'required'
 
         ]);
 
 
 
-         if($request->hasfile('image'))
+        $card = GiftCard::find($request->card_id);
 
-            {
+         $ALREDY = Cart::where('user_id',$userid)->where('product_id',$request->product_id)->first();     
 
-                $file = $request->file('image');
+        if(!empty($ALREDY)){
 
-                $extention = $file->getClientOriginalExtension();
+            return response()->json(['status' => false, 'message' => "already exist"], 200);
 
-                $filename = time().'.'.$extention;
+        }
 
-                $file->move('giftcard/', $filename);
+        if(!empty($card)){
 
-                   DB::enableQueryLog(); 
+           
 
-                GiftCard::where('id',$GiftCard->id)->update([
+             //add to cart Giftcard
+
+             $quantity = $request->quantity;
+
+             $price = $quantity *  $request->card_amount;
+
+             $cart_added = Cart::create([
+
+                 'user_id'             => $userid,
+
+                 'product_id'          => $request->product_id,
+
+                 'quantity'            => $request->quantity,
+
+                 "price"                =>  $price,
+
+                 "card_id"                => $request->card_id,
+
+                 "card_amount" => $request->card_amount
+
+             ]);
+
+             // gift card custom attributes
+
+             $custom_attr = [
 
 
 
-                    'image' => $filename
+                'to' =>  $request->recipient_email,
 
-                ]);
+                'from' =>  $request->user_name,
 
-            }
+                'message' =>  $request->message,
 
-    $type='Gift card';
+                'devlivery date' =>  $request->delivery_date,
 
-   \Helper::addToLog('Gift card create or update', $type);
+             ];
 
-    return redirect('/dashboard/gift-card')->with('status', 'your data is updated');
+             CustomAttributes::create([
+
+                'product_id'        =>$request->product_id,
+
+                'custom_attributes' => json_encode($custom_attr),
+
+                'user_id' =>$userid,
+
+                'cart_id' => $cart_added->id,
+
+                'price' =>  $price,
+
+             ]);
+
+             
+
+             return response()->json(['status' => true, 'message' => "success"], 200);
+
+
+
+        }else{
+
+            return response()->json(['status' => false, 'message' => "gift cards not found", 'data' => []], 200);
+
+         }
+
+       
 
     }
 
 
+
+    public function sendGift($userGiftCard)
+
+    {
+
+        $userEmail = User::where('id',$userGiftCard->user_id)->first();
+
+        $setting=Setting::first(); 
+
+        $basicinfo=['{code}'=>$userGiftCard->gift_card_code,
+
+       //'{recipient_name}'=>$giftuser->recipient_name,
+
+        ];
+
+        $msgData=Mails::where('msg_category','giftcard')->first();
+
+        $replMsg=Mails::where('msg_category','giftcard')->pluck('message')->first();
+
+        foreach($basicinfo as $key=> $info){
+
+        $replMsg=str_replace($key,$info,$replMsg);
+
+        }
+
+        $config=['fromemail'=>$msgData->from_email,"replyemail"=>$msgData->reply_email,'message'=>$replMsg,'subject'=>$msgData->subject,'name'=>$msgData->name];
+
+        Mail::to($userEmail->email)->send(new GiftCardEmail($config)); 
+
+
+
+    }
 
     /**
 
@@ -236,7 +411,7 @@ class GiftCardController extends Controller
 
     {
 
-         //
+        //
 
     }
 
@@ -258,13 +433,7 @@ class GiftCardController extends Controller
 
     {
 
-        $d['GiftCard']=GiftCard::findorfail($id);
-
-        $d['products']=Product::where('product_type','=','giftcard')->get();
-
-        $d['title'] = "Gift Card";
-
-        return view('admin/gift-card/add',$d);
+        //
 
     }
 
@@ -310,21 +479,14 @@ class GiftCardController extends Controller
 
     {
 
-       $GiftCard =GiftCard::where('id',$id)->first();
-
-        if ($GiftCard != null) {
-
-           $GiftCard->delete();
-
-            $type='GiftCard';
-
-            \Helper::addToLog('Gift card create or update', $type);
-
-            return redirect('dashboard/gift-card')->with('success', 'Student deleted successfully');
-
-        }
+        //
 
     }
 
-}
 
+
+    
+
+    
+
+}

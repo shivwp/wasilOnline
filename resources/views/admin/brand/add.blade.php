@@ -58,7 +58,7 @@
 
                                         <div class="row">
 
-                                            <input type="hidden" name="id" value="{{ isset($tax) ? $tax->id : '' }}">
+                                            <input type="hidden" name="id" value="{{ isset($brand) ? $brand->id : '' }}">
 
                                             <div class="col-md-6">
 
@@ -66,7 +66,19 @@
 
                                                     <label class="form-label">Title</label>
 
-                                                    <input type="text" class="form-control" name="title" placeholder="Title" value="{{ old('title', isset($tax) ? $tax->title : '') }}" required>
+                                                    <input type="text" class="form-control" name="title" placeholder="Title" value="{{ old('title', isset($brand) ? $brand->title : '') }}" required>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-md-6">
+
+                                                <div class="form-group">
+
+                                                    <label class="form-label">Title(Arabic)</label>
+
+                                                    <input type="text" class="form-control" name="arab_title" placeholder="Title" value="{{ old('title', isset($brand) ? $brand->arabic_title : '') }}" required>
 
                                                 </div>
 

@@ -14,7 +14,8 @@ class Brand extends Model
         protected $table = "brand";
     protected $fillable = [
         'title',
-        'slug'
+        'slug',
+        'arabic_title'
     ];
 
     public function sluggable(): array

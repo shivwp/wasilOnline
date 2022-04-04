@@ -1,5 +1,11 @@
 @extends('layouts.vertical-menu.master')
+
+
+
 @section('css')
+
+
+
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <style>
@@ -300,6 +306,18 @@
               <img src="{{ url('images/').'/'.$setting['arab_value_banner'] ?? "" }}"  alt="banner">
             </div>
           </div>
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">Value OF the day Banner alt tag</label>
+                <input type="text" name="value_banner_alt" value="{{isset($setting['value_banner_alt']) ? $setting['value_banner_alt'] : ""}}" class="form-control">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">Value OF the day Banner url</label>
+                <input type="text" name="value_banner_url" value="{{isset($setting['value_banner_url']) ? $setting['value_banner_url'] : ""}}" class="form-control">
+            </div>
+          </div>
 
           <div class="col-md-6">
             <div class="form-group">
@@ -328,6 +346,20 @@
                   <img src="{{ url('images/').'/'.$setting['arab_top_banner'] ?? "" }}"  alt="banner">
             </div>
           </div>
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">Top 100 Banner alt tag</label>
+                <input type="text" name="top_banner_alt" value="{{isset($setting['top_banner_alt']) ? $setting['top_banner_alt'] : ""}}" class="form-control">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">Top 100 Banner url</label>
+                <input type="text" name="top_banner_url" value="{{isset($setting['top_banner_url']) ? $setting['top_banner_url'] : ""}}" class="form-control">
+            </div>
+          </div>
+
+          
 
           <div class="col-md-6">
             <div class="form-group">
@@ -354,6 +386,19 @@
           <div class="col-md-4">
             <div class="form-group">
               <img src="{{ url('images/').'/'.$setting['arab_arrival_banner'] ?? "" }}"  alt="banner">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">New Arrival Banner alt tag</label>
+                <input type="text" name="arrival_banner_alt" value="{{isset($setting['arrival_banner_alt']) ? $setting['arrival_banner_alt'] : ""}}" class="form-control">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">New Arrival Banner url</label>
+                <input type="text" name="arrival_banner_url" value="{{isset($setting['arrival_banner_url']) ? $setting['arrival_banner_url'] : ""}}" class="form-control">
             </div>
           </div>
 
@@ -387,6 +432,19 @@
 
           <div class="col-md-6">
             <div class="form-group">
+                <label class="control-label ">Sale with us alt tag</label>
+                <input type="text" name="sale_with_us_alt" value="{{isset($setting['sale_with_us_alt']) ? $setting['sale_with_us_alt'] : ""}}" class="form-control">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">Sale with us url</label>
+                <input type="text" name="sale_with_us_url" value="{{isset($setting['sale_with_us_url']) ? $setting['sale_with_us_url'] : ""}}" class="form-control">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
               <label class="control-label ">All category page banner(English)</label>
               <input type="hidden" name="all_cat_page_banner" value="banner">
               <input type="file" class="form-control" id="exampleInputuname_1" name="all_cat_page_banner" value="{{($setting['all_cat_page_banner'])??''}}">
@@ -412,6 +470,19 @@
               <img src="{{ url('images/').'/'.$setting['arab_all_cat_page_banner'] ?? "" }}"  alt="banner">
             </div>
           </div>
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">All category page banner alt tag</label>
+                <input type="text" name="all_cat_page_banner_alt" value="{{isset($setting['all_cat_page_banner_alt']) ? $setting['all_cat_page_banner_alt'] : ""}}" class="form-control">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label ">All category page banner url</label>
+                <input type="text" name="all_cat_page_banner_url" value="{{isset($setting['all_cat_page_banner_url']) ? $setting['all_cat_page_banner_url'] : ""}}" class="form-control">
+            </div>
+          </div>
+
 
           
           
@@ -583,7 +654,7 @@
 
               <label class="switch">
 
-                  <input type="checkbox" id="free-shipping" name="free" {{ isset($setting) && ($setting['free_shipping_is_applied'] == 1) ?  'checked' : '' }} onchange="freeShipping()">
+                  <input type="checkbox" id="free-shipping" name="free" {{ isset($setting) && ($setting['free_shipping_is_applied'] == "on") ?  'checked' : '' }} onchange="freeShipping()">
 
                   <span class="slider round"></span>
 
@@ -640,7 +711,7 @@
             <div class="form-group">
 
               <label class="switch">
-                <input type="checkbox" id="normal-shipping" name="normal" {{ isset($setting) && ($setting['normal_shipping_is_applied'] == 1) ?  'checked' : '' }} onchange="normalShipping()">
+                <input type="checkbox" id="normal-shipping" name="normal" {{ isset($setting) && ($setting['normal_shipping_is_applied'] == "on") ?  'checked' : '' }} onchange="normalShipping()">
 
                 <span class="slider round"></span>
 
@@ -662,7 +733,7 @@
 
               <label class="switch">
 
-                <input type="checkbox" id="city-shipping" name="wasil" {{ isset($ship_meth_3) && ($ship_meth_3->is_available == 1) ?  'checked' : '' }} onchange="cityShipping()">
+                <input type="checkbox" id="city-shipping" name="city_shipping" {{ isset($setting) && ($setting['city_shipping'] == "on") ?  'checked' : '' }} onchange="cityShipping()">
 
                 <span class="slider round"></span>
 
@@ -803,11 +874,20 @@ $('select').select2({
   if(document.getElementById('free-shipping').checked) {
     $(".free-shipping").show();
   }
+  else{
+    $(".free-shipping").hide();
+  }
   if(document.getElementById('normal-shipping').checked) {
     $(".normal-shipping").show();
   }
   else{
     $(".normal-shipping").hide();
+  }
+  if(document.getElementById('city-shipping').checked) {
+    $(".city-shipping").show();
+  }
+  else{
+    $(".city-shipping").hide();
   }
    function freeShipping()
 	{

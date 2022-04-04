@@ -10,6 +10,7 @@ use App\Models\Country;
 use App\Models\City;
 use App\Models\ShippingMethod;
 use App\Models\VendorShipping;
+use App\Models\CityPriceVendor;
 use Auth;
 use Hash;
 use Redirect;
@@ -141,109 +142,31 @@ class VendorSettingController extends Controller
 
 
      public function index2(Request $request)
-
-
-
     {
 
-
-
-        // 
-
-
-
         $vender_id = Auth::user()->id;
-
-
-
         $data['title'] = "Vendor-settings";
-
-
-
         $data['setting']=VendorSetting::where('vendor_id', '=' , $vender_id)->first();
 
-
-
         $data['vendor_details']=VendorSetting::where('vendor_id', '=' , $vender_id)->pluck('value', 'name');
-
-
-
         $data['data'] = $this->getVendorMeta($vender_id);
-
-
-
         $data['countries'] = Country::get(["name", "id"]);
-
-
-
-        
-
-
-
         if(isset($data['vendor_details']['country']) && !empty($data['vendor_details']['country'])){
-
-
-
-
-
-
-
             $data['states'] = State::where("country_id",$data['vendor_details']['country'])->get(["state_name", "state_id"]);
-
-
-
         }
-
-
-
         else{
 
-
-
-
-
-
-
              $data['states'] = State::where("country_id",$request->country_id)->get(["state_name", "state_id"]);
-
-
-
             }
-
-
-
-
-
-
 
             if(isset($data['vendor_details']['state']) && !empty($data['vendor_details']['state'])){
 
 
-
-   
-
-
-
                  $data['cities'] = City::where("state_id",$data['vendor_details']['state'])->get(["city_name", "city_id"]);
 
-
-
-   
-
-
-
             }
-
-
-
             else{
-
-
-
                 $data['cities'] = City::where("state_id",$request->state_id)->get(["city_name", "city_id"]);
-
-
-
             }
 
             $data['ship_1'] = ShippingMethod::where('id',1)->first();
@@ -251,9 +174,6 @@ class VendorSettingController extends Controller
             $data['ship_2'] = ShippingMethod::where('id',2)->first();
 
             $data['ship_3'] = ShippingMethod::where('id',3)->first();
-
-
-
             //check method
 
             $data['checkvendorshiipingmethod1'] = VendorShipping::where('shipping_method_id',1)->where('vendor_id',$vender_id)->first();
@@ -261,12 +181,16 @@ class VendorSettingController extends Controller
             $data['checkvendorshiipingmethod2'] = VendorShipping::where('shipping_method_id',2)->where('vendor_id',$vender_id)->first();
 
             $data['checkvendorshiipingmethod3'] = VendorShipping::where('shipping_method_id',3)->where('vendor_id',$vender_id)->first();
-
-
-
            //dd($data['setting']);
+           $state = [2150,2151,2152,2153,2154,2155,2156,2157,2158];
+           $data['city_list'] = City::whereIn('state_id',$state)->get();
 
-
+           $stateCity =State::where('country_id','121')->get();
+           foreach($stateCity as $s_k => $s_v){
+            $city =City::select('city_id','city_name')->where('state_id',$s_v->state_id)->get();
+            $stateCity[$s_k]['city'] = $city;
+           }
+           $data['stateCity'] = $stateCity;
 
         return view('admin.vendor-setting',$data);
 
@@ -586,346 +510,103 @@ class VendorSettingController extends Controller
 
     public function store(Request $request)
 
-
-
     {
-
-
-
+        //dd($request->citystatecountry);
         if(Auth::user()->roles->first()->title == 'Admin'){
 
-
-
-            // isset($request->vender_id)
-
-
-
             $password = Hash::make($request->password);
-
-
-
             $user = User::updateOrCreate([
-
-
-
                 'id'=>$request->vendor_id],[
-
-
-
                 'first_name'    => $request->first_name,
-
-
-
                 'last_name'     => $request->last_name,
-
-
-
                 'email'         => $request->email,
-
-
-
                 'password'      => $password,
-
-
-
             ]);
 
-
-
-            
-
-
-
             $user->roles()->sync(3);
-
-
-
             $vendor_id=$user->id;
-
-
-
             $role = 'Admin';
-
-
-
         }
-
-
-
         elseif(Auth::user()->roles->first()->title == 'Vendor'){
 
-
-
-            // 
-
-
-
             $vendor_id= Auth::user()->id;
-
-
-
             $role = 'Vendor';
-
-
-
-              //vendor side shipping method availability
-
-              if(isset($request->free) && $request->free="on"){
-
-                VendorShipping::updateOrCreate(['vendor_id' => $vendor_id,'shipping_method_id'=>1],[
-
-                    'shipping_method_id' => 1,
-
-                    'vendor_id' => $vendor_id,
-
-                    'min_order_free' => !empty($request->order_limit) ? $request->order_limit : 0,
-
-                    'ship_price'=> 0,
-
-                    'is_available' => 1
-
-                ]);
-
-            }
-
-            else{
-
-                VendorShipping::where('vendor_id',$vendor_id)->where('shipping_method_id',1)->delete();  
-
-            }
-
-            if(isset($request->fixed) && $request->fixed="on"){
-
-                VendorShipping::updateOrCreate(['vendor_id' => $vendor_id,'shipping_method_id'=>2],[
-
-                    'shipping_method_id' => 2,
-
-                    'vendor_id' => $vendor_id,
-
-                    'min_order_free' => 0,
-
-                    'ship_price'=> !empty($request->shipping_price) ? $request->shipping_price : 0,
-
-                    'is_available' => 1
-
-                ]);
-
-            }
-
-            else{
-
-                VendorShipping::where('vendor_id',$vendor_id)->where('shipping_method_id',2)->delete();   
-
-            }
-
-            if(isset($request->wasil) && $request->wasil="on"){
-
-                VendorShipping::updateOrCreate(['vendor_id' => $vendor_id,'shipping_method_id'=>3],[
-
-                    'shipping_method_id' => 3,
-
-                    'vendor_id' => $vendor_id,
-
-                    'min_order_free' => 0,
-
-                    'ship_price'=> 0,
-
-                    'is_available' => 1
-
-                ]);
-
-            }
-
-            else{
-
-                VendorShipping::where('vendor_id',$vendor_id)->where('shipping_method_id',3)->delete();  
-
-            }
-
-
-
         }
 
-
-
-
-
-
-
         $data = $request->except('_token');
-
-
-
-
-
-
-
         if(isset($data['selling']))
-
-
-
             $data['selling'] = 1;
-
-
-
         else
-
-
-
             $data['selling'] = 0;
 
-
-
-        
-
-
-
         if(isset($data['product_publish']))
-
-
-
             $data['product_publish'] = 1;
-
-
-
         else
-
-
-
             $data['product_publish'] = 0;
 
 
-
-
-
-
-
         if(isset($data['feature_vendor']))
-
-
-
             $data['feature_vendor'] = 1;
-
-
-
         else
-
-
-
             $data['feature_vendor'] = 0;
-
-
-
-
 
 
 
         if(isset($data['notify']))
 
-
-
             $data['notify'] = 1;
-
-
-
         else
-
-
-
             $data['notify'] = 0;
 
+        if(isset($data['free_shipping_is_applied']))
 
+            $data['free_shipping_is_applied'] = "on";
+        else
+            $data['free_shipping_is_applied'] = "off";    
 
+        if(isset($data['normal_shipping_is_applied']))
 
+            $data['normal_shipping_is_applied'] = "on";
+        else
+            $data['normal_shipping_is_applied'] = "off";  
+        if(isset($data['shipping_by_city_is_applied']))
 
-
-
-        // dd($data);
-
-
-
-
-
-
+            $data['shipping_by_city_is_applied'] = "on";
+        else
+            $data['shipping_by_city_is_applied'] = "off";    
 
         foreach ($data as $key => $value) {
-
-
-
-            // 
-
-
-
-            
-
-
-
             $this->savevalue($vendor_id,$key,$value);
 
-
-
         }
-
-
-
-
-
-
 
         $type='Vendor ';
 
-
-
-        
-
-
-
         \Helper::addToLog('Vendor Settings Changes', $type);
-
-
-
-
-
-
+        if(!empty($request->ship_city)){
+            foreach($request->ship_city as $c_key => $c_val){
+                CityPriceVendor::updateOrCreate([
+                    'city_id'=>$c_val['city_id'],
+                    'vendor_id'=>Auth::user()->id,
+                    ], [
+                        'vendor_id'=>Auth::user()->id,
+                        'city_id'=>$c_val['city_id'],
+                        'normal_price'=>!empty($c_val['admin_normal_price']) ? $c_val['admin_normal_price'] : 0,
+                        'priority_price'=>!empty($c_val['admin_city_wise_price']) ? $c_val['admin_city_wise_price'] : 0,
+                    ]); 
+            }
+        }
 
         if($role == "Admin") {
-
-
-
             return redirect('/dashboard/vendorsettings');
 
-
-
         }
-
-
 
         else {
-
-
-
             return back();
-
-
-
         }
 
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
 
 
     //  public function storedata(Request $request)

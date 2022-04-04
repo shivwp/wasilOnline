@@ -102,10 +102,11 @@ class SettingsController extends Controller
     public function store(Request $request)
 
     {
+        //dd($request);
 
          $ship = explode(",",$request->ship_method);
 
-//dd($request->input('normal'));
+
         $setting['logo'] = '';
 
         $setting['value_banner'] = '';
@@ -157,14 +158,25 @@ class SettingsController extends Controller
         $setting['facebook'] = $request->facebook;
         $setting['normal_price'] = $request->admin_normal_price;
         $setting['free_shipping_over'] = $request->free_shipping;
-        $setting['free_shipping_is_applied'] =  isset($request->free) && ($request->free == "on") ? 1 : 0 ;
-        $setting['normal_shipping_is_applied'] =   isset($request->normal) && ($request->normal == "on") ? 1 : 0 ;
+        $setting['free_shipping_is_applied'] =  isset($request->free) && ($request->free == "on") ? "on" : "off" ;
+        $setting['normal_shipping_is_applied'] =   isset($request->normal) && ($request->normal == "on") ? "on" : "off" ;
+        $setting['city_shipping'] =   isset($request->city_shipping) && ($request->city_shipping == "on") ? "on" : "off" ;
         $setting['approval'] = isset($request->approval) && ($request->approval == "on") ? 1 : 0 ;
+        $setting['value_banner_alt'] = $request->value_banner_alt;
+        $setting['value_banner_url'] = $request->value_banner_url;
+        $setting['top_banner_alt'] = $request->top_banner_alt;
+        $setting['top_banner_url'] = $request->top_banner_url;
+        $setting['arrival_banner_alt'] = $request->arrival_banner_alt;
+        $setting['arrival_banner_url'] = $request->arrival_banner_url;
+        $setting['sale_with_us_alt'] = $request->sale_with_us_alt;
+        $setting['sale_with_us_url'] = $request->sale_with_us_url;
+        $setting['all_cat_page_banner_alt'] = $request->all_cat_page_banner_alt;
+        $setting['all_cat_page_banner_url'] = $request->all_cat_page_banner_url;
+
+       // dd($setting);
       
         foreach ($setting as $key => $value) {
-
-           
-
+          
             if($key == 'logo'  && $request->hasfile('logo')){ 
 
                 // 
@@ -177,6 +189,8 @@ class SettingsController extends Controller
 
                 $file->move('images/logo', $filename);
 
+
+
                 Setting::updateOrCreate([
 
                         'name'=>$key,
@@ -188,9 +202,6 @@ class SettingsController extends Controller
                     ]);
 
             }
-
-            
-
             if($key == 'value_banner'   && $request->hasfile('value_banner')){ 
 
       
@@ -454,6 +465,8 @@ class SettingsController extends Controller
             }
 
             if($value)
+
+         
 
             Setting::updateOrCreate([
 

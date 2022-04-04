@@ -84,6 +84,7 @@ class HomepageController extends Controller
 
                     }
                     $thumb[$i]['url']=$slider_image[$i]['url'];
+                    $thumb[$i]['slider_alt']=$slider_image[$i]['slider_alt'];
 
                 }
 
@@ -155,6 +156,7 @@ class HomepageController extends Controller
                     $thumb_sale[$i]['arabic_image']=$file['sale_arabic_prev'];
                 }
                 $thumb_sale[$i]['url']=$file['url'];
+                $thumb_sale[$i]['sale_alt']=$file['sale_alt'];
                 $i++;
 
               }
@@ -236,14 +238,53 @@ class HomepageController extends Controller
               $arab_thumb_banner = $request->arab_banner_img_prev; 
           }
 
+          $giftcard_image='';
+          if($request->has('giftcard_image')) {
+            $giftcard_image1=$request->giftcard_image;
+  
+            if($request->has('giftcard_image')) {
+                $name1_gift=uniqid().$giftcard_image1->getClientOriginalName();
+
+                $giftcard_image1->move('img/slider', $name1_gift);
+                $giftcard_image = $name1_gift;
+            }
+          }
+          else{
+            $giftcard_image = $request->prev_arab_giftcard_image; 
+          }
+
+          $arab_giftcard_image='';
+          if($request->has('arab_giftcard_image')) {
+            $arab_gift_img=$request->arab_giftcard_image;
+  
+            if($request->has('arab_giftcard_image')) {
+                $name1_gift_aarab=uniqid().$arab_gift_img->getClientOriginalName();
+
+                $arab_gift_img->move('img/slider', $name1_gift_aarab);
+                $arab_giftcard_image = $name1_gift_aarab;
+            }
+          }
+          else{
+            $arab_giftcard_image = $request->prev_arab_giftcard_image; 
+          }
+
+
+          
+
        $content['content'] = $request->input('content');
        $content['slider'] = $thumb;
        $content['sale'] = $thumb_sale;
        $content['adv_img'] = $thumb_adv;
        $content['arab_adv_img'] = $arab_thumb_adv;
+       $content['giftcard_image'] = $giftcard_image;
+       $content['arab_giftcard_image'] = $arab_giftcard_image;
+       $content['giftcard_image_url'] = $request->giftcard_image_url;
+       $content['giftcard_image_alt'] = $request->giftcard_image_alt;
        
        $content['banner_img'] = $thumb_banner;
        $content['arab_banner_img'] = $arab_thumb_banner;
+       $content['sale_banner_alt_tag'] = $request->sale_banner_alt_tag;
+       $content['adv_alt_tag'] = $request->adv_alt_tag;
         $homepage = Homepage::updateOrCreate(
             [
                 'id' => $request->id
