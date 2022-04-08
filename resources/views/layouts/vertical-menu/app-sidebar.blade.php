@@ -433,23 +433,7 @@
 
 
 
-                        @can('coupon_access')
-
-
-
-                         <li>
-
-
-
-                            <a class="side-menu__item" href="{{ route('dashboard.coupon.index') }}"><i class="side-menu__icon icon icon-trophy"></i><span class="side-menu__label">Coupon</span></a>
-
-
-
-                        </li>
-
-
-
-                        @endcan
+                      
 
 
 
@@ -542,42 +526,21 @@
 
 
                         @endcan
+                         
 
-
-
-                          @can('gift_card_access')
-
-                          <li class="slide">
-
-
-
-                            <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon icon icon-present"></i><span class="side-menu__label">Gift Card</span><i class="angle fa fa-angle-right"></i></a>
-
-
-
+                         <li class="slide">
+                            <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon icon icon-wallet"></i><span class="side-menu__label">Wallet</span><i class="angle fa fa-angle-right"></i></a>
                             <ul class="slide-menu">
-
-
-
-                                <li><a href="{{ route('dashboard.gift-card.create') }}" class="slide-item">Add New </a></li>
-
-
-
-                                <li><a href="{{ route('dashboard.gift-card.index') }}" class="slide-item">Gift Card List</a></li>
-
-
-
-                                <li><a href="{{ route('dashboard.card-deatils') }}" class="slide-item">Details of Gift Card</a></li>
-
-
-
+                            @can('gift_card_access')
+                                <li><a href="{{ route('dashboard.gift-card.index') }}" class="slide-item">Gift Card</a></li>
+                            @endcan
+                            @can('coupon_access')
+                                <li><a href="{{ route('dashboard.coupon.index') }}" class="slide-item">Coupns</a></li>
+                                <li><a href="{{ route('dashboard.card-deatils') }}" class="slide-item">Store Cardit</a></li>
+                            @endcan
                             </ul>
+                          </li>
 
-
-
-                        </li>
-
-                         @endcan
 
 
 
