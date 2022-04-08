@@ -233,7 +233,7 @@ class OrderApiController extends Controller
                     $giftcard = GiftCardUser::where('gift_card_code',$gift_val['code'])->where('gift_card_amount','!=',0)->first();
                     if(!empty($giftcard)){
                         $updateAmount = $giftcard->gift_card_amount - $gift_val['amount'];
-                         $giftcard->update([
+                        GiftCardUser::where('gift_card_code',$giftcard->gift_card_code)->update([
                             'gift_card_amount' => $updateAmount
                         ]);
 
@@ -245,8 +245,6 @@ class OrderApiController extends Controller
                         ]);
                     }
                 }
-            }else{
-                return response()->json(['status' => false, 'message' => "no gift card"], 200);
             }
 
 
@@ -460,7 +458,7 @@ class OrderApiController extends Controller
                 $shipping['shipping_zip_code']    = $request->shipping_address['zip_code'];
 
                 $shipping['shipping_landmark']    = $request->shipping_address['landmark'];
-                $shipping['refund_amount_in']    = !empty($request->refund_amount_in) && ($request->refund_amount_in == "store") ? "store" : "bank";
+                $shipping['refund_amount_in']    = !empty($request->refund_amount_in) && ($request->refund_amount_in == "bank") ? "bank" : "wallet";
 
 
 
@@ -493,7 +491,7 @@ class OrderApiController extends Controller
                  $billing['subtotal_price'] =     $request->subtotPrice;
                  $billing['total_price'] =     $request->totPrice;
                  $billing['gift_card_amount'] =     !empty($request->gift_card_amount) ? $request->gift_card_amount : 0;
-                 $billing['gift_card_data'] =    json_encode($request->gift_card);  
+                 $billing['gift_card_data'] =    !empty($request->gift_card_amount) ? json_encode($request->gift_card)   : 0;
 
                 $billing['currency_sign'] =   $request->input('currency_sign');
 
@@ -864,7 +862,7 @@ class OrderApiController extends Controller
                         }
                     }
 
-                        $this->ordernote($order->id,$status,$msg,"new");
+                        $this->ordernote($order->id,"unsuccess","payment unsuccess","new");
                  }
                  elseif($request->shipping_method == "wallet"){
 

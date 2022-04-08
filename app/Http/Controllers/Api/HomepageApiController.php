@@ -48,12 +48,15 @@ class HomepageApiController extends Controller
 
                $val->image = url('img/slider/' . $val->image);
                $val->banner_mobile = url('img/slider/' . $val->banner_mobile);
+               $val->slider_image_arabic = url('img/slider/' . $val->slider_image_arabic);
+               $val->banner_mobile_arabic = url('img/slider/' . $val->banner_mobile_arabic);
 
             }
 
             foreach($data->sale as $s_key => $s_val){
 
                 $s_val->image = url('img/slider/' . $s_val->image);
+                $s_val->arabic_image = url('img/slider/' . $s_val->arabic_image);
 
             }
 
@@ -61,6 +64,8 @@ class HomepageApiController extends Controller
 
             $data->banner_img = url('img/slider/' . $data->banner_img);
             $data->giftcard_image = url('img/slider/' . $data->giftcard_image);
+            $data->arab_giftcard_image = url('img/slider/' . $data->arab_giftcard_image);
+            $data->arab_banner_img = url('img/slider/' . $data->arab_banner_img);
 
             return response()->json(['status' => true, 'message' => "Home Page", 'home' => $data], 200);
 

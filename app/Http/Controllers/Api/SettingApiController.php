@@ -32,6 +32,28 @@ class SettingApiController extends Controller
     {
          $setting=Setting::pluck('value','name');
         if(count($setting) > 0 ){
+            if(!empty($setting['arab_value_banner'])){
+            $setting['arab_value_banner'] = url('images/' . $setting['arab_value_banner']);
+            }
+            if(!empty($setting['arab_top_banner'])){
+                $setting['arab_top_banner'] = url('images/' . $setting['arab_top_banner']);
+            }
+            if(!empty($setting['arab_arrival_banner'])){
+                $setting['arab_arrival_banner'] = url('images/' . $setting['arab_arrival_banner']);
+            }
+            if(!empty($setting['sale_with_us'])){
+                $setting['sale_with_us'] = url('images/' . $setting['sale_with_us']);
+            }
+            if(!empty($setting['arab_sale_with_us'])){
+                $setting['arab_sale_with_us'] = url('images/' . $setting['arab_sale_with_us']);
+            }
+            if(!empty($setting['all_cat_page_banner'])){
+                $setting['all_cat_page_banner'] = url('images/' . $setting['all_cat_page_banner']);
+            }
+            if(!empty($setting['arab_all_cat_page_banner'])){
+                $setting['arab_all_cat_page_banner'] = url('images/' . $setting['arab_all_cat_page_banner']);
+            }
+            
             unset($setting['city']);
             return response()->json(['status' => true, 'message' => "Success",  'setting' => $setting], 200);
         }

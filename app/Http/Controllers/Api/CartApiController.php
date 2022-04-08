@@ -148,7 +148,7 @@ class CartApiController extends Controller
 
                     elseif($product->product_type == "giftcard"){
 
-                        $CustomAttributes = CustomAttributes::select('price','custom_attributes')->where('product_id',$product->id)->where('user_id',$userid)->first();
+                        $CustomAttributes = CustomAttributes::select('price','custom_attributes')->where('cart_id',$c_value->id)->first();
 
                         if(!empty($CustomAttributes)){
 
@@ -444,7 +444,9 @@ class CartApiController extends Controller
 
                 'variation'           => json_encode($variations), 
 
-                "price"                => $price
+                "price"                => $price,
+                
+                "vendor_id"                => $product->vendor_id
 
             ]);
 

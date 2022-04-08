@@ -35,8 +35,10 @@ class ProductApiController extends Controller
         $prod=Product::orderBy('id', 'DESC')->where('product_type','!=','giftcard')->where('product_type','!=','card')->where('parent_id','=',0)->where('is_publish','=',1);
 
         if(!empty($request->location)){
-            $prod->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
-            $prod->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+            // $prod->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
+            // $prod->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+            $prod->leftJoin('city_user', 'city_user.user_id', '=', 'products.vendor_id')->where('city_user.city_id', $request->location);
+
         }
         
         if($request->category_id){
@@ -206,8 +208,9 @@ class ProductApiController extends Controller
     {
         $pro=Product::orderBY('id','DESC')->where('parent_id','=',0)->where('cat_id','=',$request->cat_id)->limit('5')->where('product_type','!=','giftcard')->where('product_type','!=','card')->where('is_publish','=',1);
         if(!empty($request->location)){
-            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
-            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+        
+            $pro->leftJoin('city_user', 'city_user.user_id', '=', 'products.vendor_id')->where('city_user.city_id', $request->location);
+
         }
         $product = $pro->get();
         $banner = Setting::where('name','=','arrival_banner')->first('value');
@@ -393,8 +396,7 @@ class ProductApiController extends Controller
         // $product=Product::orderBY('id','DESC')->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('8'); 
         $pro = Product::orderBY('products.id','DESC')->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('8')->where('is_publish','=',1);
         if(!empty($request->location)){
-            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
-            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+            $pro->leftJoin('city_user', 'city_user.user_id', '=', 'products.vendor_id')->where('city_user.city_id', $request->location);
         }
         $product = $pro->get();
         $banner = Setting::where('name','=','arrival_banner')->first('value');
@@ -515,8 +517,7 @@ class ProductApiController extends Controller
     public function bestseller(Request $request){
         $prod=Product::where('featured','=',1)->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('5')->where('is_publish','=',1)->orderBy('id', 'DESC'); 
         if(!empty($request->location)){
-            $prod->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
-            $prod->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+            $prod->leftJoin('city_user', 'city_user.user_id', '=', 'products.vendor_id')->where('city_user.city_id', $request->location);
         }
         $product = $prod->get();
         $products = [];
@@ -637,8 +638,7 @@ class ProductApiController extends Controller
 
         $pro=Product::orderBY('avg_rating','DESC')->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('7')->where('is_publish','=',1); 
         if(!empty($request->location)){
-            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
-            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+            $pro->leftJoin('city_user', 'city_user.user_id', '=', 'products.vendor_id')->where('city_user.city_id', $request->location);
         }
         $product = $pro->get();
         $products = [];
@@ -762,8 +762,7 @@ class ProductApiController extends Controller
     public function Featureproduct(Request $request){
         $pro=Product::where('featured',1)->where('parent_id','=',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->limit('8')->where('is_publish','=',1); 
         if(!empty($request->location)){
-            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
-            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+            $pro->leftJoin('city_user', 'city_user.user_id', '=', 'products.vendor_id')->where('city_user.city_id', $request->location);
         }
         $product = $pro->get();
         $products = [];
@@ -1118,7 +1117,7 @@ class ProductApiController extends Controller
 
     public function searchProduct(Request $request){
         
-        $category = Category::where('title', 'like', "%{$request->search}%")->where('is_publish','=',1)->get();
+        $category = Category::where('title', 'like', "%{$request->search}%")->get();
 
         if(count($category) > 0){
 
@@ -1136,7 +1135,7 @@ class ProductApiController extends Controller
             if(!empty($request->page) && !empty($request->limit)){
                 $page = $request->page;
                 $limit = $request->limit;
-                $pro=Product::where('parent_id',0)->whereIn('cat_id',$catId)
+                $pro=Product::where('parent_id',0)->where('is_publish','=',1)->whereIn('cat_id',$catId)
                 ->orWhereIn('cat_id_2', $catId)
                 ->orWhereIn('cat_id_3', $catId)
                 ->limit($limit)
@@ -1154,8 +1153,7 @@ class ProductApiController extends Controller
                 ->orWhereIn('cat_id_2', $catId)
                 ->orWhereIn('cat_id_3', $catId);
                 if(!empty($request->location)){
-                    $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
-                    $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+                    $pro->leftJoin('city_user', 'city_user.user_id', '=', 'products.vendor_id')->where('city_user.city_id', $request->location);
                 }
                 $product = $pro->get();
             }
@@ -1166,8 +1164,7 @@ class ProductApiController extends Controller
                 $pro=Product::where('parent_id',0)->where('pname', 'like', "%{$request->search}%")->limit($limit)
                 ->offset(($page - 1) * $limit);  
                 if(!empty($request->location)){
-                    $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
-                    $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+                    $pro->leftJoin('city_user', 'city_user.user_id', '=', 'products.vendor_id')->where('city_user.city_id', $request->location);
                 }
                 $product = $pro->get();
 
@@ -1299,9 +1296,8 @@ class ProductApiController extends Controller
         $currentDate  = Carbon\Carbon::now()->toDateString();
 
        $pro = Product::where('parent_id',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->whereDate('offer_end_date','>=',$currentDate)->where('is_publish','=',1); 
-       if(!empty($request->location)){
-            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
-            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+        if(!empty($request->location)){
+            $pro->leftJoin('city_user', 'city_user.user_id', '=', 'products.vendor_id')->where('city_user.city_id', $request->location);
         }
         $products = $pro->get();
 
@@ -1430,8 +1426,7 @@ class ProductApiController extends Controller
 
         $pro = Product::where('parent_id',0)->where('product_type','!=','giftcard')->where('product_type','!=','card')->where('top_hunderd',1)->where('is_publish','=',1);
         if(!empty($request->location)){
-            $pro->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'products.vendor_id');
-            $pro->where('vendorsettings.value', '=', $request->location)->select('products.*','vendorsettings.name');
+            $pro->leftJoin('city_user', 'city_user.user_id', '=', 'products.vendor_id')->where('city_user.city_id', $request->location);
         }
         $products = $pro->get(); 
         $banner = Setting::where('name','=','top_banner')->first('value'); 

@@ -133,6 +133,17 @@ class User extends Authenticatable
     }
 
 
+    public function cities()
+
+    {
+
+        return $this->belongsToMany(City::class);
+
+
+
+    }
+
+
 
 }
 

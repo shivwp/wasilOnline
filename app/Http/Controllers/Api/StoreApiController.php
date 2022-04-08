@@ -19,9 +19,12 @@ class StoreApiController extends Controller
     {
 
         $vend = Role::where('title', 'Vendor')->first()->users();
+        // if(!empty($request->location)){
+        //     $vend->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'users.id');
+        //     $vend->where('vendorsettings.value', '=', $request->location)->select('users.*','vendorsettings.name');
+        // }
         if(!empty($request->location)){
-            $vend->leftJoin('vendorsettings', 'vendorsettings.vendor_id', '=', 'users.id');
-            $vend->where('vendorsettings.value', '=', $request->location)->select('users.*','vendorsettings.name');
+            $vend->leftJoin('city_user', 'city_user.user_id', '=','users.id')->where('city_user.city_id', $request->location);
         }
         $vendors = $vend->get();
         foreach ($vendors as $key => $value) {

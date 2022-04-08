@@ -1,79 +1,20 @@
 @extends('layouts.vertical-menu.master')
-
-
-
 @section('css')
-
-
-
 <style>
-
-
-
 .input-container {
-
-
-
   padding-bottom: 1em;
-
-
-
 }
-
-
-
 .left-inner-addon {
-
-
-
     position: relative;
-
-
-
 }
-
-
-
 .left-inner-addon input {
-
-
-
     padding-left: 35px !important; 
-
-
-
 }
-
-
-
 .left-inner-addon i {
-
-
-
     position: absolute;
-
-
-
     padding: 12px 12px;
-
-
-
     pointer-events: none;
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
 </style>
 
 
@@ -547,7 +488,7 @@
               <select  id="country" name="country" class="form-control">
                   <option value="">Select Country</option>
                   @foreach ($countries as $country)
-                  <option value="{{$country->id}}"{{($data['country']== $country->id)? 'selected' :''}}>
+                  <option value="{{$country->id}}"{{(isset($data['country']) && $data['country']== $country->id)? 'selected' :''}}>
                       {{$country->name}}
                   </option>
                   @endforeach
@@ -946,7 +887,7 @@
         </div>
 
         <div class="col-md-12">
-
+          @if(isset($avaliablesettings['free_shipping_is_applied']) && ($avaliablesettings['free_shipping_is_applied'] == "on"))
             <div class="row">
 
               <div class="col-md-4">     
@@ -978,6 +919,8 @@
               </div>
 
             </div>
+          @endif
+          @if(isset($avaliablesettings['normal_shipping_is_applied']) && ($avaliablesettings['normal_shipping_is_applied'] == "on"))
             <div class="row">
 
               <div class="col-md-4">
@@ -1005,6 +948,8 @@
               </div>
 
             </div>
+          @endif
+          @if(isset($avaliablesettings['city_shipping']) && ($avaliablesettings['city_shipping'] == "on"))
             <div class="row">
               <div class="col-md-4">
 
@@ -1024,6 +969,7 @@
     
               </div>
             </div>
+          @endif
             <div class="row city-shipping" style="display: none">
               <div class="col-md-12">
                 <h4 class="mt-5">Shipping By City</h4><hr>

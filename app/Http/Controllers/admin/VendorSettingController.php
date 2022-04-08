@@ -3,6 +3,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\VendorSetting;
+use App\Models\Setting;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\State;
@@ -18,128 +19,29 @@ use Validator;
 use App\Models\Mails;
 use App\Mail\OrderMail;
 use Mail;
+use DB;
 class VendorSettingController extends Controller
 {
      public function index(Request $request)
     {
-
-
-
         $data['title'] = "Vendors";
-
-
-
         $data['buton_name'] = "Add New";
-
-
-
-
-
-
-
-         $pagination=10;                   
-
-
-
+         $pagination=10;  
         if(isset($_GET['paginate'])){
-
-
-
             $pagination=$_GET['paginate'];
-
-
-
         }
-
-
-
-
-
-
-
         $setting = Role::where('title', 'Vendor')->first()->users();
-
-
-
-        
-
-
-
         if($request->status){
-
-
-
-
-
-
-
          $setting->where('is_approved', $request->status);   
-
-
-
-
-
-
-
+        }
+        if($request->search){
+            $setting->where('first_name', 'like', "%$request->search%"); 
         }
 
-
-
-
-
-
-
-            if($request->search){
-
-
-
-                $setting->where('first_name', 'like', "%$request->search%");  
-
-
-
-            }
-
-
-
-              $data['setting']=$setting->paginate($pagination)->withQueryString();
-
-
-
-
-
-
-
-        // $data['setting'] =  $setting->paginate($pagination)->withQueryString();
-
-
-
-
-
-
-
-        // $data['setting']=Role::where('title', 'Vendor')->first()->users()->paginate($pagination)->withQueryString();
-
-
-
-       
-
-
-
-
-
-
-
+        $data['setting']=$setting->paginate($pagination)->withQueryString();
         return view('admin.vendor-details.vendor-list',$data);
 
-
-
-        
-
-
-
     }
-
-
 
      public function index2(Request $request)
     {
@@ -168,19 +70,9 @@ class VendorSettingController extends Controller
             else{
                 $data['cities'] = City::where("state_id",$request->state_id)->get(["city_name", "city_id"]);
             }
-
-            $data['ship_1'] = ShippingMethod::where('id',1)->first();
-
-            $data['ship_2'] = ShippingMethod::where('id',2)->first();
-
-            $data['ship_3'] = ShippingMethod::where('id',3)->first();
             //check method
-
-            $data['checkvendorshiipingmethod1'] = VendorShipping::where('shipping_method_id',1)->where('vendor_id',$vender_id)->first();
-
-            $data['checkvendorshiipingmethod2'] = VendorShipping::where('shipping_method_id',2)->where('vendor_id',$vender_id)->first();
-
-            $data['checkvendorshiipingmethod3'] = VendorShipping::where('shipping_method_id',3)->where('vendor_id',$vender_id)->first();
+            $data['avaliablesettings'] = Setting::pluck('value','name');
+            
            //dd($data['setting']);
            $state = [2150,2151,2152,2153,2154,2155,2156,2157,2158];
            $data['city_list'] = City::whereIn('state_id',$state)->get();
@@ -198,318 +90,60 @@ class VendorSettingController extends Controller
 
     }
 
-
-
     public function index3()
-
-
-
     {
-
-
-
         $data['title'] = "Vendor-settings";
-
-
-
-
-
-
-
         return view('admin.vendor-setting-admin',$data);
-
-
-
     }
-
-
-
-    public function vendoradd(Request $request)
-
-
-
-    {
-
-
-
-         $data['title'] = "Add-vendor";
-
-
-
-         return view('admin.vendor-details.add-vendor',$data);
-
-
-
-    }
-
-
-
-
-
-
-
-     public function vendoradded(Request $request)
-
-
-
-    {
-
-
-
-        
-
-
-
     
 
+    public function vendoradd(Request $request)
+    {
+         $data['title'] = "Add-vendor";
+         return view('admin.vendor-details.add-vendor',$data);
+    }
+    
 
-
-
-
-
+     public function vendoradded(Request $request)
+    {
 
         $us = User::where("email", $request->email)->first();
-
-
-
-
-
-
-
-       
-
-
-
-            $user = new User;
-
-
-
-          
-
-
-
-            $user->first_name = $request->first_name;
-
-
-
-            $user->last_name = $request->last_name;
-
-
-
-
-
-
-
-            if($request->password){
-
-
-
-                $pass = Hash::make($request->password);
-
-
-
-                $user->password = $pass;
-
-
-
-            }
-
-
-
-            $user->email = $request->email;
-
-
-
-
-
-
-
-            $user->phone = $request->phone;
-
-
-
-
-
-
-
-            $user->save();
-
-
-
-
-
-
-
-            $success['token'] =  $user->createToken('API Token')->accessToken;
-
-
-
-
-
-
-
-            $user->roles()->sync(3);
-
-
-
-
-
-
-
-            $vendor_id=$user->id;
-
-
-
-             
-
-
-
-            $vendordetail = array('store_url'=> $request->store_url,'store_name'=> $request->store_name);
-
-
-
-
-
-
-
-               foreach ($vendordetail as $key => $value) {
-
-
-
-                   // code...
-
-
-
-                 $this->savevalue($vendor_id,$key,$value);
-
-
-
-               }
-
-
-
-        
-
-
-
-       
-
-
-
-
-
-
-
-        // return redirect()->route('dashboard.vendorsettings');
-
-
-
-               dd('ssdfsffds');
-
-
-
-               exit();
-
-
+        $user = new User;
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        if($request->password){
+            $pass = Hash::make($request->password);
+            $user->password = $pass;
+        }
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+        $user->save();
+        $success['token'] =  $user->createToken('API Token')->accessToken;
+        $user->roles()->sync(3);
+        $vendor_id=$user->id;
+        $vendordetail = array('store_url'=> $request->store_url,'store_name'=> $request->store_name);
+        foreach ($vendordetail as $key => $value) {
+            $this->savevalue($vendor_id,$key,$value);
+        }
+        dd('ssdfsffds');
+        exit();
 
     }
-
-
-
-
-
-
-
-    /**
-
-
-
-     * Show the form for creating a new resource.
-
-
-
-     *
-
-
-
-     * @return \Illuminate\Http\Response
-
-
-
-     */
-
 
 
     public function create()
-
-
-
     {
 
-
-
-        
-
-
-
         $data['title'] = "Create Vendor";
-
-
-
         $data['countries'] = Country::get(["name", "id"]);
-
-
-
         $data['states'] = State::get(["state_name", "state_id"]);
-
-
-
         $data['cities'] = City::get(["city_name", "city_id"]);
-
-
-
-
-
-
-
          return view('admin.vendor-setting',$data);
-
-
-
     }
-
-
-
-
-
-
-
-    /**
-
-
-
-     * Store a newly created resource in storage.
-
-
-
-     *
-
-
-
-     * @param  \Illuminate\Http\Request  $request
-
-
-
-     * @return \Illuminate\Http\Response
-
-
-
-     */
 
 
 
     public function store(Request $request)
-
     {
         //dd($request->citystatecountry);
         if(Auth::user()->roles->first()->title == 'Admin'){
@@ -526,11 +160,16 @@ class VendorSettingController extends Controller
             $user->roles()->sync(3);
             $vendor_id=$user->id;
             $role = 'Admin';
+            $user->cities()->sync($request->citystatecountry,[]);
+
         }
         elseif(Auth::user()->roles->first()->title == 'Vendor'){
 
             $vendor_id= Auth::user()->id;
             $role = 'Vendor';
+            $vendor = User::where('id',$vendor_id)->first();
+            DB::table('city_user')->where('user_id',$vendor_id)->delete();
+            $vendor->cities()->sync($request->citystatecountry,[]);
         }
 
         $data = $request->except('_token');
@@ -609,54 +248,6 @@ class VendorSettingController extends Controller
     }
 
 
-    //  public function storedata(Request $request)
-
-
-
-    // {
-
-
-
-    //     //dd($request);
-
-
-
-    //     $vendor_id= $request->id;
-
-
-
-    //     $commision= VendorSetting::updateOrCreate([
-
-
-
-    //     'vendor_id'=>$request->id,
-
-
-
-    //     'commision' => $request->input('commision'),
-
-
-
-    //         ]);
-
-
-
-    //      \Helper::addToLog('Vendor settings change');
-
-
-
-    //     return back();
-
-
-
-    // }
-
-
-
-
-
-
-
     public function approveVendor($id){
 
         $vendor = User::where('id',$id)->update([
@@ -690,12 +281,6 @@ class VendorSettingController extends Controller
 
     }
 
-
-
-
-
-
-
     public function rejectVendor($id){
 
         User::where('id',$id)->update([
@@ -728,333 +313,70 @@ class VendorSettingController extends Controller
     }
 
 
-
-
-
-
-
     public function savevalue($vendor_id,$key,$value="") {
-
-
-
-
-
-
-
         $name=$key;
-
-
-
-        // $value=$value;
-
-
-
         // if($value != "") {
+            if($key == 'citystatecountry' || $key == 'ship_city'){
+                $setting =VendorSetting::updateOrCreate([
+                    'vendor_id'=> $vendor_id,
+    
+                    'name'=>$key,
+                ], [
+                    'value'=>json_encode($value)
+                ]);
+            }
+            else{
+                $setting= VendorSetting::updateOrCreate([
+                    'vendor_id'=> $vendor_id,
 
-
-
-            $setting= VendorSetting::updateOrCreate([
-
-
-
-                'vendor_id'=> $vendor_id,
-
-
-
-                'name'=>$key,
-
-
-
-            ], [
-
-
-
-                'value'=>$value
-
-
-
-            ]);
-
-
-
-
-
-
+                    'name'=>$key,
+                ], [
+                    'value'=>$value
+                ]);
+            }
+           
 
             $lastid =$setting->id;
-
-
-
             if($key == 'profile_img' ){ 
 
-
-
-                // 
-
-
-
                 $file=$value;
-
-
-
                 $extention = $value->getClientOriginalExtension();
-
-
-
                 $filename = time().'.'.$extention;
-
-
-
                 $file->move('images/vendor/settings', $filename);
-
-
-
                 VendorSetting::where('id',$lastid)->where('name','=','profile_img')->update([
-
-
-
                     'value' => $filename
-
-
-
                 ]);
-
-
-
             }
-
-
-
-
-
-
-
             if( $key=='banner_img'){ 
-
-
-
                 $file=$value;
-
-
-
                 $extention = $value->getClientOriginalExtension();
-
-
-
                 $filename = time().'.'.$extention;
-
-
-
                 $file->move('images/vendor/settings', $filename);
-
-
-
                 VendorSetting::where('id',$lastid)->where('name','=','banner_img')->update([
-
-
-
                     'value' => $filename
-
-
-
                 ]);
-
-
-
             }
 
-
-
-        // }
-
-
-
-    
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
     
-
-
-
-
-
-
-
-     /**
-
-
-
-     * Display the specified resource.
-
-
-
-     *
-
-
-
-     * @param  int  $id
-
-
-
-     * @return \Illuminate\Http\Response
-
-
-
-     */
-
-
-
-
-
-
-
-    public function show($id)
-
-
-
-    {
-
-
-
-        //
-
-
-
-    }
-
-
-
-
-
-
-
-    /**
-
-
-
-     * Show the form for editing the specified resource.
-
-
-
-     *
-
-
-
-     * @param  int  $id
-
-
-
-     * @return \Illuminate\Http\Response
-
-
-
-     */
-
 
 
     public function edit($id)
-
-
-
     {
-
-
-
         $vendor_id=$id;
-
-
-
         $data['vendor']=User::findorfail($id);
 
-
-
-
-
-
-
         $data['title'] = "Vendor-details";
-
-
-
         $data['setting']=VendorSetting::where('vendor_id', '=' , $id)->get();
-
-
-
-        
-
-
 
         $data['data'] = $this->getVendorMeta($id);
 
-
-
-        //dd($data['data']);
-
-
-
         return view('admin.vendor-details.vendor-setting',$data);
-
-
-
     }
-
-
-
-
-
-
-
-    /**
-
-
-
-     * Update the specified resource in storage.
-
-
-
-     *
-
-
-
-     * @param  \Illuminate\Http\Request  $request
-
-
-
-     * @param  int  $id
-
-
-
-     * @return \Illuminate\Http\Response
-
-
-
-     */
-
 
 
     public function update(Request $request, $id)
-
-
-
     {
-
-
-
-        //
-
 
 
     }
@@ -1062,119 +384,36 @@ class VendorSettingController extends Controller
 
 
 
-
-
-
-    /**
-
-
-
-     * Remove the specified resource from storage.
-
-
-
-     *
-
-
-
-     * @param  int  $id
-
-
-
-     * @return \Illuminate\Http\Response
-
-
-
-     */
 
 
 
     public function destroy($id)
-
-
-
     {
-
-
-
-        //
-
-
-
     }
 
 
-
-
-
-
-
-   public function countrylist()
-
-
-
+    public function countrylist()
     {
-
-
-
         $data['countries'] = Country::get(["name", "id"]);
 
-
-
         return view('admin.address.add', $data);
-
-
-
     }
 
 
 
     public function fetchState(Request $request)
-
-
-
     {
-
-
-
-
-
-
-
         $data['states'] = State::where("country_id",$request->country_id)->get(["state_name", "state_id"]);
-
-
-
         return response()->json($data);
-
-
-
     }
 
 
 
     public function fetchCity(Request $request)
-
-
-
     {
-
-
-
         $data['cities'] = City::where("state_id",$request->state_id)->get(["city_name", "city_id"]);
-
-
-
         return response()->json($data);
-
-
-
     }
-
-
-
-
-
 
 
 }
