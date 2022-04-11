@@ -279,9 +279,11 @@
                             <td>{{$item->product_price}}{{$currency}}</td>
                             <td>{{$item->quantity}}</td>
                             <td>{{$item->product_price}}{{$currency}}</td>
-                            <td>  <button  type="button" class="btn btn-sm btn-primary status-change" data-toggle="modal" data-target="#exampleModal1" value="{{$item->id}}" data-attr-order-id ="{{$item->order_id}}" data-attr-product-id ="{{$item->product_id}}">
+                            <td>  
+                                <button  type="button" class="btn btn-sm btn-primary status-change" >
                                 {{$item->status}}
-                                </button></td>
+                                </button>
+                            </td>
                             <td>{{$subtotal}}{{$currency}}</td>
                         </tr>
                         @endforeach
@@ -300,12 +302,12 @@
                             </tr>
                             @endisset
                             <tr>
-                                <th>Shipping:</th>
-                                <td>{{$order->shipping_price}}{{$currency}}</td>
+                                <th>{{$order->ship_title}}:</th>
+                                <td>{{$order->ship_pr}}{{$currency}}</td>
                             </tr>
                             <tr>
                                 <th>Total:</th>
-                                <td>{{$total + $order->shipping_price}}{{$currency}}</td>
+                                <td>{{$total + $order->ship_pr}}{{$currency}}</td>
                             </tr>
                           </table>
                       </div>
@@ -344,7 +346,7 @@
           </div>
         <div class="modal-body">
           <label>Add Note</label>
-          <textarea class="form-control" name="comment" value=""></textarea>
+          <textarea class="form-control" name="comment" value="" required></textarea>
         </div>
         <div class="modal-footer">
               <button type="submit" class="btn btn-primary">Save changes</button>

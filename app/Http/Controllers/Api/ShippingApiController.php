@@ -102,6 +102,14 @@ class ShippingApiController extends Controller
             $user = Auth::guard('api')->user();
         } 
         $user_id = $user->id;
+
+        $validator = Validator::make($request->all(), [
+            'city' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+        }
         
         $usercart = Cart::select('cart.*','products.id as product_id','products.vendor_id','products.pname')->where('cart.user_id',$user_id)->leftJoin('products', 'cart.product_id', '=', 'products.id')->groupBy('products.vendor_id')->get();
         $shipping = [];

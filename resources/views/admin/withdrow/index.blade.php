@@ -82,7 +82,7 @@
 
                                                 <br>
 
-                                                <span>Minimum Withdrow Amount: <strong>{{$max_withdrwal_limit->value ?? ''}}</strong></span>
+                                                <span>Maximum Withdrow Amount: <strong>{{$max_withdrwal_limit->value ?? ''}}</strong></span>
 
                                                 <br>
 

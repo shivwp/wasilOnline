@@ -19,6 +19,9 @@ use App\Models\VendorShipping;
 use App\Models\Tax;
 use App\Helper\Helper;
 use App\Models\Product;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ImportProduct;
+use App\Exports\ExportProduct;
 use Auth;
 use DB;
 class ProductController extends Controller
@@ -1005,6 +1008,21 @@ class ProductController extends Controller
 
       }
       return response()->json($resultHtml);
+    }
+
+
+    public function importView(Request $request){
+      return redirect('/dashboard/product');
+    }
+
+    public function importproduct(Request $request){
+      $fileName = time().'_'.request()->importfile->getClientOriginalName();
+        Excel::import(new ImportProduct, $request->file('importfile')->storeAs('product-csv', $fileName));
+        return redirect()->back();
+    }
+
+    public function exportProduct(Request $request){
+      return Excel::download(new ExportProduct, 'product.xlsx');
     }
 
 

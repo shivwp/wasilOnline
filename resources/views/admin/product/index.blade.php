@@ -67,14 +67,16 @@
                                                         <option value="50" {{ isset($_GET['paginate']) && ($_GET['paginate'] == 40) ? 'selected':''}}>30</option>
                                                    @if(isset($_GET['page']))<input type="hidden" name="page" value="{{$_GET['page']}}">@endif
                                                    <input type="submit" name="" style="display:none;">
-                                               </form> 
-                                               <form>
-                                                  <div class="search_bar d-flex">  
-                                                   <input type="" class="form-control" id="search" name="search" value="{{ (request()->get('search') != null) ? request()->get('search') : ''}}" placeholder="Search"></input>
-                                                  <button type="submit" class="form-control src-btn" ><i class="angle fe fe-search"></i></button>
-                                                   <a class="form-control src-btn" href="{{ route('dashboard.product.index') }}"><i class="angle fe fe-rotate-ccw"></i></a>
-                                              </div>
-                                          </form> 
+                                            </form> 
+                                            <form>
+                                                <div class="search_bar d-flex">  
+                                                    <input type="" class="form-control" id="search" name="search" value="{{ (request()->get('search') != null) ? request()->get('search') : ''}}" placeholder="Search"></input>
+                                                    <button type="submit" class="form-control src-btn" ><i class="angle fe fe-search"></i></button>
+                                                    <a class="form-control src-btn" href="{{ route('dashboard.product.index') }}"><i class="angle fe fe-rotate-ccw"></i></a>
+                                                </div>
+                                            </form>
+                                            <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Import</button>
+                                            <a href="{{route('dashboard.export-product')}}"  class="btn btn-success">Export</a>
                                                 
                                                </div>
                                             <table id="" class="table table-striped table-bordered text-nowrap w-100">
@@ -167,8 +169,42 @@
 
                         </div>
 
-                        <!-- ROW-1 CLOSED -->               
-                      
+                        <!-- ROW-1 CLOSED -->
+                        
+<!-- Modal -->
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+            <form action ="{{ route('dashboard.import-product') }}" method="post" enctype="multipart/form-data"> 
+                @csrf
+
+                <div class="modal-body">
+
+                    <label class="form-label">Import product</label>
+                    <input type="file" class="form-control" name="importfile" value="" required>
+
+                </div>
+               
+
+                <div class="modal-footer">
+
+                    <button type="submit" class="btn btn-primary">Import</button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+            
 @endsection
 
 @section('js')

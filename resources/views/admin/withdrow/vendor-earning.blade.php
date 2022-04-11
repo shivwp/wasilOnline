@@ -106,9 +106,15 @@
 
                                                         <th class="wd-15p">Product</th>
                                                         <th class="wd-15p">Vendor Earning</th>
+                                                        <th class="wd-15p">Withdrawal status</th>
+                                                        <th class="wd-15p">Note</th>
                                                         @can('can_withdrow')
                                                         <th class="wd-15p">Withdrow</th>
                                                         @endcan
+                                                        @if(Auth::user()->roles->first()->title == 'Admin')
+                                                        <th class="wd-15p">Request Approve</th>
+                                                        @endif
+                                                        
 
                                                     </tr>
 
@@ -129,20 +135,31 @@
                                                             <td>{{ $item->vendor ?? '' }}</td>
                                                             <td>{{ $item->product ?? '' }}</td>
                                                             <td>{{ $item->amount ?? '' }}</td>
-
                                                             <td>
-
+                                                                <span class="tag tag-blue">{{ $item->withdrawal_status ?? '' }}</span>
+                                                            </td>
+                                                            <td>
+                                                                {{ $item->note ?? '' }}
+                                                            </td>
+                                                          
+                                                            <td>
+                                                                @can('can_withdrow')
                                                                 {{--<a class="btn btn-sm btn-primary" href=""><i class="fa fa-eye"></i></a>--}}
-
-                                                                 @can('can_withdrow')
-
-                                                                 <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.tax.edit', $item->id) }}"><i class="fa fa-money"></i> </a>
-
-                                                                  @endcan
+                                                                @if($item->can_withdrow == true)
+                                                                 <a class="btn btn-sm btn-secondary withdrow" href="{{ route('dashboard.withdrow.edit', $item->id) }}" data-toggle="modal" data-target="#exampleModal" data-attr1 = "{{$item->order_id}}" data-attr2 = "{{$item->amount}}" data-attr3 = "{{$item->id}}"><i class="fa fa-money"></i> </a>
+                                                                 @else
+                                                                 <button class="btn btn-sm btn-secondary" href="{{ route('dashboard.withdrow.edit', $item->id) }}" disabled><i class="fa fa-money" ></i> </button>
+                                                                @endif
+                                                                @endcan
+                                                                @if(Auth::user()->roles->first()->title == 'Admin')
+                                                                <a class="btn btn-sm btn-secondary withdrow-approve" href="{{ route('dashboard.withdrow.edit', $item->id) }}" data-toggle="modal" data-target="#exampleModal2"  data-attr3 = "{{$item->id}}">  <i class="fa fa-check"></i> </a>
+                                                                <a class="btn btn-sm btn-secondary withdrow-reject" href="{{ route('dashboard.withdrow.edit', $item->id) }}" data-toggle="modal" data-target="#exampleModal3"  data-attr3 = "{{$item->id}}">   <i class="fa fa-ban"></i> </a>
+                                                                @endif
+                                                                
                                                                
 
                                                             </td>
-
+                                                       
                                                         </tr>
 
                                                     @endforeach
@@ -169,9 +186,125 @@
 
                         </div>
 
-                        <!-- ROW-1 CLOSED -->               
+                        <!-- ROW-1 CLOSED -->    
+    <!-- Modal -->
 
-@endsection
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog" role="document">
+    
+        <div class="modal-content">
+    
+        <form action ="{{ route('dashboard.req-withdrow') }}" method="post"> 
+            @csrf
+    
+            <input type="hidden" class="form-control withdroworderid"  name="withdroworderid" value="">
+            <input type="hidden" class="form-control withdrawid"  name="withdrowid" value="">
+    
+            <div class="modal-body">
+    
+                <label class="form-label">Withdow Amount</label>
+                <input type="number" class="form-control withdrowamount" name="amount" placeholder="amount" value="" min="500" readonly required>
+    
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Payment method</label>
+                <select class="form-control select2" name="method">
+                    <option value="stripe">Bank</option>
+                </select>
+            </div>
+    
+            <div class="modal-footer">
+    
+                <button type="submit" class="btn btn-primary">Send request</button>
+    
+            </div>
+    
+            </form>
+    
+        </div>
+    
+        </div>
+    
+    </div> 
+    
+    <!-- Modal -->
+
+    <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog" role="document">
+    
+        <div class="modal-content">
+    
+        <form action ="{{ route('dashboard.approve-request') }}"> 
+    
+            <input type="hidden" class="form-control withdrowid"  name="id" value="">
+            <input type="hidden" class="form-control "  name="status" value="approved">
+            <div class="modal-body">
+                <h5>Approve</h5>
+            </div>
+            <div class="modal-body">
+    
+            <label>Add Comment</label>
+    
+            <textarea class="form-control" name="comment" value=""></textarea>
+    
+            </div>
+    
+            <div class="modal-footer">
+    
+                <button type="submit" class="btn btn-primary">Save changes</button>
+    
+            </div>
+    
+            </form>
+    
+        </div>
+    
+        </div>
+    
+    </div> 
+  
+  <!-- Modal -->
+  
+    <div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    
+        <div class="modal-dialog" role="document">
+    
+        <div class="modal-content">
+    
+        <form action ="{{ route('dashboard.reject-request') }}"> 
+    
+            <input type="hidden" class="form-control withdrowid"  name="id" value="">
+            <input type="hidden" class="form-control "  name="status" value="decline">
+            <div class="modal-body">
+                <h5>Decline</h5>
+            </div>
+    
+            <div class="modal-body">
+    
+            <label>Add Comment</label>
+    
+            <textarea class="form-control" name="comment" value=""></textarea>
+    
+            </div>
+    
+            <div class="modal-footer">
+    
+                <button type="submit" class="btn btn-primary">Save changes</button>
+    
+            </div>
+    
+            </form>
+    
+        </div>
+    
+        </div>
+    
+    </div>   
+
+
+  @endsection
 
 @section('js')
 
@@ -198,8 +331,24 @@ $(document).ready(function() {
     console.log( $form);
 
   });
-
+  $('.withdrow').on('click', function() {
+        var withdrow = $(this).attr("data-attr2");
+        var withdroworder = $(this).attr("data-attr1");
+        var withdrowid = $(this).attr("data-attr3");
+        $('.withdroworderid').val(withdroworder);
+        $('.withdrowamount').val(withdrow);
+        $('.withdrawid').val(withdrowid);
+  }); 
+  $('.withdrow-approve').on('click', function() {
+        var withdrowid = $(this).attr("data-attr3");
+        $('.withdrowid').val(withdrowid);
+  }); 
+  $('.withdrow-reject').on('click', function() {
+        var withdrowid = $(this).attr("data-attr3");
+        $('.withdrowid').val(withdrowid);
+  });
 });
+  
 
 </script>
 

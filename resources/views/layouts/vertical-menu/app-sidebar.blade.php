@@ -536,7 +536,7 @@
                             @endcan
                             @can('coupon_access')
                                 <li><a href="{{ route('dashboard.coupon.index') }}" class="slide-item">Coupns</a></li>
-                                <li><a href="{{ route('dashboard.card-deatils') }}" class="slide-item">Store Cardit</a></li>
+                                <li><a href="{{ route('dashboard.store-cadit') }}" class="slide-item">Store Cardit</a></li>
                             @endcan
                             </ul>
                           </li>

@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ImportProduct;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\admin\UsersController;
 use App\Http\Controllers\admin\RolesController;
@@ -149,6 +151,11 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     Route::get('vendor-earning-list',[App\Http\Controllers\admin\WithdrowController::class, 'vendorEarninglist'])->name('vendor-earning-list');
 
+    Route::post('req-withdrow',[App\Http\Controllers\admin\WithdrowController::class, 'withdrowreq'])->name('req-withdrow');
+
+   
+
+
      //Menus
     Route::resource('menus', MenuController::class);
      // Logs
@@ -160,9 +167,14 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
        Route::resource('review', ReviewController::class);
 
        Route::get('user',[App\Http\Controllers\admin\UsersController::class, 'index2'])->name('user-index');
+       Route::get('store-cadit',[App\Http\Controllers\admin\UsersController::class, 'storeCradit'])->name('store-cadit');
 
      Route::get('delivered-orders',[App\Http\Controllers\admin\OrderController::class, 'deliveredorders'])->name('delivered-orders');
      Route::post('chnage-order-status',[App\Http\Controllers\admin\OrderController::class, 'changestatus'])->name('chnage-order-status');
+
+     Route::get('file-import',[App\Http\Controllers\admin\ProductController::class, 'importView'])->name('import-view');
+    Route::post('import-product',[App\Http\Controllers\admin\ProductController::class, 'importproduct'])->name('import-product');
+    Route::get('export-product',[App\Http\Controllers\admin\ProductController::class,'exportProduct'])->name('export-product');
 
 
     Route::get('get-category/{id}', [ProductController::class,'getCategory'])->name('get-category');

@@ -7,6 +7,8 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\VendorEarnings;
+use App\Models\OrderedProducts;
+use Illuminate\Support\Carbon;
 use Redirect;
 use Auth;
 
@@ -32,71 +34,29 @@ class WithdrowController extends Controller
 
         $d['title'] = "Withdrow Requests";
 
-        $d['buton_name'] = "ADD NEW";
-
-         $pagination=10;
-
-        if(isset($_GET['paginate'])){
-
-            $pagination=$_GET['paginate'];
-
-        }
-
-        $d['title'] = "Request Withdrow";
-
-        $d['min_withdrwal_limit'] = Setting::where('id',89)->first();
-
-        $d['max_withdrwal_limit'] = Setting::where('id',90)->first();
-
-        $d['withdrwal_threshould'] = Setting::where('id',92)->first();
-
-        $authUser = Auth::user();
-
-        $d['authUser'] = $authUser;
-
-
-
-        $withdrow =Withdrow::with('vendor');
-
-        
-
         if(Auth::user()->roles->first()->title == 'Admin'){
-
-            if(isset($request->status)){
-
-                $withdrow->where('status',$request->status);
-
-            }
-
-
-
-            $d['withdrow'] =    $withdrow->paginate($pagination)->withQueryString();
-
+            $earning = VendorEarnings::orderBy('id','DESC')->where('withdrawal_status','requested');
         }
-
         else{
-
-
-
-            if(isset($request->status)){
-
-                $withdrow->where('status',$request->status);
-
-            }
-
-
-
-            $d['withdrow'] =    $withdrow->where('vendor_id',Auth::user()->id)->paginate($pagination)->withQueryString();
-
-            $d['vendor_earning'] = VendorEarnings::where('vendor_id',Auth::user()->id)->sum('amount');
-
-
-
+            $earning = VendorEarnings::where('vendor_id',Auth::user()->id)->orderBy('id','DESC')->where('withdrawal_status','requested');
+            
         }
+        $pagination=10;
+        if(isset($_GET['paginate'])){
+            $pagination=$_GET['paginate'];
+        }
+        $vendor_earning =    $earning->paginate($pagination)->withQueryString();
+        foreach($vendor_earning as $key => $val){
+            $vendor = User::where('id',$val->vendor_id)->first();
+            $product = Product::where('id',$val->product_id)->first();
+          
+            $vendor_earning[$key]['vendor'] = $vendor->name;
+            $vendor_earning[$key]['product'] = $product->pname;
+        }
+        
+        $d['vendor_earning'] = $vendor_earning;
 
-       
-
-        return view('admin/withdrow/index',$d);
+        return view('admin/withdrow/vendor-earning',$d);
 
     }
 
@@ -192,6 +152,13 @@ class WithdrowController extends Controller
 
     }
 
+    public function withdrowreq(Request $request){
+        VendorEarnings::where('id',$request->withdrowid)->update([
+            'withdrawal_status' => 'requested'
+        ]);
+        return redirect('/dashboard/vendor-earning-list');
+    }
+
 
 
     /**
@@ -233,6 +200,17 @@ class WithdrowController extends Controller
         foreach($vendor_earning as $key => $val){
             $vendor = User::where('id',$val->vendor_id)->first();
             $product = Product::where('id',$val->product_id)->first();
+            $Order = OrderedProducts::where('order_id',$val->order_id)->where('product_id',$val->product_id)->first();
+            $date = Carbon::parse($Order->created_at);
+            $now = Carbon::now();
+            $diff = $date->diffInDays($now);
+
+            if(($Order->status == "delivered") && ($diff >=30)){
+                $vendor_earning[$key]['can_withdrow'] = true;
+            }
+            else{
+                $vendor_earning[$key]['can_withdrow'] = false;
+            }
             $vendor_earning[$key]['vendor'] = $vendor->name;
             $vendor_earning[$key]['product'] = $product->pname;
         }
@@ -261,13 +239,38 @@ class WithdrowController extends Controller
 
     {
 
-        
+      
+        $d['title'] = "Request Withdrow";
 
-        // $d['title'] = "PAGE";
+        $d['min_withdrwal_limit'] = Setting::where('id',66)->first();
 
-        // $d['tax']=Tax::findorfail($id);
+        $d['max_withdrwal_limit'] = Setting::where('id',67)->first();
 
-        // return view('admin/tax/add',$d);
+        $d['withdrwal_threshould'] = Setting::where('id',68)->first();
+
+        $authUser = Auth::user();
+
+        $d['authUser'] = $authUser;
+
+        if($authUser->vendor_wallet >= $d['min_withdrwal_limit']->value){
+
+
+
+            return view('admin/withdrow/add',$d);
+
+
+
+        }
+
+        else{
+
+
+
+            return view('admin/withdrow/show',$d);
+
+
+
+        }
 
     }
 
@@ -300,15 +303,9 @@ class WithdrowController extends Controller
     public function approve(Request $request)
 
     {
-
-
-
-        Withdrow::where('id',$request->id)->update([
-
-            'status' => 1,
-
-            'note'  => $request->comment
-
+        VendorEarnings::where('id',$request->id)->update([
+            'withdrawal_status' => 'approved',
+            'note' => $request->comment
         ]);
 
         return Redirect::back()->with('status', 'Withdrow Request Approved');
@@ -323,14 +320,9 @@ class WithdrowController extends Controller
 
     {
 
-        Withdrow::where('id',$request->id)->update([
-
-            'status' => 2,
-
-            'note'  => $request->comment
-
-
-
+        VendorEarnings::where('id',$request->id)->update([
+            'withdrawal_status' => 'decline',
+            'note' => $request->comment
         ]);
 
         return Redirect::back()->with('status', 'Withdrow Request Rejected');
