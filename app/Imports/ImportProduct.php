@@ -19,9 +19,9 @@ class ImportProduct implements ToModel
             //
             'pname' => $row[0],
             'arab_pname' => $row[1],
-            'product_type' => bcrypt($row[2]),
-            'p_price' => bcrypt($row[2]),
-            's_price' => bcrypt($row[2]),
+            'product_type' => $row[2],
+            'p_price' => $row[2],
+            's_price' => $row[2],
         ]);
     }
 }

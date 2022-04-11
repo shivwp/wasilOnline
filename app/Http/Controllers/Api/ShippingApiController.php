@@ -13,8 +13,11 @@ use App\Models\VendorSetting;
 
 use App\Models\ShippingMethod;
 
+use App\Models\CityPrice;
+
 use App\Models\ShippingProduct;
 use App\Models\Cart;
+use App\Models\Setting;
 use Auth;
 
 use App\Models\PaymentMethod;
@@ -117,6 +120,7 @@ class ShippingApiController extends Controller
         foreach($usercart as $val){
             $vendor = User::where('id',$val->vendor_id)->first();
             $vndorsetting = VendorSetting::where('vendor_id',$val->vendor_id)->pluck('value','name');
+            $adminsetting = Setting::pluck('value','name');
             $vendorProductCount = Cart::where('vendor_id',$val->vendor_id)->where('user_id',$user_id)->sum('price');
             $vendorship['store_id'] = $vendor->id;
             $vendorship['store_name'] = $vendor->name;
@@ -137,6 +141,13 @@ class ShippingApiController extends Controller
                 $data[] = $shipdata;
                 $vendorship['shipping_method'] = $data;
             }
+            else{
+                $shipdata = [];
+                $shipdata['title'] = "Normal Shipping";
+                $shipdata['amount'] = $adminsetting['normal_price'];
+                $data[] = $shipdata;
+                $vendorship['shipping_method'] = $data;   
+            }
             if(isset($vndorsetting['shipping_by_city_is_applied']) && ($vndorsetting['shipping_by_city_is_applied'] == "on")){
 
                 $CityPriceVendor = CityPriceVendor::where('vendor_id',$vendor->id)->where('city_id',$request->city)->first();
@@ -148,15 +159,30 @@ class ShippingApiController extends Controller
                 $data[] = $shipdata;
                 $vendorship['shipping_method'] = $data;
             }
+            else{
+                $CityPriceAdmin = CityPrice::where('city_id',$request->city)->first();  
+                $shipdata['title'] = "City Shipping";
+                //  $shipdata['amount'] = $vndorsetting['normal_price'];
+                  $shipdata['priority_price'] = $CityPriceAdmin->normal_price;
+                  $shipdata['normal_price'] = $CityPriceAdmin->priority_price;
+                  $data[] = $shipdata;
+                  $vendorship['shipping_method'] = $data;
+            }
             
             $shipping[] = $vendorship;
 
            // $vendorship['shipping'] = $vendor->name;
 
         }
+        if(!empty($shipping) && (count($shipping) > 0)){
+            return response()->json(['status' => true, 'message' => "success", 'shipping' => $shipping], 200);
 
-        return response()->json(['status' => true, 'message' => "success", 'shipping' => $shipping], 200);
+        }
+        else{
+            return response()->json(['status' => false, 'message' => "no shipping available", 'shipping' => []], 200);  
+        }
 
+     
 
     }
 
