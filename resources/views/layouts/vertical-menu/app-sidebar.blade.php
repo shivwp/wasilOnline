@@ -731,6 +731,13 @@
 
                          @endcan
 
+                         
+                        <li class="slide">
+
+                            <a class="side-menu__item" data-toggle="slide" href="{{ route('dashboard.customers') }}"><i class="side-menu__icon fa fa-user-circle-o"></i><span class="side-menu__label">Customers</span></a>
+
+                        </li>
+
 
 
                        @can('web_settings')

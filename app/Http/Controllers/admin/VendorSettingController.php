@@ -20,6 +20,8 @@ use App\Models\Mails;
 use App\Mail\OrderMail;
 use Mail;
 use DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ImportVendor;
 class VendorSettingController extends Controller
 {
      public function index(Request $request)
@@ -380,6 +382,16 @@ class VendorSettingController extends Controller
 
 
     }
+
+    public function importView(Request $request){
+        return redirect('/dashboard/product');
+      }
+  
+      public function importvendor(Request $request){
+        $fileName = time().'_'.request()->importfile->getClientOriginalName();
+          Excel::import(new ImportVendor, $request->file('importfile')->storeAs('product-csv', $fileName));
+          return redirect()->back();
+      }
 
 
 

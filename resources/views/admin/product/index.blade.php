@@ -1,6 +1,13 @@
 @extends('layouts.vertical-menu.master')
 
 @section('css')
+<style>
+.paging-section {
+    display: flex!important;
+    justify-content: flex-end;
+    margin: 13px 0px;
+}
+</style>
 
 <link href="{{ URL::asset('assets/plugins/datatable/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
 
@@ -68,6 +75,9 @@
                                                    @if(isset($_GET['page']))<input type="hidden" name="page" value="{{$_GET['page']}}">@endif
                                                    <input type="submit" name="" style="display:none;">
                                             </form> 
+                                            <button type="submit" class="form-control src-btn" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-upload" aria-hidden="true"></i></button>
+                                            <a href="{{route('dashboard.export-product')}}"  class="form-control src-btn"><i class="fa fa-download" aria-hidden="true"></i></a>
+                                                
                                             <form>
                                                 <div class="search_bar d-flex">  
                                                     <input type="" class="form-control" id="search" name="search" value="{{ (request()->get('search') != null) ? request()->get('search') : ''}}" placeholder="Search"></input>
@@ -75,9 +85,7 @@
                                                     <a class="form-control src-btn" href="{{ route('dashboard.product.index') }}"><i class="angle fe fe-rotate-ccw"></i></a>
                                                 </div>
                                             </form>
-                                            <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Import</button>
-                                            <a href="{{route('dashboard.export-product')}}"  class="btn btn-success">Export</a>
-                                                
+                                          
                                                </div>
                                             <table id="" class="table table-striped table-bordered text-nowrap w-100">
 

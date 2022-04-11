@@ -106,13 +106,7 @@
                                          <div class="addnew-ele">
 
 
-                                <a href="{{ url('dashboard/vendor-add') }}" class="btn btn-info-light ">
-
-
-                                    {{$buton_name}}
-
-
-                                </a>
+                            
 
 
                             </div>
@@ -157,31 +151,7 @@
                                             </form>
 
 
-                                            <form method="get" class="get-filter page-number" id="filter-submit">
-
-
-                                                    <h6 class="page-num"> Filter</h6>
-
-
-                                                    <select id="filter-status" name="status" class="form-control select2">
-
-
-                                                    <option value="">select</option>
-
-
-                                                        <option value="1">Approved</option>
-
-
-                                                        <option value="2">Rejected</option>
-
-
-                                                        <option value="0">Pending</option>
-
-
-                                                    </select>
-
-
-                                            </form>
+                                         
                                             <button type="submit" class="form-control src-btn" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-upload" aria-hidden="true"></i></button>
 
 
@@ -221,22 +191,13 @@
                                                         <th class="wd-15p">Id</th>
 
 
-                                                        <th class="wd-15p">Store</th>
+                                                        <th class="wd-15p">Name</th>
 
 
                                                         <th class="wd-15p">Email</th>
 
 
-                                                        <th class="wd-15p">Category</th>
-
-
                                                         <th class="wd-15p">Number</th>
-
-
-                                                        <th class="wd-15p">Registered</th>
-
-
-                                                        <th class="wd-15p">Status</th>
 
 
                                                         <th class="wd-15p">Action</th>
@@ -263,46 +224,15 @@
                                                         <td>{{$item->id ?? '' }}</td>
 
 
-                                                        <td>{{$item->first_name ?? '' }}</td>
+                                                        <td>{{$item->name ?? '' }}</td>
 
 
                                                         <td>{{$item->email ?? '' }}</td>
 
 
-                                                        <td>{{$item->cat ?? '' }}</td>
-
-
                                                         <td>{{$item->number ?? '' }}</td>
 
 
-                                                         <td>{{$item->created_at ?? '' }}</td>
-
-
-                                                         <td>
-
-
-                                                         @if($item->is_approved == 0)
-
-
-                                                         <span class="tag tag-blue">pending</span>
-
-
-                                                         @elseif($item->is_approved == 1)
-
-
-                                                         <span class="tag tag-azure">approved</span>
-
-
-                                                         @else
-
-
-                                                         <span class="tag tag-indigo">rejected</span>
-
-
-                                                         @endif
-
-
-                                                        </td>
 
 
                                                        
@@ -310,35 +240,7 @@
 
                                                         <td>  
 
-
-
-
-
-                                                        @if(Auth::user()->roles->first()->title == "Admin")
-
-
-                                                        <a data-toggle="tooltip" title="approve" class="btn btn-sm btn-secondary" href="{{ route('dashboard.vendor-approve', $item->id) }}"><i class="fa fa-check"></i> </a>
-
-
-
-
-
-                                                        <a data-toggle="tooltip" title="reject" class="btn btn-sm btn-secondary" href="{{ route('dashboard.vendor-rejected', $item->id) }}"><i class="fa fa-ban"></i> </a>
-
-
-                                                        @endif
-
-
-
-
-
-                                                            <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.vendorsettings.edit', $item->id) }}"><i class="fa fa-edit"></i> </a>
-
-
-                                                                 
-
-
-                                                               
+                                                        {{--   <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.vendorsettings.edit', $item->id) }}"><i class="fa fa-edit"></i> </a> --}} 
 
 
                                                                     <form action="{{ route('dashboard.category.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">
@@ -353,7 +255,8 @@
                                                                         <button type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}"><i class="fa fa-trash"></i></button>
 
 
-                                                                    </form></td>
+                                                                    </form>
+                                                                </td>
 
 
                                                     </tr>
@@ -407,7 +310,7 @@
 
     <div class="modal-content">
 
-        <form action ="{{ route('dashboard.import-vendor') }}" method="post" enctype="multipart/form-data"> 
+        <form action ="{{ route('dashboard.import-customer') }}" method="post" enctype="multipart/form-data"> 
             @csrf
 
             <div class="modal-body">

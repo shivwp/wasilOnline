@@ -22,6 +22,9 @@ use Hash;
 
 use Gate;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ImportCustomer;
+
 use Illuminate\Http\Request;
 
 use Symfony\Component\HttpFoundation\Response;
@@ -300,6 +303,35 @@ class UsersController extends Controller
 
         return view('admin.users.store-cradit',$d);
     }
+
+    public function customer(Request $request){
+
+        $d['title'] = "Customers";
+         $pagination=10;  
+        if(isset($_GET['paginate'])){
+            $pagination=$_GET['paginate'];
+        }
+        $setting = Role::where('title', 'User')->first()->users();
+
+        if($request->search){
+            $setting->where('first_name', 'like', "%$request->search%"); 
+        }
+
+        $d['setting']=$setting->paginate($pagination)->withQueryString();
+
+        return view('admin.customer',$d);
+
+    }
+
+    public function importView(Request $request){
+        return redirect('/dashboard/product');
+      }
+  
+      public function importCustomer(Request $request){
+        $fileName = time().'_'.request()->importfile->getClientOriginalName();
+          Excel::import(new ImportCustomer, $request->file('importfile')->storeAs('product-csv', $fileName));
+          return redirect()->back();
+      }
 
 }
 

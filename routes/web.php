@@ -172,9 +172,25 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
      Route::get('delivered-orders',[App\Http\Controllers\admin\OrderController::class, 'deliveredorders'])->name('delivered-orders');
      Route::post('chnage-order-status',[App\Http\Controllers\admin\OrderController::class, 'changestatus'])->name('chnage-order-status');
 
+     //customer
+     Route::get('customers',[App\Http\Controllers\admin\UsersController::class, 'customer'])->name('customers');
+
+     //import customer
+
+     Route::get('view-customer',[App\Http\Controllers\admin\UsersController::class, 'importView'])->name('view-customer');
+    Route::post('import-customer',[App\Http\Controllers\admin\UsersController::class, 'importCustomer'])->name('import-customer'); 
+
+     //product import
+
      Route::get('file-import',[App\Http\Controllers\admin\ProductController::class, 'importView'])->name('import-view');
     Route::post('import-product',[App\Http\Controllers\admin\ProductController::class, 'importproduct'])->name('import-product');
     Route::get('export-product',[App\Http\Controllers\admin\ProductController::class,'exportProduct'])->name('export-product');
+
+
+  //Vendor import
+
+  Route::get('vendor-view',[App\Http\Controllers\admin\VendorSettingController::class, 'importView'])->name('vendor-view');
+  Route::post('import-vendor',[App\Http\Controllers\admin\VendorSettingController::class, 'importvendor'])->name('import-vendor');
 
 
     Route::get('get-category/{id}', [ProductController::class,'getCategory'])->name('get-category');
