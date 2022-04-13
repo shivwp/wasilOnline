@@ -243,6 +243,39 @@ class OrderApiController extends Controller
                             'gift_card_amount'  =>  $gift_val['amount'],
                             'note'              =>  "gift card code used in order",
                         ]);
+
+                         //Gift Card Mail
+             
+                        $basicinfo = [
+                            '{email}' =>  $user->email,
+                            '{name}' =>  $user->name,
+                            '{gift_code}' =>  $gift_val['code'],
+                            '{gift_amount}' =>  $gift_val['amount'],
+                        ];
+                        $mail_data = Mails::where('msg_category', 'use gift card')->first();
+                        $msg = $mail_data->message;
+                        foreach($basicinfo as $key=> $info){
+                            $msg = str_replace($key,$info,$msg);
+                        }
+
+                        $config = ['from_email' => $mail_data->mail_from,
+                        "reply_email" => $mail_data->reply_email,
+                        'subject' => $mail_data->subject, 
+                        'name' => $mail_data->name,
+                        'message' => $msg,
+                        ];
+                          //mail to customer
+                          Mail::to($user->email)->send(new OrderMail($config));
+                        //mail to admin
+                        Mail::to('admin@admin.com')->send(new OrderMail($config));
+                        foreach($vendorid as  $v_id){
+                            //mail to vendor 
+                            $vendorEmail = User::where('id',$v_id)->first();
+                            Mail::to($vendorEmail->email)->send(new OrderMail($config));
+                        }
+                     
+
+
                     }
                 }
             }
@@ -377,7 +410,7 @@ class OrderApiController extends Controller
                             'total_price' => $cartdata->price,
 
                             'tax' => 0,
-                            'status' => "new",
+                            'status' => "order placed",
                             'vendor_id' => $product->vendor_id
 
                         ]);
@@ -406,7 +439,7 @@ class OrderApiController extends Controller
                         OrderProductNote::create([
                             'order_id'      => $order->id,
                             'product_id'    => $product->id,
-                            'status' => "new",
+                            'status' => "order placed",
                             'note' => "new order",
                         ]);
 
@@ -718,8 +751,8 @@ class OrderApiController extends Controller
                                     $giftcard = GiftCard::where('id',$gc_val->card_id)->first();
                                     $CustomAttributes = CustomAttributes::where('cart_id',$gc_val->id)->first();
                                     $attr = json_decode($CustomAttributes->custom_attributes);
-                                $to = $attr->to;
-                                $from = $attr->from;
+                                    $to = $attr->to;
+                                    $from = $attr->from;
     
                                     if($gc_val->quantity >  1){
     
@@ -1154,29 +1187,24 @@ class OrderApiController extends Controller
 
 
     public function orderHistoryDetail(Request $request){
-
-
-
          $userid = Auth::user()->token()->user_id;
+        //$OrderedProducts = OrderedProducts::where
+        //$OrderedProducts = Order::where
 
-        
 
-            //  dd($userid);
-
-        // $order=order::join('ordered_products', 'ordered_products.order_id', '=', 'orders.id' )->join('products','products.id','=','ordered_products.product_id')->join('users', 'users.id', '=', 'products.vendor_id' )->join('categories', 'categories.id', '=', 'products.cat_id' )->where('user_id','=',$userid)->get();
-
-        $orders = Order::with('orderItem')->where('user_id','=',$userid)->orderBy('orders.created_at','DESC')->where('parent_id','=',0)->get();
-
-      
+        $orders = Order::where('user_id','=',$userid)->orderBy('orders.created_at','DESC')->where('parent_id','=',0)->with(['orderItem' => function ($query){
+            $query->where('product_type', '<>', "card");
+            $query->where('product_type', '<>', "giftcard");
+        }])->get();
 
         if(count($orders) >0 ){
-
+            $i = 0;
             foreach($orders as $key => $val){ 
 
                 $delvery_date = Carbon::createFromFormat('Y-m-d H:i:s', $val->created_at);
                 $expected_date = $delvery_date->addDays(7);
                 $exp_date = $expected_date->toDateString();
-                $meta1 = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','billing_address')->first();
+                    $meta1 = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','billing_address')->first();
 
                 $meta2 = OrderMeta::select('meta_value')->where('order_id',$val->id)->where('meta_key','shipping_address')->first();
 
@@ -1213,14 +1241,23 @@ class OrderApiController extends Controller
 
                foreach($val->orderItem as $orderitemkey => $ordereditem){
                 $orderproductmeta = OrderProductMeta::where('order_id',$val->id)->where('product_id',$ordereditem->product_id)->where('meta_key','product_image')->first();
-                $val->orderItem[$orderitemkey]['featured_image'] = url('products/feature/'. $orderproductmeta->meta_value);
+                $val->orderItem[$orderitemkey]['featured_image'] = !empty($orderproductmeta->meta_value) ?  url('products/feature/'. $orderproductmeta->meta_value) : '';
 
                }
 
                $orders[$key]['expected_date'] = $exp_date;
 
-            }
+            //    if(count($val->orderItem) <= 0){
+                 
+            //          unset($orders[$key]);
+            //     }
+                
 
+              // dd(count($val->orderItem) <= 0);
+
+             $i++; 
+
+            }
              return response()->json([ 'status'=> true , 'message' => "Order History Detail", 'order' => $orders], 200);
 
         }else{

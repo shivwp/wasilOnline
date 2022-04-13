@@ -61,6 +61,7 @@
 						<option value="signup" {{isset($mail) && ($mail->msg_category == 'signup') ? 'selected' : '' }}>Signup</option>
 
 						<option value="giftcard" {{isset($mail) && ($mail->msg_category == 'giftcard') ? 'selected' : '' }}>Gift Card Code</option>
+						<option value="use gift card" {{isset($mail) && ($mail->msg_category == 'use gift card') ? 'selected' : '' }}>Use Gift Card </option>
 						<option value="vendor approve" {{isset($mail) && ($mail->msg_category == 'vendor approve') ? 'selected' : '' }}>Vendor Approve</option>
 
 						</select>

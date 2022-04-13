@@ -213,7 +213,9 @@ class UsersController extends Controller
 
 
 
-        return redirect()->route('admin.users.index');
+       
+        
+        
 
 
 
@@ -331,6 +333,10 @@ class UsersController extends Controller
         $fileName = time().'_'.request()->importfile->getClientOriginalName();
           Excel::import(new ImportCustomer, $request->file('importfile')->storeAs('product-csv', $fileName));
           return redirect()->back();
+      }
+
+      public function clearCache(Request $request){
+        return view('admin.clear-cache');
       }
 
 }

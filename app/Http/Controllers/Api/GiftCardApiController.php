@@ -134,8 +134,20 @@ class GiftCardApiController extends Controller
         $user_id = $user->id;
 
         $giftcard = GiftCardUser::where('gift_card_code',$request->giftcard_code)->where('gift_card_amount','!=',0)->first();
+        $card = GiftCard::where('id',$giftcard->card_id)->first();
 
         if(!empty($giftcard)){
+
+            // $currentDateTime = Carbon::now();
+            // $newDateTime = Carbon::now()->addDays(5);
+          //  $date = date("Y-M-D", strtotime($giftcard->created_at));
+            //$date =  date('Y-m-d', strtotime($giftcard->created_at));
+            $daysToAdd = $card->valid_days;
+            $date = Carbon::parse($giftcard->created_at)->addDays($daysToAdd)->format('Y-m-d');
+            $currentDateTime = Carbon::now()->format('Y-m-d');
+            if($currentDateTime > $date){
+                return response()->json(['status' => false, 'message' => "Gift Card expired"], 200);
+            }
         
             $amount = $request->amount;
 

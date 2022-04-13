@@ -302,7 +302,7 @@
                             </tr>
                             @endisset
                             <tr>
-                                <th>{{$order->ship_title}}:</th>
+                                <th>Shipping:</th>
                                 <td>{{$order->ship_pr}}{{$currency}}</td>
                             </tr>
                             <tr>

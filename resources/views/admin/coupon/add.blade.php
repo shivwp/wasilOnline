@@ -130,7 +130,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Manimum spend</label>
+                        <label class="form-label">Minimum spend</label>
                         <input type="number" class="form-control" name="manimum_spend" placeholder="Manimum" value="{{isset($coupon) ? $coupon->maximum_spend : '' }}" required>
                     </div>
                     <div class="form-group">

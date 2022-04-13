@@ -535,8 +535,8 @@
                                 <li><a href="{{ route('dashboard.gift-card.index') }}" class="slide-item">Gift Card</a></li>
                             @endcan
                             @can('coupon_access')
-                                <li><a href="{{ route('dashboard.coupon.index') }}" class="slide-item">Coupns</a></li>
-                                <li><a href="{{ route('dashboard.store-cadit') }}" class="slide-item">Store Cardit</a></li>
+                                <li><a href="{{ route('dashboard.coupon.index') }}" class="slide-item">Coupons</a></li>
+                                <li><a href="{{ route('dashboard.store-cadit') }}" class="slide-item">Store Credit</a></li>
                             @endcan
                             </ul>
                           </li>
@@ -643,10 +643,10 @@
                            @can('withdrawl_settings')
 
                         <li>
-                            <a class="side-menu__item" href="{{ route('dashboard.withdrow.index') }}"><i class="side-menu__icon icon icon-wallet"></i><span class="side-menu__label">Withdrawl requests</span></a>
+                            <a class="side-menu__item" href="{{ route('dashboard.withdrow.index') }}"><i class="side-menu__icon icon icon-wallet"></i><span class="side-menu__label">withdrawal requests</span></a>
                         </li>
                         <li>
-                            <a class="side-menu__item" href="{{ route('dashboard.vendor-earning-list') }}"><i class="side-menu__icon fa fa-euro"></i><span class="side-menu__label">Vendor Earnings</span></a>
+                            <a class="side-menu__item" href="{{ route('dashboard.vendor-earning-list') }}"><i class="side-menu__icon fa fa-usd"></i><span class="side-menu__label">Vendor Earnings</span></a>
                         </li>
 
                          @endcan
@@ -730,13 +730,14 @@
 
 
                          @endcan
-
+                         @if(Auth::user()->roles->first()->title == 'Admin'){
                          
                         <li class="slide">
 
                             <a class="side-menu__item" data-toggle="slide" href="{{ route('dashboard.customers') }}"><i class="side-menu__icon fa fa-user-circle-o"></i><span class="side-menu__label">Customers</span></a>
 
                         </li>
+                        @endif
 
 
 
@@ -754,7 +755,7 @@
                         @endcan 
                         @can('support_access')
                         <li class="slide">
-                            <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon fe fe-slack"></i><span class="side-menu__label">Suppert</span><i class="angle fa fa-angle-right"></i></a>
+                            <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon fe fe-slack"></i><span class="side-menu__label">Support</span><i class="angle fa fa-angle-right"></i></a>
                             <ul class="slide-menu">
                                 <li><a href="{{ route('dashboard.support-tickets.index') }}" class="slide-item">All tickets</a></li>
                                 <li><a href="{{ route('dashboard.support-category.index') }}" class="slide-item">Support Category</a></li>
@@ -762,7 +763,7 @@
                         </li>
                         @endcan 
                         <li>
-                            <a class="side-menu__item" href="{{url("/clear-cache")}}"><i class="side-menu__icon ti-brush-alt"></i><span class="side-menu__label">Clear Cache</span></a>
+                            <a class="side-menu__item" href="{{route("dashboard.cookie-cache-clear")}}"><i class="side-menu__icon ti-brush-alt"></i><span class="side-menu__label">Clear Cache</span></a>
                         </li>
 
 

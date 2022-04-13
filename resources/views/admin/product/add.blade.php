@@ -458,7 +458,7 @@
 					</div>
 
 				</div>
-				@if(Auth::user()->roles->first()->title == "Admin")	
+				{{--@if(Auth::user()->roles->first()->title == "Admin")	
 					<div class="col-md-12">
 						<div class="row mt-5">
 							<div class="col-md-12">
@@ -571,7 +571,7 @@
 					  </div>
 					@endif
 				  </div>
-				@endif
+				@endif--}}
 
 				<div class="col-md-6 ship-type">
 
@@ -915,13 +915,13 @@
 					</label>
 					<label for="scales">New</label>
 				</div>
-				<div class="col-md-3 mt-2">
+				{{--<div class="col-md-3 mt-2">
 						<label class="switch">
 							<input type="checkbox" id="best_saller" name="best_saller" {{ isset($product) && ($product->best_saller == 1) ?  'checked' : '' }}>
 							<span class="slider round"></span>
 						</label>
 						<label for="scales">Best Saller</label>
-				</div>
+				</div>--}}
 				@if(Auth::user()->roles->first()->title == "Admin")	
 					<div class="col-md-3 mt-2">
 							<label class="switch">

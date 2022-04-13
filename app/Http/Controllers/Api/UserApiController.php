@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\Mailtemp;
 use App\PhoneTemp;
+use App\Models\Product;
 use App\UserCompany;
 use Twilio\Rest\Client;
 use DB;
@@ -59,6 +60,7 @@ class UserApiController extends Controller
             return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
 
         }
+        $product = Product::where('id',$request->product_id)->first();
 
        $feedback = Reviews::create([
             'rating_number'      => $request->rating_number,
@@ -66,7 +68,7 @@ class UserApiController extends Controller
             'name'     => $User->first_name,
             'email'     => $User->email,
             'product_id'     => $request->product_id,
-
+            'vendor_id'     => $product->vendor_id,
         ]);
         return response()->json(['status' => true,'message' => "success" ,"data"=>$feedback], 200);
 
@@ -379,7 +381,7 @@ class UserApiController extends Controller
 
         $us = User::where("email", $request->email)->first();
         if(!empty($us)){
-            return response()->json(['status' => false, 'message' => "Your account with this email registerd.", 'user' => []], 200);
+            return response()->json(['status' => false, 'message' => "Email already registered", 'user' => []], 200);
         }
         else{
             $user = new User;

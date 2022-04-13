@@ -332,7 +332,7 @@ class CartApiController extends Controller
         ]);
 
 
-        return response()->json(['status' => false, 'message' => "Success",], 200);
+        return response()->json(['status' => true, 'message' => "Success",], 200);
 
     }
 

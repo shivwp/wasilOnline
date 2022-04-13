@@ -106,7 +106,7 @@ class ProductController extends Controller
       //product Aprroval
       $publish = 0;
       $Setting = Setting::where('id', 100)->first();
-      if(!empty($Setting) && $Setting->value == 1){
+      if(!empty($Setting) && $Setting->value == "on"){
       $publish = 1;
       }
       else{
@@ -1008,6 +1008,36 @@ class ProductController extends Controller
 
       }
       return response()->json($resultHtml);
+    }
+
+    public function productapprove($id){
+
+      $vendor = Product::where('id',$id)->update([
+
+        'is_publish' => 1
+
+    ]);
+  
+    // $mail_data = Mails::where('msg_category', 'vendor approve')->first();
+    // $msg = $mail_data->message;
+    // foreach($basicinfo as $key=> $info){
+    //     $msg = str_replace($key,$info,$msg);
+    // }
+
+    // $config = ['from_email' => $mail_data->mail_from,
+    // "reply_email" => $mail_data->reply_email,
+    // 'subject' => $mail_data->subject, 
+    // 'name' => $mail_data->name,
+    // 'message' => $msg,
+    // ];
+
+    // Mail::to($vendor->email)->send(new OrderMail($config));
+    return redirect('/dashboard/product')->with('status', 'Product Approved');
+
+
+    }
+    public function rejectapprove($id){
+      
     }
 
 

@@ -100,6 +100,7 @@
                                                         <th class="wd-15p">Price</th>
 
                                                         <th class="wd-20p">Category</th>
+                                                        <th class="wd-20p">Is Publish</th>
 
                                                         <th class="wd-20p">image</th>
 
@@ -124,6 +125,14 @@
                                                         <td> $ {{$item->s_price ?? '' }}</td>
 
                                                         <td>{{$item->title ?? '' }}</td>
+                                                        <td> 
+                                                            @if($item->is_publish == 0)
+                                                                <span class="tag tag-red">Pending</span>
+                                                            @else
+                                                                <span class="tag tag-azure">Published</span>
+                                                            @endif
+                                                        </td>
+
 
                                                         <td><img src="{{url('products/feature').'/'.$item->featured_image}}" alt="" style="height:50px"></td>
 
@@ -134,6 +143,11 @@
                                                                  <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.product.edit', $item->id) }}"><i class="fa fa-edit"></i> </a>
 
                                                                 @endcan 
+
+                                                                @if(Auth::user()->roles->first()->title == "Admin")
+                                                                <a data-toggle="tooltip" title="approve" class="btn btn-sm btn-secondary" href="{{ route('dashboard.approve-product', $item->id) }}"><i class="fa fa-check"></i> </a>
+                                                                {{--<a data-toggle="tooltip" title="reject" class="btn btn-sm btn-secondary" href="{{ route('dashboard.reject-product', $item->id) }}"><i class="fa fa-ban"></i> </a>--}}
+                                                                @endif
 
                                                                 @can('product_delete')
 

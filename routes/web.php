@@ -142,6 +142,11 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
      Route::get('vendor-approve/{id}',[App\Http\Controllers\admin\VendorSettingController::class, 'approveVendor'])->name('vendor-approve');
 
      Route::get('vendor-rejected/{id}',[App\Http\Controllers\admin\VendorSettingController::class, 'rejectVendor'])->name('vendor-rejected');
+
+     //approve product
+     Route::get('approve-product/{id}',[App\Http\Controllers\admin\ProductController::class, 'productapprove'])->name('approve-product');
+     Route::post('reject-product/{id}',[App\Http\Controllers\admin\ProductController::class, 'rejectapprove'])->name('reject-product');
+
     //Withdrow Request
     Route::resource('withdrow', WithdrowController::class);
 
@@ -179,6 +184,20 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
      Route::get('view-customer',[App\Http\Controllers\admin\UsersController::class, 'importView'])->name('view-customer');
     Route::post('import-customer',[App\Http\Controllers\admin\UsersController::class, 'importCustomer'])->name('import-customer'); 
+
+
+    //cahce clear
+    Route::get('cache-clear',[App\Http\Controllers\admin\UsersController::class, 'clearCache'])->name('cache-clear'); 
+    Route::get('cookie-cache-clear', function() {
+      Artisan::call('cache:clear');
+      Artisan::call('optimize');
+      Artisan::call('config:clear');
+      Artisan::call('route:clear');
+      Artisan::call('view:clear');
+      return redirect('https://beta.wasilonline.net/dashboard/dashboard/cache-clear');
+    
+    })->name('cookie-cache-clear');
+
 
      //product import
 

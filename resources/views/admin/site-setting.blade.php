@@ -625,7 +625,7 @@
 
               <label class="switch">
 
-                  <input type="checkbox" id="auto-approve" name="approval" {{ isset($setting['approval']) && ($setting['approval'] == 1) ?  'checked' : '' }}>
+                  <input type="checkbox" id="auto-approve" name="approval" {{ isset($setting['approval']) && ($setting['approval'] == "on") ?  'checked' : '' }}>
 
                   <span class="slider round"></span>
 

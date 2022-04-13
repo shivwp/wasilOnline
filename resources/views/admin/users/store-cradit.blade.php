@@ -108,7 +108,7 @@
 
                                                         <th class="wd-15p">Email</th>
 
-                                                        <th class="wd-15p">Store Cradit</th>
+                                                        <th class="wd-15p">Store Credit</th>
 
                                                        {{-- <th class="wd-15p">Action</th>--}}  
 
