@@ -147,6 +147,9 @@ Route::post('all-states', [App\Http\Controllers\Api\CountryStateCityApiControlle
 Route::post('all-cities', [App\Http\Controllers\Api\CountryStateCityApiController::class, 'allCities'] );
 //brand
 Route::post('brands', [App\Http\Controllers\Api\ProductApiController::class, 'brands'] );
+//offer
+Route::post('offer-product', [App\Http\Controllers\Api\ProductApiController::class, 'offerProduct']);
+
 
 
 
@@ -183,6 +186,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('ticket-comment', [App\Http\Controllers\Api\SupportTicketApiController::class, 'ticketComment'] );
 
     Route::post('user-order', [App\Http\Controllers\Api\SupportTicketApiController::class, 'userOrder'] );
+
 
 
 

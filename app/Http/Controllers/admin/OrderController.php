@@ -1,11 +1,5 @@
 <?php
-
-
-
 namespace App\Http\Controllers\admin;
-
-
-
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
@@ -253,7 +247,6 @@ class OrderController extends Controller
     }
 
     public function changestatus(Request $request){
-        //dd($request);
         OrderedProducts::where('id',$request->id)->update([
             'status' => $request->status
         ]);
@@ -268,6 +261,38 @@ class OrderController extends Controller
             $arryaseachpostionPrev = array_search($prevStatus->status, $orderstatus);
             $orderstatusNew = array_merge(array_slice($orderstatus, 0, $arryaseachpostionPrev+1), array($addorderStatus_1), array_slice($orderstatus, $arryaseachpostionPrev+1));
             $orderstatusNew_1 = array_merge(array_slice($orderstatusNew, 0, $arryaseachpostionPrev+1), array($addorderStatus_2), array_slice($orderstatusNew, $arryaseachpostionPrev+1));
+
+            //Cancel Refund
+            $order = Order::where('id',$request->orderid)->firstOrFail();
+            $ordermeta = OrderMeta::where('order_id',$request->orderid)->pluck('meta_value','meta_key');
+            $orderpayment = OrderPayment::where('order_id',$request->orderid)->firstOrFail();
+            $OrderedProducts =OrderedProducts::where('order_id',$request->orderid)->where('product_id',$request->productid)->firstOrFail();
+            if(isset($ordermeta['refund_amount_in']) &&  $ordermeta['refund_amount_in'] == "bank"){
+
+                try{
+                    $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+        
+                    $stripe->refunds->create(
+                        ['payment_intent' => $orderpayment->trans_id, 'amount' => $OrderedProducts->total_price*100]
+                      );
+        
+                      //return stripe;
+                }
+                catch(\Stripe\Exception\InvalidRequestException $e)
+                {
+    
+                        return redirect('/dashboard/order/'.$request->orderid)->with('status', $e->getError()->message);
+                       
+                }
+
+            }
+            elseif(isset($ordermeta['refund_amount_in']) && $ordermeta['refund_amount_in'] == "wallet"){
+                $user =User::where('id',$order->user_id)->first();
+                $updatewalletAmount = $user->user_wallet + $OrderedProducts->total_price;
+                User::where('id',$order->user_id)->update([
+                    'user_wallet' =>  $updatewalletAmount
+                ]);
+            }
 
         }
         else{

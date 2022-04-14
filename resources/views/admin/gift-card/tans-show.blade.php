@@ -18,7 +18,9 @@
 
                                 <ol class="breadcrumb">
 
-                                    <li class="breadcrumb-item"><a href="#">user</a></li>
+                                    <li class="breadcrumb-item"><a href="#">Gift-card</a></li>
+
+                                    
 
                                     <li class="breadcrumb-item active" aria-current="page">List</li>
 
@@ -44,23 +46,15 @@
 
                                 <div class="card">
 
-                                <div class="addnew-ele">
-
-                                <a href="{{ route('dashboard.users.create') }}" class="btn btn-info-light ">
-
-                                    {{$buton_name}}
-
-                                </a>
-
-                            </div>
+                               
 
                                     <div class="card-body">
 
                                         <div class="table-responsive">
 
-                                            <div class="paging-section">
+                                              <div class="paging-section">
 
-                                                   <form method="get" class="page-number"  >
+                                             <form method="get" class="page-number"  >
 
                                                     <h6 class="page-num">show</h6>
 
@@ -80,7 +74,7 @@
 
                                                </form>
 
-                                               <form>
+                                                <form>
 
                                                   <div class="search_bar d-flex">  
 
@@ -88,7 +82,7 @@
 
                                                   <button type="submit" class="form-control src-btn" ><i class="angle fe fe-search"></i></button>
 
-                                                   <a class="form-control src-btn" href="{{ route('dashboard.users.index') }}"><i class="angle fe fe-rotate-ccw"></i></a>
+                                                   <a class="form-control src-btn" href="{{ route('dashboard.gift-card.index') }}"><i class="angle fe fe-rotate-ccw"></i></a>
 
                                               </div>
 
@@ -102,15 +96,15 @@
 
                                                     <tr>
 
-                                                        <th>#</th>
+                                                        <th class="wd-10p">id</th>
 
-                                                        <th class="wd-15p">Title</th>
+                                                        <th class="wd-15p">Gift Card Code </th>
 
-                                                        <th class="wd-15p">Email</th>
+                                                        <th class="wd-15p">Purchased User </th>
 
-                                                        <th class="wd-15p">Roles</th>
+                                                        <th class="wd-15p">Used By </th>
 
-                                                        <th class="wd-15p">Action</th>
+                                                        <th class="wd-15p">Remaining Amount</th>
 
                                                     </tr>
 
@@ -118,61 +112,56 @@
 
                                                 <tbody>
 
-                                                @if(count($users)>0)
+                                                @if(count($giftcard)>0)
 
-                                                    @foreach($users as $key => $item)
+                                                    @foreach($giftcard as $key => $item)
 
-                                                        <tr>
+                                                    <tr>
 
-                                                            <td>{{ $item->id ?? '' }}</td>
+                                                        <td>{{$item->id ?? '' }}</td>
 
-                                                            <td>{{ $item->first_name ?? '' }}</td>
+                                                        <td>{{$item->gift_card_code ?? '' }}</td>
 
-                                                            <td>{{ $item->email ?? '' }}</td>
+                                                        <td>{{$item->puchased_user ?? '' }}</td>
 
-                                                            <td>
+                                                        <td>
+                                                            <table>
+                                                                <thead>
+                                                                    <th class="wd-10p">Order </th>   
+                                                                    <th class="wd-10p">User</th>   
+                                                                    <th class="wd-10p">Amount Used</th>   
+                                                                </thead>
+                                                                @if(!empty($item->log) || count($item->log))
+                                                                @foreach($item->log as $key1 => $item1)
+                                                                    <tbody>
+                                                                            <td>
+                                                                               #{{$item1->order_id ?? '' }}
+                                                                            </td>
+                                                                            <td>
+                                                                                    {{$item1->user ?? '' }}
+                                                                            </td>
+                                                                            <td>  
+                                                                                {{$item1->gift_card_amount ?? '' }}
+                                                                            </td>
+                                                                    </tbody>
+                                                                @endforeach
+                                                                @endif
+                                                                
+                                                            </table>
+                                                          
+                                                        </td>
 
-                                                            @foreach($item->roles as $key => $item1)
+                                                        <td>{{$item->gift_card_amount ?? '' }}</td>
 
-                                                                <span class="badge badge-info">{{ $item1->title }}</span>
+                                                        
 
-                                                            @endforeach
-
-                                                            </td>
-
-                                                            <td>
-
-                                                                {{--<a class="btn btn-sm btn-primary" href=""><i class="fa fa-eye"></i></a>--}}
-
-                                                                 @can('permission_edit')
-
-                                                                 <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.users.edit', $item->id) }}"><i class="fa fa-edit"></i> </a>
-
-                                                                @endcan
-
-                                                                <a class="btn btn-sm btn-primary" href="{{ route('dashboard.users.show', $item->id) }}"><i class="fa fa-eye"></i></a>
-
-                                                                 @can('permission_delete')
-
-                                                                    <form action="{{ route('dashboard.users.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">
-
-                                                                        <input type="hidden" name="_method" value="DELETE">
-
-                                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-
-                                                                        <button type="submit" class="btn btn-sm btn-danger" value=""><i class="fa fa-trash"></i></button>
-
-                                                                    </form>
-
-                                                                 @endcan
-
-                                                            </td>
-
-                                                        </tr>
+                                                    </tr>
 
                                                     @endforeach
 
                                                 @endif
+
+                                                    
 
                                                 </tbody>
 
@@ -180,7 +169,7 @@
 
                                         </div>
 
-                                        <div id="pagination">{{{ $users->links() }}}</div>
+                                        <div id="pagination">{{{ $giftcard->links() }}}</div>
 
                                     </div>
 

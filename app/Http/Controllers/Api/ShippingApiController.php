@@ -163,8 +163,8 @@ class ShippingApiController extends Controller
                 $CityPriceAdmin = CityPrice::where('city_id',$request->city)->first();  
                 $shipdata['title'] = "City Shipping";
                 //  $shipdata['amount'] = $vndorsetting['normal_price'];
-                  $shipdata['priority_price'] = $CityPriceAdmin->normal_price;
-                  $shipdata['normal_price'] = $CityPriceAdmin->priority_price;
+                  $shipdata['priority_price'] = !empty($CityPriceAdmin->normal_price) ? $CityPriceAdmin->normal_price : 0;
+                  $shipdata['normal_price'] = !empty($CityPriceAdmin->priority_price) ? $CityPriceAdmin->priority_price : 0;
                   $data[] = $shipdata;
                   $vendorship['shipping_method'] = $data;
             }

@@ -18,7 +18,9 @@
 
                                 <ol class="breadcrumb">
 
-                                    <li class="breadcrumb-item"><a href="#">user</a></li>
+                                    <li class="breadcrumb-item"><a href="#">Gift-card</a></li>
+
+                                    
 
                                     <li class="breadcrumb-item active" aria-current="page">List</li>
 
@@ -46,7 +48,7 @@
 
                                 <div class="addnew-ele">
 
-                                <a href="{{ route('dashboard.users.create') }}" class="btn btn-info-light ">
+                                <a href="{{ route('dashboard.gift-card.create') }}" class="btn btn-info-light ">
 
                                     {{$buton_name}}
 
@@ -58,9 +60,9 @@
 
                                         <div class="table-responsive">
 
-                                            <div class="paging-section">
+                                              <div class="paging-section">
 
-                                                   <form method="get" class="page-number"  >
+                                             <form method="get" class="page-number"  >
 
                                                     <h6 class="page-num">show</h6>
 
@@ -80,7 +82,7 @@
 
                                                </form>
 
-                                               <form>
+                                                <form>
 
                                                   <div class="search_bar d-flex">  
 
@@ -88,7 +90,7 @@
 
                                                   <button type="submit" class="form-control src-btn" ><i class="angle fe fe-search"></i></button>
 
-                                                   <a class="form-control src-btn" href="{{ route('dashboard.users.index') }}"><i class="angle fe fe-rotate-ccw"></i></a>
+                                                   <a class="form-control src-btn" href="{{ route('dashboard.gift-card.index') }}"><i class="angle fe fe-rotate-ccw"></i></a>
 
                                               </div>
 
@@ -102,13 +104,19 @@
 
                                                     <tr>
 
-                                                        <th>#</th>
+                                                        <th class="wd-10p">id</th>
 
                                                         <th class="wd-15p">Title</th>
 
-                                                        <th class="wd-15p">Email</th>
+                                                        <th class="wd-15p">Description</th>
 
-                                                        <th class="wd-15p">Roles</th>
+                                                        <th class="wd-15p">Image</th>
+
+                                                        <th class="wd-15p">Amount</th>
+
+                                                        <th class="wd-15p">Valid Days</th>
+
+                                                        <th class="wd-15p">Status</th>
 
                                                         <th class="wd-15p">Action</th>
 
@@ -118,61 +126,79 @@
 
                                                 <tbody>
 
-                                                @if(count($users)>0)
+                                                    @if(count($giftcard)>0)
 
-                                                    @foreach($users as $key => $item)
+                                                        @foreach($giftcard as $key => $item)
 
                                                         <tr>
 
-                                                            <td>{{ $item->id ?? '' }}</td>
+                                                            <td>{{$item->id ?? '' }}</td>
 
-                                                            <td>{{ $item->first_name ?? '' }}</td>
+                                                            <td>{{$item->title ?? '' }}</td>
 
-                                                            <td>{{ $item->email ?? '' }}</td>
+                                                            <td>{{$item->description ?? '' }}</td>
+
+                                                            <td style="height: 70px;width: 100px;">
+
+                                                                @if(!empty($item->image))
+
+                                                                <img src="{{url('/giftcard')}}/{{$item->image}}" alt="giftcard">
+
+                                                                @endif
+
+                                                            </td>
+
+                                                            <td>{{$item->amount ?? '' }}</td>
+
+                                                            <td>{{$item->valid_days ?? '' }}</td>
 
                                                             <td>
 
-                                                            @foreach($item->roles as $key => $item1)
+                                                                @if($item->status == 1)
 
-                                                                <span class="badge badge-info">{{ $item1->title }}</span>
+                                                                <span class="tag tag-green">Active</span>
 
-                                                            @endforeach
+                                                                @else
+
+                                                                <span class="tag tag-gray-dark">Deactive</span>
+
+                                                                @endif
 
                                                             </td>
 
                                                             <td>
 
-                                                                {{--<a class="btn btn-sm btn-primary" href=""><i class="fa fa-eye"></i></a>--}}
+                                                                
 
-                                                                 @can('permission_edit')
+                                                                    <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.gift-card.edit', $item->id) }}"><i class="fa fa-edit"></i> </a>
 
-                                                                 <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.users.edit', $item->id) }}"><i class="fa fa-edit"></i> </a>
+                                                                    <a class="btn btn-sm btn-primary" href="{{ route('dashboard.transaction-show', $item->id) }}"><i class="fa fa-eye"></i></a>
 
-                                                                @endcan
+                                                                    
 
-                                                                <a class="btn btn-sm btn-primary" href="{{ route('dashboard.users.show', $item->id) }}"><i class="fa fa-eye"></i></a>
+                                                                
 
-                                                                 @can('permission_delete')
+                                                                        <form action="{{ route('dashboard.gift-card.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">
 
-                                                                    <form action="{{ route('dashboard.users.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">
+                                                                            <input type="hidden" name="_method" value="DELETE">
 
-                                                                        <input type="hidden" name="_method" value="DELETE">
+                                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
-                                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                                            <button type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}"><i class="fa fa-trash"></i></button>
 
-                                                                        <button type="submit" class="btn btn-sm btn-danger" value=""><i class="fa fa-trash"></i></button>
+                                                                        </form>
 
-                                                                    </form>
+                                                                
 
-                                                                 @endcan
-
-                                                            </td>
+                                                                </td>
 
                                                         </tr>
 
-                                                    @endforeach
+                                                        @endforeach
 
-                                                @endif
+                                                    @endif
+
+                                                    
 
                                                 </tbody>
 
@@ -180,7 +206,7 @@
 
                                         </div>
 
-                                        <div id="pagination">{{{ $users->links() }}}</div>
+                                        <div id="pagination">{{{ $giftcard->links() }}}</div>
 
                                     </div>
 

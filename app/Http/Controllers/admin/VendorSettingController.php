@@ -373,6 +373,13 @@ class VendorSettingController extends Controller
 
         $data['data'] = $this->getVendorMeta($id);
 
+        $stateCity =State::where('country_id','121')->get();
+        foreach($stateCity as $s_k => $s_v){
+         $city =City::select('city_id','city_name')->where('state_id',$s_v->state_id)->get();
+         $stateCity[$s_k]['city'] = $city;
+        }
+        $data['stateCity'] = $stateCity;
+
         return view('admin.vendor-details.vendor-setting',$data);
     }
 

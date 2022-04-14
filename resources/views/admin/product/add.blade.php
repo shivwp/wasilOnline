@@ -932,6 +932,16 @@
 					</div>
 				@endif
 
+				@if(Auth::user()->roles->first()->title == "Admin")	
+					<div class="col-md-3 mt-2">
+							<label class="switch">
+								<input type="checkbox" id="offer" name="offer_product" {{ isset($product) && ($product->in_offer == 1) ?  'checked' : '' }}>
+								<span class="slider round"></span>
+							</label>
+							<label for="scales">Offer</label>
+					</div>
+				@endif
+
 
 
 	</div>

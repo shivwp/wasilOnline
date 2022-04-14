@@ -526,13 +526,33 @@
 
 
                         @endcan
+
+
+                        
+                        @can('gift_card_access')
+                        <li class="slide">
+
+                          <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon icon icon-present"></i><span class="side-menu__label">Gift Card</span><i class="angle fa fa-angle-right"></i></a>
+
+                          <ul class="slide-menu">
+
+                              <li><a href="{{ route('dashboard.gift-card.create') }}" class="slide-item">Add New </a></li>
+
+                              <li><a href="{{ route('dashboard.gift-card.index') }}" class="slide-item">Gift Card List</a></li>
+
+                            {{--  <li><a href="{{ route('dashboard.card-deatils') }}" class="slide-item">Details of Gift Card</a></li>--}}
+
+                          </ul>
+
+                      </li>
+                        @endcan
                          
 
                          <li class="slide">
                             <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon icon icon-wallet"></i><span class="side-menu__label">Wallet</span><i class="angle fa fa-angle-right"></i></a>
                             <ul class="slide-menu">
                             @can('gift_card_access')
-                                <li><a href="{{ route('dashboard.gift-card.index') }}" class="slide-item">Gift Card</a></li>
+                                <li><a href="{{ route('dashboard.gift-card-transaction') }}" class="slide-item">Gift Card Transaction</a></li>
                             @endcan
                             @can('coupon_access')
                                 <li><a href="{{ route('dashboard.coupon.index') }}" class="slide-item">Coupons</a></li>
@@ -540,6 +560,8 @@
                             @endcan
                             </ul>
                           </li>
+
+                          
 
 
 
@@ -730,13 +752,13 @@
 
 
                          @endcan
-                         @if(Auth::user()->roles->first()->title == 'Admin'){
+                         @if(Auth::user()->roles->first()->title == 'Admin')
                          
-                        <li class="slide">
+                        {{--<li class="slide">
 
                             <a class="side-menu__item" data-toggle="slide" href="{{ route('dashboard.customers') }}"><i class="side-menu__icon fa fa-user-circle-o"></i><span class="side-menu__label">Customers</span></a>
 
-                        </li>
+                        </li>--}}
                         @endif
 
 

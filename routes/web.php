@@ -106,6 +106,11 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     Route::resource('gift-card', GiftCardController::class);
     Route::get('card-deatils',[App\Http\Controllers\admin\GiftCardController::class, 'index2'])->name('card-deatils');
+    Route::get('gift-card-transaction',[App\Http\Controllers\admin\GiftCardController::class, 'giftcardTransaction'])->name('gift-card-transaction');
+
+    Route::get('transaction-show/{id}',[App\Http\Controllers\admin\GiftCardController::class, 'transactionShow'])->name('transaction-show');
+
+
 
     // Coupon
     Route::resource('coupon', CouponController::class);

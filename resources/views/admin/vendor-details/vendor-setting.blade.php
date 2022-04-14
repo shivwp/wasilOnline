@@ -1,7 +1,27 @@
 @extends('layouts.vertical-menu.master')
+@section('css')
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<link href="{{ URL::asset('assets/plugins/ion.rangeSlider/css/ion.rangeSlider.css')}}" rel="stylesheet">
 
+<link href="{{ URL::asset('assets/plugins/ion.rangeSlider/css/ion.rangeSlider.skinSimple.css')}}" rel="stylesheet">
 
+<link href="{{ URL::asset('assets/plugins/bootstrap-daterangepicker/daterangepicker.css')}}" rel="stylesheet" />
 
+<link href="{{ URL::asset('assets/plugins/date-picker/spectrum.css')}}" rel="stylesheet" />
+
+<link href="{{ URL::asset('assets/plugins/fileuploads/css/fileupload.css')}}" rel="stylesheet" />
+
+<link href="{{ URL::asset('assets/plugins/multipleselect/multiple-select.css')}}" rel="stylesheet" />
+
+<link href="{{ URL::asset('assets/plugins/select2/select2.min.css')}}" rel="stylesheet" />
+
+<link href="{{ URL::asset('assets/plugins/time-picker/jquery.timepicker.css')}}" rel="stylesheet" />
+
+<link href="{{ URL::asset('assets/plugins/summernote/summernote-bs4.css')}}" rel="stylesheet">
+
+<link href="{{ URL::asset('assets/plugins/wysiwyag/richtext.css')}}" rel="stylesheet">
+
+@endsection
 @section('page-header')
 
 
@@ -35,8 +55,21 @@
 
 
   <div class="card-body" id="add_space">
+
+
+
     <form action="{{ route("dashboard.vendorsettings.store") }}" method="post" enctype="multipart/form-data">
+
+
+
       @csrf
+
+
+
+
+
+
+
       <input type="hidden" class="form-control" name="vendor_id" value="{{ isset($vendor) ? $vendor->id : '' }}">
 
 
@@ -739,6 +772,37 @@
 
        </div>
 
+       <div class="row">
+        <div class="col-md-12">
+          <h4 class="mt-5">Selling Areas</h4> <hr>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                  <label class="control-label ">Select City</label>
+                  <select  name="citystatecountry[]" id="city" class="form-control select2" multiple>
+                    @php  
+                    if(!empty($data['citystatecountry'])){
+                      $array = json_decode($data['citystatecountry']);
+                    }
+                    else{
+                      $array = [];
+                    }
+                    @endphp
+                    @if(count($stateCity)>0)
+                      @foreach($stateCity as $key => $val)
+                        <optgroup label="{{$val->state_name}}">
+                          @foreach($val->city as $k1 => $v1)
+                          <option value="{{$v1->city_id}}" {{isset($data['citystatecountry']) && in_array($v1->city_id,$array) ? 'selected' : ''}}>{{$v1->city_name}}</option>
+                          @endforeach
+                      @endforeach
+                    @endif
+                  </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
 
        <h4>Payment Options</h4>
@@ -1069,4 +1133,52 @@
 
 
 
+@endsection
+
+@section('js')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="{{ URL::asset('assets/plugins/bootstrap-daterangepicker/moment.min.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/date-picker/spectrum.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/date-picker/jquery-ui.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/fileuploads/js/fileupload.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/fileuploads/js/file-upload.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/input-mask/jquery.maskedinput.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/multipleselect/multiple-select.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/multipleselect/multi-select.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/select2/select2.full.min.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/time-picker/jquery.timepicker.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/time-picker/toggles.min.js') }}"></script>
+
+<script src="{{ URL::asset('assets/js/form-elements.js') }}"></script>
+
+
+
+<script src="{{ URL::asset('assets/plugins/chart/Chart.bundle.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/chart/utils.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/wysiwyag/jquery.richtext.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/wysiwyag/wysiwyag.js') }}"></script>
+
+<script src="{{ URL::asset('assets/plugins/summernote/summernote-bs4.js') }}"></script>
+
+<script src="{{ URL::asset('assets/js/summernote.js') }}"></script>
+
+<script src="{{ URL::asset('assets/js/formeditor.js') }}"></script>
+<script>     
+
+<script src="{{ URL::asset('assets/plugins/multipleselect/multi-select.js') }}"></script>
 @endsection
