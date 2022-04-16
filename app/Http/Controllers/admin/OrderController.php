@@ -11,6 +11,9 @@ use App\Models\OrderNote;
 use App\Models\OrderShipping;
 use App\Models\Mails;
 use App\Mail\OrderMail;
+use App\Models\Country;
+use App\Models\State;
+use App\Models\City;
 use Mail;
 
 use App\Models\Address;
@@ -105,6 +108,8 @@ class OrderController extends Controller
        
     }
 
+ 
+
 
 
     public function deliveredorders()
@@ -191,6 +196,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
+      
         $d['title'] = "ORDER";
         if(Auth::user()->roles->first()->title == 'Admin'){
         $order=Order::with('orderItem')->findOrFail($id);
@@ -241,9 +247,65 @@ class OrderController extends Controller
         $shippingdata = OrderShipping::where('order_id',$order->id)->where('vendor_id',Auth::user()->id)->first();
         $order['ship_pr']    = !empty($shippingdata->shipping_price) ? $shippingdata->shipping_price : 0;
         $order['ship_title']    = !empty($shippingdata->shipping_title) ? $shippingdata->shipping_title : 0;
+        $d['countries'] = Country::get(["name", "id"]); 
+        $d['state'] = State::all(); 
+        $d['city'] = City::all(); 
+        $d['ordernotedata'] = OrderNote::where('order_id',$id)->orderBy('id','desc')->first(); 
+
+        //shipping 
+
+
+        //billing
+        if(!empty($shipping_country)){
+            $d['billingcountry'] = Country::where('id',$order['billing_country'])->first();
+        }
+        if(!empty($shipping_state)){
+            $d['billingstate'] = State::where('state_id',$order['billing_state'])->first();
+        }
+        if(!empty($shipping_city)){
+            $d['billingcity'] = City::where('city_id', $order['billing_city'])->first();
+        }
+
+        //shipping
+        if(!empty($shipping_country)){
+            $d['shippingcountry'] = Country::where('id',$order['shipping_country'])->first();
+        }
+        if(!empty($shipping_state)){
+            $d['shippingstate'] = State::where('state_id',$order['shipping_state'])->first();
+        }
+        if(!empty($shipping_city)){
+            $d['shippingcity'] = City::where('city_id', $order['shipping_city'])->first();
+        }
+       // dd($order['billing_country']);
         $d['order'] = $order;
 
         return view('admin/order/show',$d);
+    }
+
+    public function orderQtyUpdate(Request $request){
+
+        $item = OrderedProducts::where('id',$request->itemid)->first();
+        $price = $item->product_price;
+        $updatePrice = $request->qty * $price;
+        $item->update([
+            'quantity' => $request->qty,
+            'total_price' => $updatePrice
+        ]);
+        $item->save();
+        $data['success'] = 'success';
+        return response()->json($data);
+
+    }
+
+    public function fetchState(Request $request)
+    {
+        $data['states'] = State::where("country_id",$request->country_id)->get(["state_name", "state_id"]);
+        return response()->json($data);
+    }
+    public function fetchCity(Request $request)
+    {
+        $data['cities'] = City::where("state_id",$request->state_id)->get(["city_name", "city_id"]);
+        return response()->json($data);
     }
 
     public function changestatus(Request $request){
@@ -332,6 +394,28 @@ class OrderController extends Controller
     
     }
 
+    public function refundAmount(Request $request){
+        $order = Order::where('id',$request->orderid)->first();
+        $orderpayment = OrderPayment::where('order_id',$order->id)->first();
+        try{
+            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+
+            $stripe->refunds->create(
+                ['payment_intent' => $orderpayment->trans_id, 'amount' => $request->refund_amount*100]
+              );
+
+              //return stripe;
+        }
+        catch(\Stripe\Exception\InvalidRequestException $e)
+        {
+
+                return redirect('/dashboard/order/'.$request->orderid)->with('status', $e->getError()->message);
+               
+        }
+        return redirect('/dashboard/order/'.$request->orderid)->with('status', 'order status is updated');
+
+    }
+
 
 
     /**
@@ -410,19 +494,12 @@ class OrderController extends Controller
 
         ]); 
 
-
-
         $data = Order::find($id);
-
-        $data->status = $request->order_status;
-
-        $data->shipping_type = $request->shipping_type;
-
-        $data->shipping_method = $request->shipping_method;
-
-        $data->save();
-
-       
+        if(!empty($request->order_status)){
+            $data->status = $request->order_status;
+            $data->save();
+        }
+        dd($request->status_note);
 
         $notedata = new OrderNote();
 
@@ -434,17 +511,38 @@ class OrderController extends Controller
 
         $notedata->save();
 
-
-
         $order_id = $request->order_id;
 
-       
+       $metadata =  [];
+       $metadata['billing_first_name'] = $request->billing_first_name;
+       $metadata['billing_last_name'] = $request->billing_last_name;
+       $metadata['billing_phone'] = $request->billing_phone;
+       $metadata['billing_country'] = $request->country;
+       $metadata['billing_state'] = $request->state;
+       $metadata['billing_city'] = $request->city;
+       $metadata['billing_address2'] = $request->billing_address2;
+       $metadata['shipping_first_name'] = $request->shipping_first_name;
+       $metadata['shipping_last_name'] = $request->shipping_last_name;
+       $metadata['shipping_address2'] = $request->shipping_address2;
+       $metadata['shipping_zip_code'] = $request->shipping_zip;
+       $metadata['shipping_phone'] = $request->shipping_phone;
+       $metadata['shipping_country'] = $request->shipping_country;
+       $metadata['shipping_state'] = $request->shipping_state;
+       $metadata['shipping_city'] = $request->shipping_city;
+       $metadata['order_id'] = $request->order_id;
 
-        $addressdata = Address::where('order_id',$order_id)->first();
-
-        $addressdata->address = $request->address;
-
-        $addressdata->save();
+       foreach($metadata as $m_k => $mv){
+            if(!empty($mv)){
+                OrderMeta::updateOrCreate([
+                    'order_id'=>$request->order_id,
+                    'meta_key'=>$m_k
+                    ], [
+                        'meta_key'=>$m_k,
+                        'meta_value'=>$mv,
+                ]); 
+            }
+        }
+        
 
         if(Auth::user()->roles->first()->title == 'Vendor'){
 
@@ -453,8 +551,6 @@ class OrderController extends Controller
        \Helper::addToLog('Order create or update', $type);
 
        }
-
-
 
         return redirect('/dashboard/order');
 

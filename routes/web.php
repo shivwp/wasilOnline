@@ -64,6 +64,7 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     //Order
     Route::resource('order', OrderController::class);
+
     //Pages
     Route::resource('pages', PagesController::class);
     //Mail
@@ -180,6 +181,8 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
        Route::get('store-cadit',[App\Http\Controllers\admin\UsersController::class, 'storeCradit'])->name('store-cadit');
 
      Route::get('delivered-orders',[App\Http\Controllers\admin\OrderController::class, 'deliveredorders'])->name('delivered-orders');
+     Route::get('order-qty-update',[App\Http\Controllers\admin\OrderController::class, 'orderQtyUpdate'])->name('order-qty-update');
+     Route::post('refund-order',[App\Http\Controllers\admin\OrderController::class, 'refundAmount'])->name('refund-order');
      Route::post('chnage-order-status',[App\Http\Controllers\admin\OrderController::class, 'changestatus'])->name('chnage-order-status');
 
      //customer

@@ -1,5 +1,10 @@
 @extends('layouts.vertical-menu.master')
 @section('css')
+<style>
+strong.select2-results__group {
+    font-size: 33px;
+}
+</style>
 <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 <link href="{{ URL::asset('assets/plugins/ion.rangeSlider/css/ion.rangeSlider.css')}}" rel="stylesheet">
 

@@ -15,6 +15,10 @@
     padding: 12px 12px;
     pointer-events: none;
 }
+
+strong.select2-results__group {
+    font-size: 33px;
+}
 </style>
 
 
