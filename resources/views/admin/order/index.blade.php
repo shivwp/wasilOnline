@@ -216,8 +216,11 @@
 
                                                                     <a class="btn btn-sm btn-primary" href="{{ route('dashboard.order.show', $item->id) }}"><i class="fa fa-eye"></i></a>
 
+<<<<<<< HEAD
                                                                     <a class="btn btn-sm btn-primary" href="{{ route('dashboard.invoice', $item->id) }}"><i class="fa fa-file-text"></i></a>
 
+=======
+>>>>>>> 33b5ed612b3678e7ee1c1eff6139f0f509666ac8
                                                                     {{-- @endcan  --}}
 
                                                                     @can('order_delete')
@@ -423,11 +426,19 @@
                                                                         @endforeach
                                                                     @endif
                                                                 </td>--}}
+<<<<<<< HEAD
 
 
 
                                                                 <td>{{ $item->ship_pr ?? '' }}</td>
 
+=======
+
+
+
+                                                                <td>{{ $item->ship_pr ?? '' }}</td>
+
+>>>>>>> 33b5ed612b3678e7ee1c1eff6139f0f509666ac8
                                                                 <td>
 
                                                                     {{-- @can('order_edit') --}}

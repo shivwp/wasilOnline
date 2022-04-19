@@ -396,6 +396,7 @@ class OrderController extends Controller
     
     }
 
+<<<<<<< HEAD
     public function orderInvoice($id){
         $d['title'] = "ORDER";
         $d['order'] = Order::where('id',$id)->first();
@@ -410,6 +411,8 @@ class OrderController extends Controller
 
     }
 
+=======
+>>>>>>> 33b5ed612b3678e7ee1c1eff6139f0f509666ac8
     public function refundAmount(Request $request){
         $order = Order::where('id',$request->orderid)->first();
         $orderpayment = OrderPayment::where('order_id',$order->id)->first();
