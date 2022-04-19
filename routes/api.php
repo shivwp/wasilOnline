@@ -141,12 +141,16 @@ Route::post('testimonials', [App\Http\Controllers\Api\TestimonialsApiController:
 Route::post('product-attributes',[App\Http\Controllers\Api\ProductApiController::class, 'productAttributes'])->name('product-attributes');
 
 Route::post('gift-cards', [App\Http\Controllers\Api\GiftCardApiController::class, 'index'] );
+Route::post('user-giftcard', [App\Http\Controllers\Api\GiftCardApiController::class, 'userGiftcard'] );
 
 Route::post('all-countries', [App\Http\Controllers\Api\CountryStateCityApiController::class, 'allCountries'] );
 Route::post('all-states', [App\Http\Controllers\Api\CountryStateCityApiController::class, 'allStates'] );
 Route::post('all-cities', [App\Http\Controllers\Api\CountryStateCityApiController::class, 'allCities'] );
 //brand
 Route::post('brands', [App\Http\Controllers\Api\ProductApiController::class, 'brands'] );
+//offer
+Route::post('offer-product', [App\Http\Controllers\Api\ProductApiController::class, 'offerProduct']);
+
 
 
 
@@ -183,6 +187,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('ticket-comment', [App\Http\Controllers\Api\SupportTicketApiController::class, 'ticketComment'] );
 
     Route::post('user-order', [App\Http\Controllers\Api\SupportTicketApiController::class, 'userOrder'] );
+
 
 
 

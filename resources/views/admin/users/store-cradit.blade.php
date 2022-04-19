@@ -129,7 +129,7 @@
                                                             <td>{{ $item->name ?? '' }}</td>
 
                                                             <td>{{ $item->email ?? '' }}</td>
-                                                            <td>{{ $item->user_wallet ?? '' }}</td>
+                                                            <td>${{ $item->user_wallet ?? '0' }}</td>
 
                                                           
                                                         </tr>

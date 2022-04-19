@@ -80,7 +80,9 @@ class Coupon extends Model
 
         'product_id',
 
-        'created_by'
+        'created_by',
+
+        'customer_id'
 
 
 

@@ -26,7 +26,7 @@
     
     
       <div class="row">
-      <div class="col-sm-12">
+      <div class="col-sm-3">
           <div class="form-group">
             <label class="switch">
               <input type="checkbox"  name="vendor_approval" {{($setting['vendor_approval'] == 1)?'checked':''}}>
@@ -37,7 +37,7 @@
         </div>
 
 
-        <div class="col-sm-12">
+        <div class="col-sm-3">
           <div class="form-group">
             <label class="switch">
               <input type="checkbox" name="product_approval" {{($setting['product_approval'])?'checked':''}}  >

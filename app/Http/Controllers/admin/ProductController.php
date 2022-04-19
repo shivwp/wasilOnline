@@ -196,6 +196,7 @@ class ProductController extends Controller
             'arab_long_description'          => $request->input('arab_long_description'),
             'is_publish'          => $publish,
             'brand_slug'          => $request->brand,
+            'in_offer'            => !empty($request->input('offer_product')) && ($request->input('offer_product') == 'on') ? '1' : '0',     
           ]);
 
          if($request->hasfile('featured_image'))

@@ -18,6 +18,10 @@ use App\Models\GiftCardLog;
 
 use App\Models\Product;
 
+use App\Models\GiftCardUser;
+
+use App\Models\User;
+
 use DB;
 
 
@@ -289,6 +293,77 @@ class GiftCardController extends Controller
     {
 
         //
+
+    }
+
+    public function giftcardTransaction(Request $request){
+
+        $d['title'] = "Gift Card";
+
+        $d['buton_name'] = "ADD NEW";
+
+        $giftcard=GiftCard::all();
+
+
+
+        $d['giftcard'] = $giftcard;
+
+         $pagination=10;
+
+        if(isset($_GET['paginate'])){
+
+            $pagination=$_GET['paginate'];
+
+        }
+
+         $q=GiftCard::select('*');
+
+            if($request->search){
+
+                $q->where('title', 'like', "%$request->search%");  
+
+            }
+
+             $d['giftcard']=$q->paginate($pagination)->withQueryString();
+
+       
+
+
+
+        return view('admin/gift-card/gift-trans',$d);
+    }
+
+    public function transactionShow($id){
+
+        $d['title'] = "Show Transactions";
+
+        $pagination=10;
+
+        if(isset($_GET['paginate'])){
+
+            $pagination=$_GET['paginate'];
+
+        }
+
+        $GiftCardUser =GiftCardUser::where('card_id',$id);
+        $giftcard = $GiftCardUser->paginate($pagination)->withQueryString();
+
+        foreach($giftcard as $key => $val){
+
+            $giftcard_log =GiftCardLog::where('gift_card_code',$val->gift_card_code)->get();
+            foreach($giftcard_log as $key_log => $val_log){
+                $user = User::where('id',$val_log->user_id)->first();
+                $giftcard_log[$key_log]['user'] = !empty($user->name) ? $user->name : $user->first_name;
+            }
+            $puchased_user = User::where('id',$val->user_id)->first();
+            $giftcard[$key]['puchased_user'] = !empty($puchased_user->name) ? $puchased_user->name : $puchased_user->first_name;
+            $giftcard[$key]['log'] = $giftcard_log;
+
+        }
+
+        $d['giftcard'] = $giftcard;
+        
+        return view('admin/gift-card/tans-show',$d);
 
     }
 

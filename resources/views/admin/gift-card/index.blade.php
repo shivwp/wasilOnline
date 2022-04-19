@@ -126,75 +126,75 @@
 
                                                 <tbody>
 
-                                                @if(count($giftcard)>0)
+                                                    @if(count($giftcard)>0)
 
-                                                    @foreach($giftcard as $key => $item)
+                                                        @foreach($giftcard as $key => $item)
 
-                                                    <tr>
+                                                        <tr>
 
-                                                        <td>{{$item->id ?? '' }}</td>
+                                                            <td>{{$item->id ?? '' }}</td>
 
-                                                        <td>{{$item->title ?? '' }}</td>
+                                                            <td>{{$item->title ?? '' }}</td>
 
-                                                        <td>{{$item->description ?? '' }}</td>
+                                                            <td>{{$item->description ?? '' }}</td>
 
-                                                        <td style="height: 70px;width: 100px;">
+                                                            <td style="height: 70px;width: 100px;">
 
-                                                            @if(!empty($item->image))
+                                                                @if(!empty($item->image))
 
-                                                            <img src="{{url('/giftcard')}}/{{$item->image}}" alt="giftcard">
+                                                                <img src="{{url('/giftcard')}}/{{$item->image}}" alt="giftcard">
 
-                                                            @endif
-
-                                                        </td>
-
-                                                        <td>{{$item->amount ?? '' }}</td>
-
-                                                        <td>{{$item->valid_days ?? '' }}</td>
-
-                                                        <td>
-
-                                                            @if($item->status == 1)
-
-                                                            <span class="tag tag-green">Active</span>
-
-                                                            @else
-
-                                                            <span class="tag tag-gray-dark">Deactive</span>
-
-                                                            @endif
-
-                                                        </td>
-
-                                                        <td>
-
-                                                               
-
-                                                                 <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.gift-card.edit', $item->id) }}"><i class="fa fa-edit"></i> </a>
-
-                                                                 
-
-                                                               
-
-                                                                    <form action="{{ route('dashboard.gift-card.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">
-
-                                                                        <input type="hidden" name="_method" value="DELETE">
-
-                                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-
-                                                                        <button type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}"><i class="fa fa-trash"></i></button>
-
-                                                                    </form>
-
-                                                               
+                                                                @endif
 
                                                             </td>
 
-                                                    </tr>
+                                                            <td>{{$item->amount ?? '' }}</td>
 
-                                                    @endforeach
+                                                            <td>{{$item->valid_days ?? '' }}</td>
 
-                                                @endif
+                                                            <td>
+
+                                                                @if($item->status == 1)
+
+                                                                <span class="tag tag-green">Active</span>
+
+                                                                @else
+
+                                                                <span class="tag tag-gray-dark">Deactive</span>
+
+                                                                @endif
+
+                                                            </td>
+
+                                                            <td>
+
+                                                                
+
+                                                                    <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.gift-card.edit', $item->id) }}"><i class="fa fa-edit"></i> </a>
+
+                                                                    
+
+                                                                
+
+                                                                        <form action="{{ route('dashboard.gift-card.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure');" style="display: inline-block;">
+
+                                                                            <input type="hidden" name="_method" value="DELETE">
+
+                                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
+                                                                            <button type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}"><i class="fa fa-trash"></i></button>
+
+                                                                        </form>
+
+                                                                
+
+                                                                </td>
+
+                                                        </tr>
+
+                                                        @endforeach
+
+                                                    @endif
 
                                                     
 

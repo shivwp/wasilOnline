@@ -95,7 +95,7 @@
 
 					<div class="form-group">
 
-						<label class="form-label">Procuct Name(English)</label>
+						<label class="form-label">Product Name(English)</label>
 
 							<input type="hidden" name="pid" value="{{ isset($product->id)?$product->id:'' }}" class="pid" required>
 
@@ -108,7 +108,7 @@
 
 					<div class="form-group">
 
-						<label class="form-label">Procuct Name(Arabic)</label>
+						<label class="form-label">Product Name(Arabic)</label>
 
 						<input type="text" class="form-control" name="arab_pname" placeholder="Name"  value="{{isset($product) ? $product->arab_pname : '' }}" required>
 
@@ -120,7 +120,7 @@
 
 					<div class="form-group mb-0">
 
-						<label class="form-label">Short Discription(English)</label>
+						<label class="form-label">Short Description(English)</label>
 
 						<textarea class="form-control" name="example-textarea-input" rows="6" placeholder="text here.." required>{{isset($product) ? $product->short_description : '' }}</textarea>
 
@@ -132,7 +132,7 @@
 
 					<div class="form-group mb-0">
 
-						<label class="form-label">Short Discription(Arabic)</label>
+						<label class="form-label">Short Description(Arabic)</label>
 
 						<textarea class="form-control" name="arab_short_description" rows="6" placeholder="text here.." required>{{isset($product) ? $product->arab_short_description : '' }}</textarea>
 
@@ -144,7 +144,7 @@
 
 					<div class="form-group mb-0">
 
-						<label class="form-label">Detailed Discription(English)</label>
+						<label class="form-label">Detailed Description(English)</label>
 
                                                         <div id="summernote"><?php echo isset($product) ? $product->long_description : '' ?></div>
 
@@ -156,7 +156,7 @@
 
 					<div class="form-group mb-0">
 
-						<label class="form-label">Detailed Discription(Arabic)</label>
+						<label class="form-label">Detailed Description(Arabic)</label>
 						<textarea id="editor1" name="arab_long_description" value="" required><?php echo isset($product) ? $product->arab_long_description : '' ?></textarea>
 
 						
@@ -929,6 +929,16 @@
 								<span class="slider round"></span>
 							</label>
 							<label for="scales">Top 100</label>
+					</div>
+				@endif
+
+				@if(Auth::user()->roles->first()->title == "Admin")	
+					<div class="col-md-3 mt-2">
+							<label class="switch">
+								<input type="checkbox" id="offer" name="offer_product" {{ isset($product) && ($product->in_offer == 1) ?  'checked' : '' }}>
+								<span class="slider round"></span>
+							</label>
+							<label for="scales">Offer</label>
 					</div>
 				@endif
 

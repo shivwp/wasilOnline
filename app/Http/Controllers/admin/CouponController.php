@@ -21,6 +21,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Product;
+use App\Models\User;
 
 use App\Models\Coupon;
 
@@ -157,6 +158,7 @@ class CouponController extends Controller
         $d['title'] = "COUPON";
 
         $d['vendor'] = Role::where('title', 'Vendor')->first()->users()->get();
+        $d['user'] =   Role::where('title', 'User')->first()->users()->get();
 
         $d['category'] = Category::all();
 
@@ -208,6 +210,42 @@ class CouponController extends Controller
 
     }
 
+    public function usersSearch(Request $req){
+
+
+
+        $search =  $req->psearchTerm;
+
+        $datas = [];
+
+
+
+       //$User = User::where('pname', 'like', "%{$search}%")->leftJoin('roles','')->get();
+
+       $users = User::with(['roles' => function($q){
+        $q->where('title', 'User');
+        }])->where('name', 'like', "%{$search}%")->get();
+
+		$data = array();
+
+		foreach ($users as $d){
+
+			$data[] =array(
+
+				'id' =>$d->id,
+
+				'text' => $d->name,
+
+			);
+
+		}
+
+        echo json_encode($data);
+
+		exit;
+
+    }
+
 
 
     public function store(Request $request)
@@ -215,8 +253,6 @@ class CouponController extends Controller
 
 
     {
-
-     
 
       $maximum_spend = $request->maximum_spend;
 
@@ -303,6 +339,7 @@ class CouponController extends Controller
             
 
             'product_id'     => json_encode($request->input('product_id')),
+            'customer_id'     => json_encode($request->input('user_id')),
             'created_by'     => Auth::user()->id,
 
 
@@ -322,7 +359,6 @@ class CouponController extends Controller
             DB::table('coupon_user')->where('coupon_id',$request->id)->delete();
 
 
-
         }
 
         $coupon->product()->sync($request->input('product_id'),[]);
@@ -336,7 +372,7 @@ class CouponController extends Controller
         $coupon->vendor()->sync($request->input('vendor_id'),[]);
 
 
-
+        $coupon->vendor()->sync($request->input('user_id'),[]);
 
 
 

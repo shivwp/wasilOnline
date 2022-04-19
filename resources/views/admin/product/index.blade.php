@@ -145,7 +145,9 @@
                                                                 @endcan 
 
                                                                 @if(Auth::user()->roles->first()->title == "Admin")
-                                                                <a data-toggle="tooltip" title="approve" class="btn btn-sm btn-secondary" href="{{ route('dashboard.approve-product', $item->id) }}"><i class="fa fa-check"></i> </a>
+                                                                    @if($item->is_publish != 1)
+                                                                    <a data-toggle="tooltip" title="approve" class="btn btn-sm btn-secondary" href="{{ route('dashboard.approve-product', $item->id) }}"><i class="fa fa-check"></i> </a>
+                                                                    @endif
                                                                 {{--<a data-toggle="tooltip" title="reject" class="btn btn-sm btn-secondary" href="{{ route('dashboard.reject-product', $item->id) }}"><i class="fa fa-ban"></i> </a>--}}
                                                                 @endif
 

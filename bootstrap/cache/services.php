@@ -45,6 +45,7 @@
     41 => 'Laravel\\Passport\\PassportServiceProvider',
     42 => 'Laravel\\Socialite\\SocialiteServiceProvider',
     43 => 'Intervention\\Image\\ImageServiceProvider',
+    44 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
   ),
   'eager' => 
   array (
@@ -76,6 +77,7 @@
     25 => 'App\\Providers\\RouteServiceProvider',
     26 => 'Laravel\\Passport\\PassportServiceProvider',
     27 => 'Intervention\\Image\\ImageServiceProvider',
+    28 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
   ),
   'deferred' => 
   array (

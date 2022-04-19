@@ -407,6 +407,16 @@ class GiftCardApiController extends Controller
 
     }
 
+    public function userGiftcard(Request $request){
+        if (Auth::guard('api')->check()) {
+            $user = Auth::guard('api')->user();
+        } 
+        $user_id = $user->id;
+        dd($user_id);
+
+
+    }
+
     /**
 
      * Display the specified resource.

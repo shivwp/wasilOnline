@@ -61,9 +61,11 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
     //create variants
     Route::post('create-varient', [ProductController::class,'createVarient'])->name('create-varient');
     Route::post('product-search', [CouponController::class,'productSearch'])->name('product-search');
+    Route::post('user-search', [CouponController::class,'usersSearch'])->name('user-search');
 
     //Order
     Route::resource('order', OrderController::class);
+
     //Pages
     Route::resource('pages', PagesController::class);
     //Mail
@@ -106,6 +108,11 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     Route::resource('gift-card', GiftCardController::class);
     Route::get('card-deatils',[App\Http\Controllers\admin\GiftCardController::class, 'index2'])->name('card-deatils');
+    Route::get('gift-card-transaction',[App\Http\Controllers\admin\GiftCardController::class, 'giftcardTransaction'])->name('gift-card-transaction');
+
+    Route::get('transaction-show/{id}',[App\Http\Controllers\admin\GiftCardController::class, 'transactionShow'])->name('transaction-show');
+
+
 
     // Coupon
     Route::resource('coupon', CouponController::class);
@@ -175,7 +182,10 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
        Route::get('store-cadit',[App\Http\Controllers\admin\UsersController::class, 'storeCradit'])->name('store-cadit');
 
      Route::get('delivered-orders',[App\Http\Controllers\admin\OrderController::class, 'deliveredorders'])->name('delivered-orders');
+     Route::get('order-qty-update',[App\Http\Controllers\admin\OrderController::class, 'orderQtyUpdate'])->name('order-qty-update');
+     Route::post('refund-order',[App\Http\Controllers\admin\OrderController::class, 'refundAmount'])->name('refund-order');
      Route::post('chnage-order-status',[App\Http\Controllers\admin\OrderController::class, 'changestatus'])->name('chnage-order-status');
+     Route::get('invoice/{id}',[App\Http\Controllers\admin\OrderController::class, 'orderInvoice'])->name('invoice');
 
      //customer
      Route::get('customers',[App\Http\Controllers\admin\UsersController::class, 'customer'])->name('customers');

@@ -16,7 +16,15 @@ use App\Http\Requests\UpdateUserRequest;
 
 use App\Models\Role;
 
+use App\Models\Category;
+use App\Models\Cart;
+
+use App\Models\OrderMeta;
+
 use App\Models\User;
+use App\Models\Product;
+use App\Models\Order;
+use App\Models\OrderedProducts;
 
 use Hash;
 
@@ -223,19 +231,60 @@ class UsersController extends Controller
 
 
 
-    public function show(User $user)
+    public function show($id)
 
     {
+        
+        $d['title']         = "User";
+        $user = User::where('id',$id)->first();
+        $userOrder = Order::where('user_id',$id)->where('parent_id',0)->get();
+        foreach($userOrder as $key => $val){
+         $orderMeta = OrderMeta::where('order_id',$val->id)->pluck('meta_value','meta_key');
+         $OrderedProducts = OrderedProducts::where('order_id',$val->id)->get();
+         $userOrder[$key]['order_meta'] = $orderMeta;
+         $userOrder[$key]['order_product'] = $OrderedProducts;
+        }
 
-        abort_if(Gate::denies('user_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        // $topsellingproduct = Product::query()
+        // ->join('ordered_products', 'ordered_products.product_id', '=', 'products.id')
+        // ->selectRaw('products.*, SUM(ordered_products.quantity) AS quantity_sold')
+        // ->groupBy(['products.id']) // should group by primary key
+        // ->orderByDesc('quantity_sold')
+        // ->take(5) // 20 best-selling products
+        // ->get();
+        $topsellingproduct = Order::where('user_id',$id)
+        ->join('ordered_products', 'ordered_products.order_id', '=', 'orders.id')
+        ->join('products', 'products.id', '=', 'ordered_products.product_id')
+        ->selectRaw('products.*, SUM(ordered_products.quantity) AS quantity_sold')
+        ->groupBy(['products.id']) // should group by primary key
+        ->orderByDesc('quantity_sold')
+        ->take(5) // 20 best-selling products
+        ->get();
+        $topsellingcategory = Order::where('user_id',$id)
+        ->join('ordered_products', 'ordered_products.order_id', '=', 'orders.id')
+        ->join('categories', 'categories.id', '=', 'ordered_products.category')
+        ->selectRaw('categories.*')
+        ->groupBy(['categories.id']) 
+        ->take(5) // 20 best-selling products
+        ->get();
+        // $topsellingcategory = Category::query()
+        // ->join('ordered_products', 'ordered_products.category', '=', 'categories.id')
+        // ->selectRaw('categories.*')
+        // ->groupBy(['categories.id']) 
+        // ->take(5) // 20 best-selling products
+        // ->get();
+        $usercart = Cart::where('user_id',$id)->get();
+        foreach($usercart as $cart_key => $cart_val){
+            $pro = Product::where('id',$cart_val->product_id)->first();
+            $usercart[$cart_key]['pro_name'] = $pro->pname;
 
-
-
-        $user->load('roles');
-
-
-
-        return view('admin.users.show', compact('user'));
+        }
+        $d['user']         = $user;
+        $d['userOrder']         = $userOrder;
+        $d['topsellingproduct']         = $topsellingproduct;
+        $d['topsellingcategory']         = $topsellingcategory;
+        $d['usercart']         = $usercart;
+        return view('admin.users.show',$d);
 
     }
 
@@ -301,7 +350,7 @@ class UsersController extends Controller
         $d['users']=User::query()
         ->whereHas('roles', function($query){ 
         $query->where('title','=', 'User');
-        })->paginate($pagination)->withQueryString();
+        })->where('user_wallet','!=',0)->paginate($pagination)->withQueryString();
 
         return view('admin.users.store-cradit',$d);
     }

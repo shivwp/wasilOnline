@@ -130,6 +130,24 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">Select User</label>
+                        <select class="form-control select2 user_search" name="user_id[]" id="user_search" multiple="">
+                            @if(!isset($coupon))
+                                <option value="0">All</option>
+                            @else
+                            @foreach($user as $val)
+                            @isset($coupon)
+                            @php
+                                $check = json_decode($coupon->user_id)
+                            @endphp
+                            @endisset
+                                <option value="{{$val->id}}" {{ isset($check) && in_array($val->id, $check) ? 'selected' : '' }}>{{!empty($val->name) ? $val->name : $val->first_name}}</option>
+                            @endforeach
+                            @endif
+
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">Minimum spend</label>
                         <input type="number" class="form-control" name="manimum_spend" placeholder="Manimum" value="{{isset($coupon) ? $coupon->maximum_spend : '' }}" required>
                     </div>
@@ -317,6 +335,30 @@ function codegenrate() {
          minimumInputLength: 3,
           ajax: {
                   url: '{{ route("dashboard.product-search") }}',
+                  method: 'post',
+                  dataType: 'json',
+                  delay:250,
+                  data: function (params) {
+                    // console.log(params);
+                      return{
+                         psearchTerm: params.term,
+                         _token: '{{csrf_token()}}'
+                      }
+                   },
+                  processResults: function(data){
+                    // console.log(data);
+                    return{
+                      results: data
+                    };
+                  },
+                  cache:true
+            }
+    });
+
+    $('.user_search').select2({
+         minimumInputLength: 3,
+          ajax: {
+                  url: '{{ route("dashboard.user-search") }}',
                   method: 'post',
                   dataType: 'json',
                   delay:250,
