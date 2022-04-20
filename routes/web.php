@@ -180,6 +180,7 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
        Route::get('user',[App\Http\Controllers\admin\UsersController::class, 'index2'])->name('user-index');
        Route::get('store-cadit',[App\Http\Controllers\admin\UsersController::class, 'storeCradit'])->name('store-cadit');
+       Route::get('store-transection/{id}',[App\Http\Controllers\admin\UsersController::class, 'storeTransection'])->name('store-transection');
 
      Route::get('delivered-orders',[App\Http\Controllers\admin\OrderController::class, 'deliveredorders'])->name('delivered-orders');
      Route::get('order-qty-update',[App\Http\Controllers\admin\OrderController::class, 'orderQtyUpdate'])->name('order-qty-update');

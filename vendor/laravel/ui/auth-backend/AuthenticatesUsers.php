@@ -6,6 +6,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Models\Role;
+use DB;
 
 trait AuthenticatesUsers
 {
@@ -31,6 +33,18 @@ trait AuthenticatesUsers
      */
     public function login(Request $request)
     {
+         //custom code for checking vendor approved 
+         $UserVendor = User::where('email',$request->email)->first();
+         $roleid = DB::table('role_user')->where('user_id',$UserVendor->id)->first();
+         $role =Role::where('id',$roleid->role_id)->first();
+ 
+         if($role->title == "Vendor"){
+             if($UserVendor->is_approved == 0){
+                 return $request->wantsJson()
+                         ? new JsonResponse([], 204)
+                         : redirect('/login'); 
+             }
+         }
         $this->validateLogin($request);
 
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
