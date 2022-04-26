@@ -1,127 +1,40 @@
 <?php
 
-
-
-
-
-
-
 namespace App\Http\Controllers\Api;
 
-
-
-
-
-
-
 use App\Http\Controllers\Controller;
-
-
-
 use Illuminate\Http\Request;
-
-
-
 use App\Models\Order;
-
-
-
 use App\Models\Address;
-
-
-
 use App\Models\Product;
-
-
-
 use App\Models\OrderShipping;
-
-
-
 use App\Models\OrderedProducts;
-
 use App\Models\OrderProductMeta;
-
-
-
 use App\Models\GiftCard;
-
-
-
 use App\Models\GiftCardUser;
-
-
-
 use App\Models\GiftCardLog;
-
-
-
 use App\Models\User;
-
-
-
 use App\Models\Coupon;
-
-
-
 use App\Models\Cart;
-
 use App\Models\VendorSetting;
-
 use App\Models\Category;
-
-
-
 use App\Models\OrderMeta;
-
-
-
 use App\Models\OrderNote;
-
-
-
 use App\Models\OrderPayment;
-
 use App\Models\CustomAttributes;
-
-
-
 use App\Models\VendorEarnings;
-
-
-
 use App\Models\UserWalletTransection;
 
 use App\Models\OrderProductNote;
-
-
-
 use AmrShawky\LaravelCurrency\Facade\Currency as CurrencyConvert;
-
-
-
 use Illuminate\Support\Carbon;
-
 use App\Http\Traits\CurrencyTrait;
-
-
-
 use Illuminate\Support\Str;
-
 use App\Models\Mails;
-
 use App\Mail\GiftCardEmail;
-
 use App\Mail\OrderMail;
-
 use Mail;
-
-
-
 use Validator;
-
-
-
 use Auth;
 
 
@@ -456,104 +369,7 @@ class OrderApiController extends Controller
 
 
 
-            //Gift Card
-
-            if(count($request->gift_card) > 0){
-
-                foreach($request->gift_card as $gift_k => $gift_val){
-
-                    $giftcard = GiftCardUser::where('gift_card_code',$gift_val['code'])->where('gift_card_amount','!=',0)->first();
-
-                    if(!empty($giftcard)){
-
-                        $updateAmount = $giftcard->gift_card_amount - $gift_val['amount'];
-
-                        GiftCardUser::where('gift_card_code',$giftcard->gift_card_code)->update([
-
-                            'gift_card_amount' => $updateAmount
-
-                        ]);
-
-
-
-                        GiftCardLog::where('gift_card_code',$request->giftcard_code)->create([
-
-                            'user_id'           => $user_id,
-
-                            'gift_card_code'    => $gift_val['code'],
-
-                            'gift_card_amount'  =>  $gift_val['amount'],
-
-                            'note'              =>  "gift card code used in order",
-
-                        ]);
-
-
-
-                         //Gift Card Mail
-
-             
-
-                        $basicinfo = [
-
-                            '{email}' =>  $user->email,
-
-                            '{name}' =>  $user->name,
-
-                            '{gift_code}' =>  $gift_val['code'],
-
-                            '{gift_amount}' =>  $gift_val['amount'],
-
-                        ];
-
-                        $mail_data = Mails::where('msg_category', 'use gift card')->first();
-
-                        $msg = $mail_data->message;
-
-                        foreach($basicinfo as $key=> $info){
-
-                            $msg = str_replace($key,$info,$msg);
-
-                        }
-
-
-
-                        $config = ['from_email' => $mail_data->mail_from,
-
-                        "reply_email" => $mail_data->reply_email,
-
-                        'subject' => $mail_data->subject, 
-
-                        'name' => $mail_data->name,
-
-                        'message' => $msg,
-
-                        ];
-
-                          //mail to customer
-
-                          Mail::to($user->email)->send(new OrderMail($config));
-
-                        //mail to admin
-
-                        Mail::to('admin@admin.com')->send(new OrderMail($config));
-
-                        foreach($vendorid as  $v_id){
-
-                            //mail to vendor 
-
-                            $vendorEmail = User::where('id',$v_id)->first();
-
-                            Mail::to($vendorEmail->email)->send(new OrderMail($config));
-
-                        }
-
-                    }
-
-                }
-
-            }
-
+          
 
         if (count(array_unique($vendorid)) === 1) {
 
@@ -649,17 +465,114 @@ class OrderApiController extends Controller
 
 
 
+                  //Gift Card
+
+            if(count($request->gift_card) > 0){
+
+                foreach($request->gift_card as $gift_k => $gift_val){
+
+                    $giftcard = GiftCardUser::where('gift_card_code',$gift_val['code'])->where('gift_card_amount','!=',0)->first();
+
+                    if(!empty($giftcard)){
+
+                        $updateAmount = $giftcard->gift_card_amount - $gift_val['amount'];
+
+                        GiftCardUser::where('gift_card_code',$giftcard->gift_card_code)->update([
+
+                            'gift_card_amount' => $updateAmount
+
+                        ]);
+
+
+
+                        GiftCardLog::where('gift_card_code',$request->giftcard_code)->create([
+
+                            'user_id'           => $user_id,
+
+                            'gift_card_code'    => $gift_val['code'],
+
+                            'gift_card_amount'  =>  $gift_val['amount'],
+
+                            'note'              =>  "gift card code used in order",
+
+                        ]);
+
+
+
+                         //Gift Card Mail
+
+             
+
+                        $basicinfo = [
+
+                            '{email}' =>  $user->email,
+
+                            '{name}' =>  $user->name,
+
+                            '{gift_code}' =>  $gift_val['code'],
+
+                            '{gift_amount}' =>  $gift_val['amount'],
+
+                            '{orderid}' =>  $order->id,
+
+                        ];
+
+                        $mail_data = Mails::where('msg_category', 'use gift card')->first();
+
+                        $msg = $mail_data->message;
+
+                        foreach($basicinfo as $key=> $info){
+
+                            $msg = str_replace($key,$info,$msg);
+
+                        }
+
+
+
+                        $config = ['from_email' => $mail_data->mail_from,
+
+                        "reply_email" => $mail_data->reply_email,
+
+                        'subject' => $mail_data->subject, 
+
+                        'name' => $mail_data->name,
+
+                        'message' => $msg,
+
+                        ];
+
+                          //mail to customer
+
+                          Mail::to($user->email)->send(new OrderMail($config));
+
+                        //mail to admin
+
+                        Mail::to('admin@admin.com')->send(new OrderMail($config));
+
+                        foreach($vendorid as  $v_id){
+
+                            //mail to vendor 
+
+                            $vendorEmail = User::where('id',$v_id)->first();
+
+                            Mail::to($vendorEmail->email)->send(new OrderMail($config));
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+
+
 
 
 
 
                 $vendor = array_unique($vendorid);
-
-
-
-
-
-
 
                 foreach($vendor as $val){
 

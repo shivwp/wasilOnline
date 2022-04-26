@@ -1,20 +1,39 @@
 <?php
 
+
+
 namespace App\Models;
 
+
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use Illuminate\Database\Eloquent\Model;
 
-class CityPriceVendor extends Model
+
+
+class CityPrice extends Model
+
 {
+
     use HasFactory;
-     protected $table = "city_price_vendor";
+
+     protected $table = "city_price";
+
      protected $fillable = [
+
         'id',
-        'vendor_id',
-        'normal_price',
+
         'city_id',
+
+        'normal_price',
+
         'priority_price',
+        'state_id',
+
     ];
 
+
+
 }
+
