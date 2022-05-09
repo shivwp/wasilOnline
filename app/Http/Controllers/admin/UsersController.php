@@ -67,6 +67,7 @@ use Gate;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Imports\ImportCustomer;
+use App\Exports\ExportUser;
 
 
 
@@ -786,6 +787,10 @@ class UsersController extends Controller
         return view('admin.clear-cache');
 
       }
+
+        public function exportUsers(Request $request){
+            return Excel::download(new ExportUser, 'users.xlsx');
+    }
 
 
 

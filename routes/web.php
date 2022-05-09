@@ -222,6 +222,14 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
   Route::get('vendor-view',[App\Http\Controllers\admin\VendorSettingController::class, 'importView'])->name('vendor-view');
   Route::post('import-vendor',[App\Http\Controllers\admin\VendorSettingController::class, 'importvendor'])->name('import-vendor');
 
+  //order export
+
+    Route::get('export-orders',[App\Http\Controllers\admin\OrderController::class,'exportOrder'])->name('export-orders');
+
+     
+          //user export
+   Route::get('export-users',[App\Http\Controllers\admin\UsersController::class,'exportUsers'])->name('export-users');
+
 
     Route::get('get-category/{id}', [ProductController::class,'getCategory'])->name('get-category');
     });

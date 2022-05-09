@@ -79,6 +79,7 @@
                                                    <input type="submit" name="" style="display:none;">
 
                                                </form>
+                                              <a href="{{route('dashboard.export-users')}}"  class="form-control src-btn"><i class="fa fa-download" aria-hidden="true"></i></a>
 
                                                <form>
 
