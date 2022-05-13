@@ -32,6 +32,9 @@ use App\Http\Requests\UpdateUserRequest;
 
 use App\Models\Role;
 
+
+use App\Models\UserBids;
+
 use App\Models\UserWalletTransection;
 
 
@@ -147,7 +150,7 @@ class UsersController extends Controller
 
 
 
-         $q=User::select('*');
+         $q=User::select('*')->orderBy('id','DESC');
 
 
 
@@ -419,6 +422,9 @@ class UsersController extends Controller
         $user->load('roles');
 
 
+       
+
+
 
 
 
@@ -581,6 +587,20 @@ class UsersController extends Controller
         $d['topsellingcategory']         = $topsellingcategory;
 
         $d['usercart']         = $usercart;
+
+        $usersbid = UserBids::where('user_id',$id)->get();
+
+        foreach($usersbid as $bid_key => $bid_val){
+
+            $user = User::where('id',$bid_val->user_id)->first();
+            $product = Product::where('id',$bid_val->product_id)->first();
+            $usersbid[$bid_key]['user'] = !empty($user->name) ? $user->name : '';
+            $usersbid[$bid_key]['product'] = !empty($product->pname) ? $product->pname : '';
+
+        }
+
+
+        $d['usersbid']         = $usersbid;
 
         return view('admin.users.show',$d);
 
