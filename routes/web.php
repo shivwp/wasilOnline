@@ -29,6 +29,7 @@ use App\Http\Controllers\admin\SupportCategoryController;
 use App\Http\Controllers\admin\WithdrowController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\TestimonialsController;
+use App\Http\Controllers\admin\BidController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\admin\SupportTicketsController;
 
@@ -229,6 +230,9 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
      
           //user export
    Route::get('export-users',[App\Http\Controllers\admin\UsersController::class,'exportUsers'])->name('export-users');
+
+    //Bidding
+    Route::resource('product-bids', BidController::class);
 
 
     Route::get('get-category/{id}', [ProductController::class,'getCategory'])->name('get-category');

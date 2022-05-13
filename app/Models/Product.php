@@ -51,7 +51,8 @@ class Product extends Model
         'arab_long_description',
         'is_publish',
         'brand_slug',
-        'in_offer'
+        'in_offer',
+        'for_auction'
     ];
 
   public function category()

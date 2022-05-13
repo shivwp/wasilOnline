@@ -394,6 +394,13 @@
 
                          @endcan
 
+                         
+                        <li class="slide">
+
+                            <a class="side-menu__item" data-toggle="slide" href="{{ route('dashboard.product-bids.index') }}"><i class="side-menu__icon fe fe-anchor"></i><span class="side-menu__label">Bids</span></a>
+
+                        </li>
+
 
 
                         @can('page_access')

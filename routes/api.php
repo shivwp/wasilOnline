@@ -66,6 +66,13 @@ Route::post('/userforgot', [App\Http\Controllers\Api\UserApiController::class, '
 
 Route::post('/userresetpassword', [App\Http\Controllers\Api\UserApiController::class, 'userresetpassword']);
 
+//Product Bid
+Route::post('user-bids',[App\Http\Controllers\Api\BidApiController::class, 'index'])->name('user-bids');
+Route::post('product-bids',[App\Http\Controllers\Api\BidApiController::class, 'productbid'])->name('product-bids');
+Route::post('create-bid',[App\Http\Controllers\Api\BidApiController::class, 'create'])->name('create-bid'); 
+Route::post('all-bids',[App\Http\Controllers\Api\BidApiController::class, 'allbids'])->name('all-bids'); 
+Route::post('bidding-products',[App\Http\Controllers\Api\ProductApiController::class, 'bidproduct'])->name('bidding-products'); 
+
 
 
 //social

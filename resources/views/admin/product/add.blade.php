@@ -11,6 +11,10 @@
 .sub_cat, .sub_sub_cat {
 	display: none;
 }
+label.switch.checkbox-margin {
+    margin-top: 40px;
+}
+
 
 </style>
 
@@ -65,7 +69,50 @@
 
 <div class="card">
 
+	
+
 	<div class="card-body">
+		@if(isset($bids) && count($bids) > 0)
+		<div class="row">
+			<div class="col-md-12">
+				<button class="btn btn-success float-right mb-2 product-bids">Product Bids</button>
+			</div>
+			<div class="col-md-12 bid-data" style="display:none;">
+				<table id="" class="table table-striped table-bordered text-nowrap w-100">
+					 <thead>
+			            <tr>
+			                <th  class="wd-10p">id</th>
+			                <th class="wd-15p">User Name</th>
+			                <th class="wd-15p">Product Name</th>
+			                <th class="wd-20p">Bid Price</th>
+			                <th class="wd-20p">Bid Status</th>
+			            </tr>
+		            </thead>
+		            <tbody>
+			            @if(count($bids)>0)
+			                @foreach($bids as $key => $item)
+			                <tr>
+			                    <td>{{$item->id ?? '' }}</td>
+			                    <td>{{$item->user ?? '' }}</td>
+			                    <td>{{$item->product ?? '' }}</td>
+			                    <td>{{$item->bid_price ?? '' }}</td>
+			                    <td>
+			                    	 @if($item->status == 'pending')
+			                    	 	<span class=" tag tag-blue">{{ $item->status ?? '' }}</span>
+			                    	 @elseif($item->status == 'out bid')
+			                    	 	<span class=" tag tag-red">{{ $item->status ?? '' }}</span>
+			                    	  @elseif($item->status == 'winner')
+			                    	  	<span class=" tag tag-green">{{ $item->status ?? '' }}</span>
+			                    	 @endif
+			                    </td>
+			                </tr>
+			                @endforeach
+			            @endif
+		        	</tbody>
+				</table> 
+			</div>
+		</div>
+		@endif
 
 		<form method="POST" action="{{ route('dashboard.product.store') }}" enctype="multipart/form-data">
 
@@ -165,8 +212,87 @@
 
 				</div>
 
-				
+				<div class="col-md-6 mt-2">
+					<label class="switch">
+						<input type="checkbox" id="auction" name="auction"  {{ isset($product) && ($product->for_auction == "on") ?  'checked' : '' }} >
+						<span class="slider round"></span>
+					</label>
+					<label for="scales">For auction</label>
+				</div>
+				<div class="col-md-6">
+					
+				</div>
 
+				
+				<div class="col-md-12 bid-options">
+					<div class="row">
+						<div class="col-md-3">
+							<input type="hidden" name="bidId" value="{{isset($product_bid) ? $product_bid->id : '' }}">
+
+							<div class="form-group">
+
+								<label class="form-label">Auction Start Date</label>
+
+								<input type="date" class="form-control" name="bid_start_date" placeholder="auction start"  value="{{isset($product_bid) ? $product_bid->start_date : '' }}" required>
+
+							</div>
+
+						</div>
+
+						<div class="col-md-3">
+
+							<div class="form-group">
+
+								<label class="form-label">Auction End Date</label>
+
+								<input type="date" class="form-control" name="bid_end_date" placeholder="auction start"  value="{{isset($product_bid) ? $product_bid->end_date : '' }}" required>
+
+							</div>
+
+						</div>
+
+						<div class="col-md-2">
+
+							<div class="form-group">
+
+								<label class="form-label">Min Bid Price</label>
+
+								<input type="number" class="form-control" name="min_price" placeholder="Minimum price"  value="{{isset($product_bid) ? $product_bid->min_bid_price : '' }}" required>
+
+							</div>
+
+						</div>
+
+
+						<div class="col-md-2">
+
+							<div class="form-group">
+
+								<label class="form-label">Step Bid Price</label>
+
+								<input type="text" class="form-control" name="step_price" placeholder="Step price"  value="{{isset($product_bid) ? $product_bid->step_price : '' }}" required>
+
+							</div>
+
+						</div>
+
+						<div class="col-md-2">
+
+							<div class="form-group">
+
+							<label class="switch checkbox-margin">
+								<input type="checkbox" id="auto-allot" name="auto_allot"  {{ isset($product_bid) && ($product_bid->auto_allot == "1") ?  'checked' : '' }} >
+								<span class="slider round"></span>
+							</label>
+							<label for="scales">Auto Allot</label>
+
+							</div>
+
+						</div>
+					</div>
+					
+				</div>
+			
 				<div class="col-md-6">
 
 					<div class="form-group">
@@ -244,6 +370,9 @@
 					</div>
 
 				</div>
+
+
+
 				<div class="col-md-6">
 
 					<div class="form-group">
@@ -1044,6 +1173,44 @@
 
 		$('#dataTable').DataTable();
 
+
+
+	});
+
+</script>
+
+<script>
+
+	$(document).ready(function() {
+
+		var forauction = "{{isset($product->for_auction) ? $product->for_auction : 'off'}}";
+		if(forauction == "on"){
+
+			 $('.bid-options').show();
+		}
+		else{
+			$('.bid-options').hide();	
+		}
+		$("#auction").change(function() {
+		    if(this.checked) {
+		        $('.bid-options').show();
+		    }
+		    else{
+		    	 $('.bid-options').hide();
+		    }
+		});
+	});
+
+</script>
+
+<script>
+
+	$(document).ready(function() {
+		$(".product-bids").click(function() {
+
+			  $(".bid-data").toggle();
+		   
+		});
 	});
 
 </script>

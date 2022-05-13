@@ -22,6 +22,8 @@ use App\Models\Product;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ImportProduct;
 use App\Exports\ExportProduct;
+use App\Models\ProductBid;
+use App\Models\UserBids;
 use Auth;
 use DB;
 class ProductController extends Controller
@@ -57,6 +59,7 @@ class ProductController extends Controller
 
     public function create()
     { 
+      
         $d['title'] = "Product Add";
         $d['category']=Category::where('parent_id','=',0)->get();
         $d['tax']=Tax::all();
@@ -104,6 +107,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
       //product Aprroval
+      // dd($request->auction);
       $publish = 0;
       $Setting = Setting::where('id', 100)->first();
       if(!empty($Setting) && $Setting->value == "on"){
@@ -197,7 +201,22 @@ class ProductController extends Controller
             'is_publish'          => $publish,
             'brand_slug'          => $request->brand,
             'in_offer'            => !empty($request->input('offer_product')) && ($request->input('offer_product') == 'on') ? '1' : '0',     
+            'for_auction'            => !empty($request->input('auction')) && ($request->input('auction') == "on") ? "on" : "off" 
           ]);
+
+        if($request->input('auction') == 'on'){
+
+          $ProductBid = ProductBid::updateOrCreate(['id' => $request->bidId],[
+            'product_id'    => $product->id,
+            'start_date'    => $request->bid_start_date,
+            'end_date'      => $request->bid_end_date,
+            'min_bid_price' =>$request->min_price,
+            'step_price'    =>$request->step_price,
+            'auto_allot'    =>!empty($request->input('auto_allot')) && ($request->input('auto_allot') == "on") ? "1" : "0"
+
+          ]);
+
+        }
 
          if($request->hasfile('featured_image'))
 
@@ -883,6 +902,7 @@ class ProductController extends Controller
         $d['product'] = $product;
         $d['all_vendors']=User::join('role_user', 'role_user.user_id', '=', 'users.id')->where('role_user.role_id', '=', '3')->get();
         $d['child_product'] = Product::where('parent_id',$id)->get();
+        $d['product_bid'] = ProductBid::where('product_id',$id)->first();
         $product_attr = [];
 
         foreach($product->product_attr as $val){
@@ -917,6 +937,20 @@ class ProductController extends Controller
         $data['checkvendorshiipingmethod1'] = VendorShipping::where('shipping_method_id',1)->where('vendor_id',$product->vender_id)->first();
         $data['checkvendorshiipingmethod2'] = VendorShipping::where('shipping_method_id',2)->where('vendor_id',$product->vender_id)->first();
         $data['checkvendorshiipingmethod3'] = VendorShipping::where('shipping_method_id',3)->where('vendor_id',$product->vender_id)->first();
+
+         // product biddings
+          $bids =UserBids::where('product_id',$id)->get();
+
+          foreach($bids as $bid_key => $bid_val){
+
+            $user = User::where('id',$bid_val->user_id)->first();
+            $product = Product::where('id',$bid_val->product_id)->first();
+            $bids[$bid_key]['user'] = !empty($user->name) ? $user->name : '';
+            $bids[$bid_key]['product'] = !empty($product->pname) ? $product->pname : '';
+
+          }
+          $d['bids'] = $bids;
+
 
         return view('admin/product/add',$d);
     }
