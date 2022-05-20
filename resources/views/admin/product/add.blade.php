@@ -212,6 +212,44 @@ label.switch.checkbox-margin {
 
 				</div>
 
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="form-label">Product Type</label>
+						<select name="pro_type" class="form-control select2 pro_type" id="product_type" required>
+								<option value="single" {{isset($product) && ($product->product_type == "single") ? 'selected' : ''}}>Single</option>
+								<option value="variants" {{isset($product) && ($product->product_type == "variants") ? 'selected' : ''}}>Variants</option>
+								<option value="giftcard" {{isset($product) && ($product->product_type == "giftcard") ? 'selected' : ''}}>Giftcard</option>
+								<option value="card" {{isset($product) && ($product->product_type == "card") ? 'selected' : ''}}>Card</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="col-md-6">
+
+					<div class="form-group">
+
+						<label class="form-label">Select Brand</label>
+
+						<select name="brand" class="form-control select2" id="pc" >
+  						
+							<option value="">Select</option>
+
+							@if(count($brand) > 0)
+
+								@foreach($brand as $val)
+
+									<option value="{{$val->slug}}" {{isset($product) && ($product->brand_slug == $val->slug) ? 'selected' : ''}}>{{$val->title}}</option>
+
+								@endforeach
+
+							@endif
+
+						</select>
+
+					</div>
+
+				</div>
+
 				<div class="col-md-6 mt-2">
 					<label class="switch">
 						<input type="checkbox" id="auction" name="auction"  {{ isset($product) && ($product->for_auction == "on") ?  'checked' : '' }} >
@@ -238,6 +276,18 @@ label.switch.checkbox-margin {
 							</div>
 
 						</div>
+						<div class="col-md-3">
+							<input type="hidden" name="bidId" value="{{isset($product_bid) ? $product_bid->id : '' }}">
+
+							<div class="form-group">
+
+								<label class="form-label">Auction Start Time</label>
+
+								<input type="time" class="form-control" name="bid_start_time" placeholder="auction start"  value="{{isset($product_bid) ? $product_bid->start_time : '' }}" required>
+
+							</div>
+
+						</div>
 
 						<div class="col-md-3">
 
@@ -250,8 +300,25 @@ label.switch.checkbox-margin {
 							</div>
 
 						</div>
+						<div class="col-md-3">
+							<input type="hidden" name="bidId" value="{{isset($product_bid) ? $product_bid->id : '' }}">
 
-						<div class="col-md-2">
+							<div class="form-group">
+
+								<label class="form-label">Auction End Time</label>
+
+								<input type="time" class="form-control" name="bid_end_time" placeholder="auction start"  value="{{isset($product_bid) ? $product_bid->end_time : '' }}" required>
+
+							</div>
+
+						</div>
+
+						
+						
+					</div>
+					<div class="row">
+
+						<div class="col-md-3">
 
 							<div class="form-group">
 
@@ -264,7 +331,7 @@ label.switch.checkbox-margin {
 						</div>
 
 
-						<div class="col-md-2">
+						<div class="col-md-3">
 
 							<div class="form-group">
 
@@ -276,7 +343,7 @@ label.switch.checkbox-margin {
 
 						</div>
 
-						<div class="col-md-2">
+						<div class="col-md-3">
 
 							<div class="form-group">
 
@@ -373,31 +440,7 @@ label.switch.checkbox-margin {
 
 
 
-				<div class="col-md-6">
-
-					<div class="form-group">
-
-						<label class="form-label">Select Brand</label>
-
-						<select name="brand" class="form-control select2" id="pc" >
-  						
-							<option value="">Select</option>
-
-							@if(count($brand) > 0)
-
-								@foreach($brand as $val)
-
-									<option value="{{$val->slug}}" {{isset($product) && ($product->brand_slug == $val->slug) ? 'selected' : ''}}>{{$val->title}}</option>
-
-								@endforeach
-
-							@endif
-
-						</select>
-
-					</div>
-
-				</div>
+				
 
 				@if(Auth::user()->roles->first()->title == "Admin" && !empty($product))
 				<div class="col-md-6">
@@ -407,17 +450,7 @@ label.switch.checkbox-margin {
 					</div>
 				</div>
 				@endif
-				<div class="col-md-6">
-					<div class="form-group">
-						<label class="form-label">Product Type</label>
-						<select name="pro_type" class="form-control select2 pro_type" id="product_type" required>
-								<option value="single" {{isset($product) && ($product->product_type == "single") ? 'selected' : ''}}>Single</option>
-								<option value="variants" {{isset($product) && ($product->product_type == "variants") ? 'selected' : ''}}>Variants</option>
-								<option value="giftcard" {{isset($product) && ($product->product_type == "variants") ? 'selected' : ''}}>Giftcard</option>
-								<option value="card" {{isset($product) && ($product->product_type == "card") ? 'selected' : ''}}>Card</option>
-						</select>
-					</div>
-				</div>
+			
 
 
 				<div class="col-md-6 pro-single">
@@ -1135,6 +1168,24 @@ label.switch.checkbox-margin {
 <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
 <script>
 	CKEDITOR.replace( 'editor1' );
+</script>
+<script type="text/javascript">
+$('document').ready(function() {
+		var a = $('#product_type').val();
+		if(a != 'single'){
+			$("#auction").prop('disabled', true);
+		}
+
+	$("#product_type").change(function() {
+	var a = $('#product_type').val();
+		if(a == 'single'){
+			$("#auction").prop('disabled', false);
+		}
+		else{
+			$("#auction").prop('disabled', true);
+		}
+	});
+});
 </script>
 
 <script>     

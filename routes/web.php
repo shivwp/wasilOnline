@@ -166,6 +166,11 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     Route::post('req-withdrow',[App\Http\Controllers\admin\WithdrowController::class, 'withdrowreq'])->name('req-withdrow');
 
+
+    //test route
+
+    Route::get('chron-fn',[App\Http\Controllers\Controller::class, 'chronfn'])->name('chron-fn');
+
    
 
 
@@ -233,6 +238,10 @@ Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.', 'middleware' => ['a
 
     //Bidding
     Route::resource('product-bids', BidController::class);
+
+    Route::get('winner/{id}',[App\Http\Controllers\admin\BidController::class,'makewinner'])->name('winner');
+
+
 
 
     Route::get('get-category/{id}', [ProductController::class,'getCategory'])->name('get-category');

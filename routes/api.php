@@ -228,6 +228,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('wallet-transaction', [App\Http\Controllers\Api\GiftCardApiController::class, 'index2'] );
 
     Route::post('add-order', [App\Http\Controllers\Api\OrderApiController::class, 'store'] );
+    Route::post('complete-order', [App\Http\Controllers\Api\OrderApiController::class, 'orderComplete'] );
 
     Route::post('my-account', [App\Http\Controllers\Api\UserApiController::class, 'userdetails'] );
 

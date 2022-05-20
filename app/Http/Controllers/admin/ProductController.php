@@ -210,6 +210,8 @@ class ProductController extends Controller
             'product_id'    => $product->id,
             'start_date'    => $request->bid_start_date,
             'end_date'      => $request->bid_end_date,
+            'start_time'      => $request->bid_start_time,
+            'end_time'      => $request->bid_end_time,
             'min_bid_price' =>$request->min_price,
             'step_price'    =>$request->step_price,
             'auto_allot'    =>!empty($request->input('auto_allot')) && ($request->input('auto_allot') == "on") ? "1" : "0"

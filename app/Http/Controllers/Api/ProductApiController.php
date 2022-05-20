@@ -292,9 +292,9 @@ class ProductApiController extends Controller
                    
                    $mytime = Carbon\Carbon::now();
                    $currenttime  =  $mytime->toDateString();
-                   $productbid = ProductBid::whereDate('end_date','>=',$currenttime)->first();
+                   $productbidavailable = ProductBid::whereDate('end_date','>=',$currenttime)->first();
 
-                   if(!empty($productbid)){
+                   if(!empty($productbidavailable)){
                         $product[$key]['bid_status'] = 'is_available';
                    }
                    else{
@@ -949,9 +949,9 @@ class ProductApiController extends Controller
                    
                    $mytime = Carbon\Carbon::now();
                    $currenttime  =  $mytime->toDateString();
-                   $productbid = ProductBid::whereDate('end_date','>=',$currenttime)->first();
+                   $productbidavailable = ProductBid::whereDate('end_date','>=',$currenttime)->first();
 
-                   if(!empty($productbid)){
+                   if(!empty($productbidavailable)){
                         $product[$key]['bid_status'] = 'is_available';
                    }
                    else{
@@ -1213,9 +1213,9 @@ class ProductApiController extends Controller
                    
                    $mytime = Carbon\Carbon::now();
                    $currenttime  =  $mytime->toDateString();
-                   $productbid = ProductBid::whereDate('end_date','>=',$currenttime)->first();
+                   $productbidavailable = ProductBid::whereDate('end_date','>=',$currenttime)->first();
 
-                   if(!empty($productbid)){
+                   if(!empty($productbidavailable)){
                         $product[$key]['bid_status'] = 'is_available';
                    }
                    else{
@@ -1480,9 +1480,9 @@ class ProductApiController extends Controller
                
                $mytime = Carbon\Carbon::now();
                $currenttime  =  $mytime->toDateString();
-               $productbid = ProductBid::whereDate('end_date','>=',$currenttime)->first();
+               $productbidavailable = ProductBid::whereDate('end_date','>=',$currenttime)->first();
 
-               if(!empty($productbid)){
+               if(!empty($productbidavailable)){
                     $product[$key]['bid_status'] = 'is_available';
                }
                else{
@@ -1987,9 +1987,9 @@ class ProductApiController extends Controller
                    
                    $mytime = Carbon\Carbon::now();
                    $currenttime  =  $mytime->toDateString();
-                   $productbid = ProductBid::whereDate('end_date','>=',$currenttime)->first();
+                   $productbidavailable = ProductBid::whereDate('end_date','>=',$currenttime)->first();
 
-                   if(!empty($productbid)){
+                   if(!empty($productbidavailable)){
                         $product['bid_status'] = 'is_available';
                    }
                    else{
@@ -2601,9 +2601,9 @@ class ProductApiController extends Controller
                    
                    $mytime = Carbon\Carbon::now();
                    $currenttime  =  $mytime->toDateString();
-                   $productbid = ProductBid::whereDate('end_date','>=',$currenttime)->first();
+                   $productbidavailable = ProductBid::whereDate('end_date','>=',$currenttime)->first();
 
-                   if(!empty($productbid)){
+                   if(!empty($productbidavailable)){
                         $product[$key]['bid_status'] = 'is_available';
                    }
                    else{
@@ -2878,9 +2878,9 @@ class ProductApiController extends Controller
                    
                    $mytime = Carbon\Carbon::now();
                    $currenttime  =  $mytime->toDateString();
-                   $productbid = ProductBid::whereDate('end_date','>=',$currenttime)->first();
+                   $productbidavailable = ProductBid::whereDate('end_date','>=',$currenttime)->first();
 
-                   if(!empty($productbid)){
+                   if(!empty($productbidavailable)){
                         $products[$key]['bid_status'] = 'is_available';
                    }
                    else{
@@ -3158,9 +3158,9 @@ class ProductApiController extends Controller
                    
                    $mytime = Carbon\Carbon::now();
                    $currenttime  =  $mytime->toDateString();
-                   $productbid = ProductBid::whereDate('end_date','>=',$currenttime)->first();
+                   $productbidavailable = ProductBid::whereDate('end_date','>=',$currenttime)->first();
 
-                   if(!empty($productbid)){
+                   if(!empty($productbidavailable)){
                         $products[$key]['bid_status'] = 'is_available';
                    }
                    else{
@@ -3624,9 +3624,9 @@ class ProductApiController extends Controller
                    
                    $mytime = Carbon\Carbon::now();
                    $currenttime  =  $mytime->toDateString();
-                   $productbid = ProductBid::whereDate('end_date','>=',$currenttime)->first();
+                   $productbidavailable = ProductBid::whereDate('end_date','>=',$currenttime)->first();
 
-                   if(!empty($productbid)){
+                   if(!empty($productbidavailable)){
                         $products[$key]['bid_status'] = 'is_available';
                    }
                    else{
@@ -3855,9 +3855,15 @@ class ProductApiController extends Controller
                 $prod->leftJoin('city_user', 'city_user.user_id', '=', 'products.vendor_id')->where('city_user.city_id', $request->location);
             }
 
-            if(!empty($request->is_featured)){
+            if(!empty($request->is_featured) && ($request->is_featured == 1)){
 
               $prod->where('products.featured',1);  
+
+            }
+
+             if(!empty($request->product_limit)){
+
+              $prod->limit($request->product_limit);
 
             }
 
@@ -3881,7 +3887,7 @@ class ProductApiController extends Controller
 
         }
 
-       // dd(DB::getQueryLog());
+        //dd($product);
 
         if(count($product) > 0){
 
@@ -3999,9 +4005,9 @@ class ProductApiController extends Controller
                    
                    $mytime = Carbon\Carbon::now();
                    $currenttime  =  $mytime->toDateString();
-                   $productbid = ProductBid::whereDate('end_date','>=',$currenttime)->first();
+                   $productbidavailable = ProductBid::whereDate('end_date','>=',$currenttime)->first();
 
-                   if(!empty($productbid)){
+                   if(!empty($productbidavailable)){
                         $product[$key]['bid_status'] = 'is_available';
                    }
                    else{

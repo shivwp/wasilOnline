@@ -46,13 +46,19 @@
                                                            <a class="form-control src-btn" href="{{ route('dashboard.tax.index') }}"><i class="angle fe fe-rotate-ccw"></i></a>
                                                        </div>
                                                 </form>  --}}
-                                                {{-- <form>
+                                                <form action="{{ route('dashboard.product-bids.index') }}" method="get" id="pro-select">
+                                                    @csrf
                                                      <h6 class="page-num">Product</h6>
-                                                     <select class="form-control select2">
-                                                         <option></option>
+                                                     <select class="form-control select2 pro-select" name="pro_id" >
+                                                        @if(count($bid_products) > 0)
+                                                        <option value="">select</option>
+                                                            @foreach($bid_products as $key => $val)
+                                                                <option value="{{$val->id}}" {{!empty($_GET['pro_id']) && ($_GET['pro_id'] == $val->id) ? 'selected' : ''}}>{{$val->pname}}</option>
+                                                            @endforeach
+                                                        @endif
                                                         
                                                      </select>
-                                                </form> --}}
+                                                </form>
                                                </div>
                                             <table id="" class="table table-striped table-bordered text-nowrap w-100">
                                                 <thead>
@@ -62,6 +68,7 @@
                                                         <th class="wd-15p">Product</th>
                                                         <th class="wd-15p">bid price</th>
                                                         <th class="wd-15p">status</th>
+                                                        <th class="wd-15p">Assign Winner</th>
                                                        {{--  <th class="wd-15p">Action</th> --}}
                                                     </tr>
                                                 </thead>
@@ -82,11 +89,26 @@
                                                                     <span class=" tag tag-green">{{ $item->status ?? '' }}</span>
                                                                 @endif
                                                             </td>
+                                                            <td>
+                                                                @if($item->auto_allot == 0)
+                                                                      @if($item->auto_allot == 0 && $item->status == 'out bid')
+                                                                        <span class="tag tag-red">Out Bid</span>
+                                                                      @elseif($item->auto_allot == 0 && $item->status == 'pending')
+                                                                           <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.winner', $item->product_id) }}"><i class="fa fa-trophy"></i> </a>
+                                                                       @elseif($item->auto_allot == 0 && $item->status == 'winner')
+                                                                         <span class="tag tag-green">Winner</span>
+                                                                      @endif
+                                                                @else
+                                                                 <span class="tag tag-azure">Auto</span>
+                                                                @endif
+                                                            </td>
                                                         
                                                            {{--  <td>
                                                                 <a class="btn btn-sm btn-primary" href=""><i class="fa fa-eye"></i></a>
                                                                  @can('coupon_edit')
                                                                  <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.brand.edit', $item->id) }}"><i class="fa fa-edit"></i> </a>
+
+                                                                 <a class="btn btn-sm btn-secondary" href="{{ route('dashboard.brand.edit', $item->id) }}"><i class="fa fa-trophy"></i> </a>
 
                                                                   @endcan
                                                                  @can('coupon_delete')
@@ -126,6 +148,14 @@ $(document).ready(function() {
     $form.find('input[type=submit]').click();
     console.log( $form);
   });
+
+  $(".pro-select").change(function() {
+      $('#pro-select').submit();
+   });
+
+
+
+
 });
 </script>
 @endsection

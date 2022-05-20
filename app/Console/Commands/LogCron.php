@@ -1,11 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\UserBids;
-use App\Models\Product;
+
+
+
+
+
+namespace App\Console\Commands;
+
+
+
+
+
+
+
+use Illuminate\Console\Command;
 use App\Models\User;
 
 use App\Mail\OrderMail;
@@ -26,95 +35,192 @@ use App\Models\UserWalletTransection;
 use App\Models\City;
 use App\Models\State;
 use App\Models\ProductBid;
+use App\Models\Product;
+use App\Models\UserBids;
 use App\Models\Address;
 use App\Models\OrderShipping;
 use App\Models\OrderNote;
 
 use Carbon;
 
-class BidController extends Controller
+
+
+
+
+
+
+class LogCron extends Command
+
+
+
 {
-    public function index(Request $request){
-      $d['title'] = "Bids";
-      $d['buton_name'] = "ADD NEW";
-      $bid = UserBids::orderBy('id','DESC');
 
 
-        $pagination=10;
-      if(isset($_GET['paginate'])){
-          $pagination=$_GET['paginate'];
-      }
 
-      if(isset($_REQUEST['pro_id'])){
-          $pro_id=$_REQUEST['pro_id'];
-          $bid = UserBids::where('product_id',$pro_id);
-      }
-     
+    /**
 
-      $bids = $bid->paginate($pagination)->withQueryString();
 
-    
 
-      foreach($bids as $key => $val){
+     * The name and signature of the console command.
 
-        $user = User::where('id',$val->user_id)->first();
-        $product = Product::where('id',$val->product_id)->first();
-        $productbid = ProductBid::where('product_id',$val->product_id)->first();
 
-        $bids[$key]['user'] = $user->name;
-        $bids[$key]['product'] = $product->pname;
-        $bids[$key]['auto_allot'] = $productbid->auto_allot;
-        $bids[$key]['status'] = $val->status;
-        
-      }
-      $d['bids'] = $bids;
 
-       $ProductBid = ProductBid::pluck('product_id');
+     *
 
-       $d['bid_products'] = Product::whereIn('id',$ProductBid)->get();
 
-        return view('admin/bids/index',$d);
+
+     * @var string
+
+
+
+     */
+
+
+
+    protected $signature = 'log:cron';
+
+
+
+
+
+
+
+    /**
+
+
+
+     * The console command description.
+
+
+
+     *
+
+
+
+     * @var string
+
+
+
+     */
+
+
+
+    protected $description = 'Command description';
+
+
+
+
+
+
+
+    /**
+
+
+
+     * Create a new command instance.
+
+
+
+     *
+
+
+
+     * @return void
+
+
+
+     */
+
+
+
+    public function __construct()
+
+
+
+    {
+
+
+
+        parent::__construct();
+
+
 
     }
 
-     public function create(Request $request)
-    { 
 
-    }
 
-     public function store(Request $request)
-    { 
 
-    }
 
-    public function edit(Request $request)
-    { 
 
-    }
 
-    public function makewinner($id){
+    /**
 
-      $productBid = Product::where([['id',$id],['for_auction','on']])->first();
 
-      if(!empty($productBid)){
 
-           $productManual  = ProductBid::where([['product_id',$productBid->id],['auto_allot',0]])->first(); 
+     * Execute the console command.
 
-                 if(!empty($productManual)){
+
+
+     *
+
+
+
+     * @return int
+
+
+
+     */
+
+
+
+    public function handle()
+    {
+
+        $productBid = Product::where('for_auction','on')->get();
+
+
+
+           if(count($productBid) > 0){
+
+
+
+                foreach($productBid as $val){
+
+                    $productAuto  = ProductBid::where([['product_id',$val->id],['auto_allot',1]])->first(); 
+
+                    if(!empty($productAuto)){
 
                             $currentDateTime = Carbon\Carbon::now();
 
                             $currentDateTime->setTimezone('Asia/Kolkata');
 
-                            if($currentDateTime >= $productManual->end_date){
-                                  $userBid = UserBids::where('product_id',$productBid->id)->orderBy('bid_price', 'desc')->first();
+                            if($currentDateTime >= $val->end_date){
+
+
+
+                                  $userBid = UserBids::where('product_id',$val->id)->orderBy('bid_price', 'desc')->first();
+
+
 
                                   $user = User::where('id',$userBid->user_id)->first();
+
+
+
                                   if(empty($user->default_card)){
+
+
+
                                     echo 'payment not found';
-                                    die;  
+
+                                    die;
+
                                   }
+
+
+
                                 //order create
+
+
 
                                 $order =  Order::create([
 
@@ -136,11 +242,14 @@ class BidController extends Controller
 
 
 
-                                 $product = Product::where('id',$productBid->id)->first();
+                                 $product = Product::where('id',$val->id)->first();
 
 
 
                                  //order product create
+
+
+
                                 $orderedProduct = OrderedProducts::create([
 
 
@@ -388,7 +497,7 @@ class BidController extends Controller
 
                                     //auction close
 
-                                    $proupdate = Product::where('id',$productBid->id)->update([
+                                    $proupdate = Product::where('id',$val->id)->update([
 
                                         'for_auction' => 'off'
 
@@ -466,11 +575,22 @@ class BidController extends Controller
 
                     }
 
-      } 
 
-     return redirect('/dashboard/product-bids');
+                }
 
+
+
+           }
+
+
+           return 0;
 
 
     }
+
+
+
 }
+
+
+

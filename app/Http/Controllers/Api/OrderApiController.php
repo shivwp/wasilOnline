@@ -389,7 +389,7 @@ class OrderApiController extends Controller
 
 
 
-                        'status'                => 'new',
+                        'status'                => 'order placed',
 
 
 
@@ -443,7 +443,7 @@ class OrderApiController extends Controller
 
 
 
-                        'status'                => 'new',
+                        'status'                => 'order placed',
 
 
 
@@ -594,7 +594,7 @@ class OrderApiController extends Controller
 
 
 
-                            'status'                => 'new',
+                            'status'                => 'order placed',
 
 
 
@@ -881,11 +881,6 @@ class OrderApiController extends Controller
                 $shipping['shipping_landmark']    = $request->shipping_address['landmark'];
 
                 $shipping['refund_amount_in']    = !empty($request->refund_amount_in) && ($request->refund_amount_in == "bank") ? "bank" : "wallet";
-
-
-
-
-
 
 
                 $billing['billing_first_name'] = $request->billing_address['first_name'];
@@ -1832,6 +1827,194 @@ class OrderApiController extends Controller
     }
 
 
+      public function orderComplete(Request $request){
+
+       $order = order::where('id',$request->order_id)->where('parent_id',0)->where('status','order incomplete')->first();
+
+       $product = OrderedProducts::where('order_id',$order->id)->first();
+
+
+        $products_list = '<tr style="border-collapse: collapse;border-bottom: 1px solid #eaedf1; ">
+
+        <td><h6 style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin: 10px 0px;">'.$product->product_name.' </h6></td>
+
+        <td><h6 align="center" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53; margin: 10px 0px; align: center;">'.$product->quantity.' </h6></td>
+
+        <td>
+
+            <h6 align="right" style="font-size: 15px; font-family: \'Raleway\', sans-serif; font-weight: 400; color:#4c4c53;  align: right; margin: 10px 0px;">$'.$product->product_price.'</h6>
+
+        </td>
+
+        </tr>';
+
+       $billing_meta = [];
+
+                $billing_meta['shipping_first_name'] = $request->shipping_address['first_name'];
+                $billing_meta['shipping_last_name'] = $request->shipping_address['last_name'];
+                $billing_meta['shipping_phone']    = $request->shipping_address['phone'];
+                $billing_meta['shipping_alternate_phone']    = $request->shipping_address['alternate_phone'];
+                $billing_meta['shipping_address']    = $request->shipping_address['address'];
+                $billing_meta['shipping_address2']    = $request->shipping_address['address2'];
+                $billing_meta['shipping_address_type']    = $request->shipping_address['address_type'];
+                $billing_meta['shipping_city']    = $request->shipping_address['city'];
+                $billing_meta['shipping_country']    = $request->shipping_address['country'];
+                $billing_meta['shipping_state']    = $request->shipping_address['state'];
+                $billing_meta['shipping_zip_code']    = $request->shipping_address['zip_code'];
+                $billing_meta['shipping_landmark']    = $request->shipping_address['landmark'];
+                // $billing_meta['refund_amount_in']    = !empty($request->refund_amount_in) && ($request->refund_amount_in == "bank") ? "bank" : "wallet";
+                $billing_meta['billing_first_name'] = $request->billing_address['first_name'];
+                $billing_meta['billing_last_name'] = $request->billing_address['last_name'];
+                $billing_meta['billing_phone']    = $request->billing_address['phone'];
+                $billing_meta['billing_alternate_phone']    = $request->billing_address['alternate_phone'];
+                $billing_meta['billing_address']    = $request->billing_address['address'];
+                $billing_meta['billing_address2']    = $request->billing_address['address2'];
+                $billing_meta['billing_address_type']    = $request->billing_address['address_type'];
+                $billing_meta['billing_city']    = $request->billing_address['city'];
+                $billing_meta['billing_country']    = $request->billing_address['country'];
+                $billing_meta['billing_state']    = $request->billing_address['state'];
+                $billing_meta['billing_zip_code']    = $request->billing_address['zip_code'];
+                $billing_meta['billing_landmark']    = $request->billing_address['landmark'];
+                $billing_meta['subtotal_price'] =     $request->subtotPrice;
+                $billing_meta['total_price'] =     $request->totPrice;
+                $billing_meta['shipping_price'] =     $request->shipping_price;
+                $billing_meta['shipping'] =     !empty($request->shipping) && ($request->input("shipping_price") > 0) ? json_encode($request->shipping)   : 0;
+
+
+                foreach($billing_meta as $key => $value){
+                    if($value == '') {
+                        $value = null;
+                    }
+                    OrderMeta::updateOrCreate(
+
+                        ['meta_key' => $key, 'order_id' => $order->id],
+                        ['meta_value' => $value]
+
+                    );
+                }
+
+                foreach($request->shipping as $valship){
+
+                    OrderShipping::create([
+
+                        'order_id' => $order->id,
+
+                        'vendor_id' => $valship['store_id'],
+
+                        'shipping_title' => $valship['title'],
+
+                        'shipping_price' => $valship['ship_price'],
+
+                    ]);
+
+                }
+
+                //shipping method wallet
+
+                   $userwalletamount = User::where('id',$order->user_id)->first();
+
+                    $price = $request->totPrice + $request->shipping_price;
+
+                    $updateAmount = $userwalletamount->user_wallet - $price;
+
+                    if($price > $userwalletamount->user_wallet ){
+                        return response()->json(['status' => false, 'message' => "Wallet Amount is not sufficient for this order"], 200);
+                    }
+
+                    User::where('id',$order->user_id)->update([
+
+                        'user_wallet' =>  $updateAmount
+
+                    ]);
+
+                    $msg = "deducted ".$request->totPrice." amount from user wallet";
+
+                    UserWalletTransection::create([
+
+                        'user_id' => $order->user_id,
+
+                        'amount' => $request->totPrice,
+
+                        'amount_type' => 'Wallet',
+
+                        'description' => 'User Wallet',
+
+                        'title' => 'Paid from',
+
+                        'status' => 'paid'  
+
+                    ]);
+
+
+                    $order->status = 'order placed';
+                    $order->save();
+
+                    $orderproduct = OrderedProducts::where('order_id',$order->id)->update([
+
+                        'status' => 'order placed'
+                    ]);
+
+
+                //Order Mail
+
+                $user = USER::where('id',$order->user_id)->first();
+
+               $basicinfo = [
+
+                '{email}' =>  $user->email,
+
+                '{phone}' => $billing_meta['billing_phone'],
+
+                '{billing_address}' => $billing_meta['billing_address'].' '.$billing_meta['billing_address2'].' '.$billing_meta['billing_city'].' '.$billing_meta['billing_country'].' '.$billing_meta['billing_state'].' '.$billing_meta['billing_zip_code'].' '.$billing_meta['billing_landmark'],
+
+                '{total}' => $request->totPrice + $request->shipping_price,
+
+                '{sub_total}' => isset($order->shipping_price)?($request->totPrice - $request->shipping_price) : $request->totPrice,
+
+                '{products_list}' => $products_list,
+
+                '{order_date}' => Carbon::parse($order->created_at)->format('M d Y'),
+
+                '{order_number}' => $order->id,
+
+                '{shipping}' => $request->shipping_price,
+
+                '{currency}' => $request->currency_sign,
+
+            ];
+
+            $mail_data = Mails::where('msg_category', 'placed')->first();
+
+            $msg = $mail_data->message;
+
+            foreach($basicinfo as $key=> $info){
+
+                $msg = str_replace($key,$info,$msg);
+
+            }
+
+
+
+            $config = ['from_email' => $mail_data->mail_from,
+
+            "reply_email" => $mail_data->reply_email,
+
+            'subject' => $mail_data->subject, 
+
+            'name' => $mail_data->name,
+
+            'message' => $msg,
+
+            ];
+
+            Mail::to('gunjanmanghnani5@gmail.com')->send(new OrderMail($config));
+
+        return response()->json(['status' => true, 'message' => "Success"], 200);
+
+
+      }
+
+
 
 
 
@@ -2291,13 +2474,17 @@ class OrderApiController extends Controller
 
 
 
-        $orders = Order::where('user_id','=',$userid)->orderBy('orders.created_at','DESC')->where('parent_id','=',0)->with(['orderItem' => function ($query){
+        // $orders = Order::where('user_id','=',$userid)->orderBy('orders.created_at','DESC')->where('parent_id','=',0)->with(['orderItem' => function ($query){
 
-            $query->where('product_type', '<>', "card");
+        //     $query->where('product_type', '<>', "card");
 
-            $query->where('product_type', '<>', "giftcard");
+        //     $query->where('product_type', '<>', "giftcard");
 
-        }])->get();
+        // }])->get();
+
+
+
+        $orders = Order::where('user_id','=',$userid)->orderBy('orders.created_at','DESC')->where('parent_id','=',0)->with('orderItem')->get();
 
 
 
